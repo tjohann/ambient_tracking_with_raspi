@@ -35,12 +35,12 @@ int main(void)
 	fd = open("/dev/i2c-1", O_RDWR);
 	if (fd < 0) {
 		printf("open error: %s\n", strerror(errno));
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	if (ioctl(fd, I2C_SLAVE, I2C_ADDR) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
-		return 1;
+		exit(EXIT_FAILURE);
 	}
 
 	while (1) {
@@ -48,6 +48,7 @@ int main(void)
 			value = LED_OFF;
 		else
 			value = LED_ON;
+
 		if (write(fd, &value, 1) != 1) {
 			printf("write error: %s\n", strerror(errno));
 		}
@@ -55,5 +56,5 @@ int main(void)
 		usleep(BLINK_TIME);
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
