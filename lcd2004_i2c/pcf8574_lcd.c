@@ -17,20 +17,23 @@
 #include <errno.h>
 #include <linux/i2c-dev.h>
 
-/* the second PCF8574 address */
-#define I2C_ADDR 0x27
+/* the first PCF8574 address -> LCD */
+#define I2C_ADDR_LCD 0x22
+
+/* the second PCF8574 address -> LEDs */
+#define I2C_ADDR_LED 0x27
 
 /* trigger all LEDs on/off*/
 #define LED_ON  0xFF
 #define LED_OFF 0x00
 
-/* time in usec */
+/* time in usec -> 1000000 == 1s */
 #define BLINK_TIME 1000000
 
 int main(void)
 {
-	int value;
-	int fd;
+	int value = LED_OFF;
+	int fd = -1;
 
 	fd = open("/dev/i2c-1", O_RDWR);
 	if (fd < 0) {
@@ -38,7 +41,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, I2C_SLAVE, I2C_ADDR) < 0) {
+	if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LED) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
