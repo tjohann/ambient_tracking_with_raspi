@@ -1,11 +1,11 @@
 My ambient tracking modul with raspi
 ====================================
 
-This is all content around my ambient tracking modul with raspi. Its collects ambient values like temperatur or humidity and shows it on a LCD2004 display.
+This is all content around my ambient tracking modul with a Raspi2. It collects ambient values like temperatur or humidity and shows it on a LCD2004 display.
 
 [Related links](Documentation/links.md).
 
-The basic user interface are make targets, which then start the corresponding scripts:
+The basic user interface are make targets, which then start the corresponding scripts or actvivate something:
 
     +-----------------------------------------------------------+
     |                                                           |
@@ -29,7 +29,7 @@ If you face a bug then pls use https://github.com/tjohann/ambient_tracking_with_
 Images
 ------
 
-You can download the ready-to-use image from sourceforge (TODODODODODO).
+You can download the ready-to-use image from sourceforge (TODODODODODO). All images are based on Void-Linux (https://voidlinux.org/) and use MUSL as libc (https://www.musl-libc.org/).
 
 The sd-card needs 3 different partitions which are reflected by the images tarballs itself:
 
@@ -50,10 +50,10 @@ The user baalue is available on all images, you can use it to login via ssh and 
 Raspi 2
 -------
 
-....
+Some technial data:
 
-900MHz quad-core ARM Cortex-A7 CPU
-1GB RAM
+	900MHz quad-core ARM Cortex-A7 CPU
+	1GB RAM
 
 
 Build kernel
@@ -65,7 +65,7 @@ I use a custom kernel [Build custom kernel for the Raspi2](Documentation/howto_k
 DockerPi Sensor Hub
 -------------------
 
-I use the DockerPi Sensor shield, direct connected to the raspi
+I use the DockerPi Sensor shield, direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **powersave**
 
 
 Display
@@ -77,6 +77,17 @@ I use a LCD2004 display connected to the raspi via I2C modul.
 Powermanagment
 --------------
 
-tbd
+The default CPUFreq governor is **powersave**, which results in a frequency of 600MHz instead of 900MHz.
 
+
+Additional libraries/tools
+--------------------------
+
+To control the device i use my daemon baalued (https://github.com/tjohann/baalued) which is based on libbalue (https://github.com/tjohann/libbaalue).
+
+
+Additonal scripts
+-----------------
+
+In the scripts folder you find the used helper tools to setup an sd-card or to download and build a kernel.
 

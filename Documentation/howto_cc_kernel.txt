@@ -9,6 +9,11 @@ Date:   23.04.2021/23.04.2021
 
 Content:
 
+- Preparation
+  -- Device
+  -- Mountpoints
+  -- Fstab for mountpoints
+
 - Configure/build/install kernel
   -- Clone kernel
   -- Configure kernel
@@ -18,12 +23,42 @@ Content:
   -- Copy kernel/config
 
 
+Preparation
+===========
+
+Device
+-------
+
+- Raspberry 2
+
+Mountpoints
+-----------
+
+bananapi:
+ - kernel -> /mnt/raspi/raspi_kernel
+ - rootfs -> /mnt/raspi/raspi_rootfs
+ - home   -> /mnt/raspi/raspi_home
+
+
+Fstab entrys for mountpoints
+----------------------------
+
+raspi:
+ LABEL=KERNEL_RPI  /mnt/raspi/raspi_kernel  auto   noauto,user,rw    0       0
+ LABEL=ROOTFS_RPI  /mnt/raspi/raspi_rootfs  auto   noauto,user,rw    0       0
+ LABEL=HOME_RPI    /mnt/raspi/raspi_home    auto   noauto,user,rw    0       0
+
+
+Installation of Cross-Compiler
+------------------------------
+
+This is summary to build a raspi2 kernel with void-linux.
+My provided images use MUSL instead of GLIBC. So you need to install cross-armv7l-linux-musleabihf-libc and cross-armv7l-linux-musleabihf.
+
+
 
 Configure/build/install kernel
 ==============================
-
-This is a summary needed to build and install a kernel nativ with the help of my baalue cluster (the raspi act as baalue_master node).
-
 
 Clone kernel
 ------------
@@ -39,23 +74,25 @@ DIR: $AMBIENT_REPO/kernel/linux-*
 KDO: KERNEL=kernel7
 KDO: cp $AMBIENT_REPO/configs/kernel_config_5.10.x .config
 or
-KDO: make bcm2709_defconfig
-KDO: make menuconfig
+KDO: make CROSS_COMPILE=armv7l-linux-musleabihf- ARCH=arm bcm2709_defconfig
+KDO: make CROSS_COMPILE=armv7l-linux-musleabihf- ARCH=arm menuconfig
 
 
 Build kernel/modules/dtb
 ------------------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: make CC=distcc -j32 zImage modules dtbs
+KDO: make -j24 CROSS_COMPILE=armv7l-linux-musleabihf- ARCH=arm zImage modules dtbs
 
 
 Install modules
 ---------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: sudo make modules_install
+KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.10.31 modules_install
 
+
+############### TODO ##################
 
 Copy dtb/overlays
 -----------------
