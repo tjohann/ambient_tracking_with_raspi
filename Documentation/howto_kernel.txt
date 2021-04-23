@@ -36,10 +36,10 @@ Configure kernel
 ----------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
+KDO: KERNEL=kernel7
 KDO: cp $AMBIENT_REPO/configs/kernel_config_5.10.x .config
 or
-KDO: KERNEL=kernel7
-     make bcm2709_defconfig
+KDO: make bcm2709_defconfig
 KDO: make menuconfig
 
 
@@ -71,5 +71,5 @@ Copy kernel/config
 ------------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: sudo cp arch/arm/boot/zImage/boot/
+KDO: sudo cp arch/arm/boot/zImage /boot/kernel7.img
 KDO: sudo cp .config /boot/
