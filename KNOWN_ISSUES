@@ -1,0 +1,36 @@
+#
+# known issues
+#
+
+- A20_SDK_V2.7.2
+There`s no update for armhf_env in a20_sdk, a20_sdk_src and configs/armhf_env.sh (fixed with A20_SDK_V2.7.3)
+
+- all versions with kernel 4.X.X-rtX:
+There's a bug within the RT-PREEMPT parts (but has no "real" impact ... as far as i have tested):
+
+root@bananapi:~# [   86.873075] BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:995
+[   86.873083] in_atomic(): 0, irqs_disabled(): 128, pid: 466, name: pool
+[   86.873087] INFO: lockdep is turned off.
+[   86.873090] irq event stamp: 0
+[   86.873098] hardirqs last  enabled at (0): [<  (null)>]   (null)
+[   86.873120] hardirqs last disabled at (0): [<c021c240>] copy_process.part.5+0x34c/0x1a58
+[   86.873128] softirqs last  enabled at (0): [<c021c240>] copy_process.part.5+0x34c/0x1a58
+[   86.873132] softirqs last disabled at (0): [<  (null)>]   (null)
+[   86.873144] CPU: 0 PID: 466 Comm: pool Tainted: G        W       4.9.6-rt4 #1
+[   86.873147] Hardware name: Allwinner sun7i (A20) Family
+[   86.873176] [<c020f7c0>] (unwind_backtrace) from [<c020b758>] (show_stack+0x20/0x24)
+[   86.873192] [<c020b758>] (show_stack) from [<c0727284>] (dump_stack+0x98/0xcc)
+[   86.873208] [<c0727284>] (dump_stack) from [<c024db6c>] (___might_sleep+0x1fc/0x280)
+[   86.873223] [<c024db6c>] (___might_sleep) from [<c0a1375c>] (rt_spin_lock+0x30/0x6c)
+[   86.873240] [<c0a1375c>] (rt_spin_lock) from [<c0359688>] (kmap_high_get+0x20/0x74)
+[   86.873255] [<c0359688>] (kmap_high_get) from [<c02184f0>] (kmap_atomic+0x6c/0x1a4)
+[   86.873269] [<c02184f0>] (kmap_atomic) from [<c0359188>] (__get_user_pages_fast+0x12c/0x314)
+[   86.873281] [<c0359188>] (__get_user_pages_fast) from [<c03593a0>] (get_user_pages_fast+0x30/0x70)
+[   86.873296] [<c03593a0>] (get_user_pages_fast) from [<c02b1718>] (get_futex_key+0x240/0x574)
+[   86.873311] [<c02b1718>] (get_futex_key) from [<c02b23ec>] (futex_wake+0x58/0x150)
+[   86.873324] [<c02b23ec>] (futex_wake) from [<c02b4084>] (do_futex+0x10c/0x9e8)
+[   86.873337] [<c02b4084>] (do_futex) from [<c02b4a98>] (SyS_futex+0x138/0x160)
+[   86.873349] [<c02b4a98>] (SyS_futex) from [<c021be48>] (mm_release+0xc4/0x114)
+[   86.873363] [<c021be48>] (mm_release) from [<c0224e74>] (do_exit+0x28c/0xb5c)
+[   86.873376] [<c0224e74>] (do_exit) from [<c0225790>] (do_group_exit+0x0/0xcc)
+

@@ -50,3 +50,15 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Repository specifics
+*.gz
+*.bz2
+*.xz
+*.img
+linux-*
+modules_*
+
+# Binaries
+lcd2004_i2c
+sensor_pi

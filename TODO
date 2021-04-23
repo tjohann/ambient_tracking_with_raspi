@@ -1,0 +1,16 @@
+#
+# TODO with date and progress
+#
+#
+
+
+#
+# -------------- 2021-XX-XX ----------------------------------------------------
+#
+## target stuff
+- ...                                                       [20XX-XX-XX -> done]
+- ...                                                   [20XX-XX-XX -> canceled]
+
+## script stuff
+## lcd2004_i2c stuff
+## sensor_pi stuff
