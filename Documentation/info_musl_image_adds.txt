@@ -1,0 +1,174 @@
+# ------------------------------------------------------------------------------
+#
+# some image realted infos
+#
+# ------------------------------------------------------------------------------
+#
+# see -> https://docs.voidlinux.org/installation/guides/arm-devices/index.html
+#        https://voidlinux.org/download/
+#        https://wiki.voidlinux.org/Cubieboard2_SD-Card
+#        https://alpha.de.repo.voidlinux.org/live/current/
+
+#
+# user/passwd
+#
+root/root
+baalue/baalue
+
+#
+# groups for baalue
+#
+usermod -aG wheel dialout network socklog baalue
+
+#
+# basic image
+#
+wget https://repo.voidlinux.eu/live/current -> raspi2 image
+
+#
+# add serial console after unpacking image to sd-card (location: /mnt/raspi/raspi_rootfs)
+#
+ln -s /etc/sv/agetty-ttyS0 /mnt/raspi/raspi_rootfs/etc/runit/runsvdir/default
+
+#
+# add chronyd for valid time (ntp replacement)
+#
+ln -s /etc/sv/chronyd /var/service/chronyd
+
+#
+# add dhcpd for ip config
+#
+ln -s /etc/sv/dhcpd /var/service/
+
+#
+# add sshd
+#
+ln -s /etc/sv/sshd /var/service/
+
+#
+# addtional installations
+#
+void-repo-debug
+void-repo-nonfree
+inetutils
+bash-completion
+htop
+tree
+rsync
+wget
+cowsay
+fortune-mod
+gcc
+make
+automake
+autoconf
+binutils
+gettext
+gettext-devel
+libtool
+vim
+git
+gdb
+ltrace
+strace
+libbsd-devel
+confuse-devel
+libconfig-devel
+rsyslog
+pkg-config
+xz
+libcap-ng
+libcap-ng-devel
+i2c-tools
+bcc
+bcc-devel
+bcc-tools
+libgit2-devel
+libcurl-devel
+libarchive-devel
+libcgroup
+libcgroup-devel
+libcgroup-utils
+mg
+socklog
+socklog-void
+distcc
+trace-cmd
+valgrind
+gcompat
+flex
+mlocate
+python3-Mako
+musl-legacy-compat
+musl-fts-devel
+musl-obstack-devel
+cloc
+xtools
+libxbps-devel
+tcpdump
+ncurses-devel
+ncurses-libtinfo-devel
+ncurses-libtinfo-libs
+bc
+terminus-font
+termsyn-font
+powertop
+
+#
+# addtional installations via source
+#
+libbaalue and baalued (see /usr/local/src)
+
+#
+# config additions/changes
+#
+
+# --- some simple stuff
+chsh /bin/bash  (for root)
+rm agetty-tty[2-6]
+usermod -a -G socklog baalue
+
+# --- dhcpd.conf
+# Static IP configuration (if needed)
+interface eth0
+static ip_address=YOUR_IP
+static routers=YOUR_ROUTER_IP
+static domain_name_servers=YOUR_NAMESERVER_IP
+
+# --- hostname
+pi-env
+
+# --- rc.conf
+TIMEZONE="Europe/Berlin"
+FONT="ter-v14n"
+
+# --- modules-load.d/i2c.conf
+i2c-dev
+
+# --- hosts
+see my a20_sdk repository in folder bananapi/configs/hosts_a20_devices.txt
+
+# --- fstab
+# raspi2
+/dev/mmcblk0p2  /	ext4	  defaults    0 1
+/dev/mmcblk0p1  /boot 	vfat 	  defaults    0 2
+/dev/mmcblk0p3  /home  	ext4 	  defaults    0 2
+
+#
+# the "rest"
+#
+
+# --- syslog
+xbps-install -Sy socklog-void
+usermod -aG socklog baalue
+ln -s /etc/sv/socklog-unix /var/service/
+ln -s /etc/sv/nanoklogd /var/service/
+
+# --- update locale
+root@raspi:etc# cat locale.conf
+LANG=de_DE.UTF-8
+LC_COLLATE=C
+
+# ---- visudo
+## Uncomment to allow members of group wheel to execute any command
+%wheel ALL=(ALL) ALL

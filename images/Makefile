@@ -10,3 +10,4 @@ clean::
 	rm -f .*~
 
 distclean: clean
+	rm -rf *.tgz

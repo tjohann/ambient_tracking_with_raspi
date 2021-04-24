@@ -1,3 +1,8 @@
+This are the kernel config adds used by void-linux
+--------------------------------------------------
+
+(see void-packages for more infos)
+
 echo "CONFIG_CONNECTOR=y" >> .config
 echo "CONFIG_PROC_EVENTS=y" >> .config
 echo "CONFIG_F2FS_FS_SECURITY=y" >> .config
