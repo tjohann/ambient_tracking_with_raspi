@@ -56,5 +56,6 @@ dkms.conf
 *.bz2
 *.xz
 *.img
+*.tgz
 linux*
 modules_*

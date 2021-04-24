@@ -3,14 +3,28 @@
 #
 #
 
+#
+# -------------- 2021-XX-XX ----------------------------------------------------
+#
+
+## script stuff
+- create a similiar dialog based script like
+  a20_sdk_make_sdcard.sh
+
+## system stuff
+- prepare first release PI-ENV_V0.0.1
+
+
+# ------------------------------------------------------------------------------
 
 #
 # -------------- 2021-XX-XX ----------------------------------------------------
 #
-## target stuff
+## system stuff
 - ...                                                       [20XX-XX-XX -> done]
 - ...                                                   [20XX-XX-XX -> canceled]
 
+## target stuff
 ## script stuff
 ## lcd2004_i2c stuff
 ## sensor_pi stuff
