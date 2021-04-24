@@ -56,9 +56,5 @@ dkms.conf
 *.bz2
 *.xz
 *.img
-linux-*
+linux*
 modules_*
-
-# Binaries
-lcd2004_i2c
-sensor_pi
