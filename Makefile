@@ -2,7 +2,7 @@
 # my simple makefile act as something like a user interface
 #
 
-MODULES = pics configs scripts bin Documentation raspi2
+MODULES = pics configs scripts bin Documentation raspi2 schematics
 MODULES_BUILD = lcd2004_i2c sensor_pi
 MODULES_EXTRA = kernel
 
