@@ -3,6 +3,6 @@
 #
 # <file system>	<dir>	<type>	<options>		<dump>	<pass>
 tmpfs		/tmp	tmpfs	defaults,nosuid,nodev   0       0
-UUID=82a7b58e-8ba0-4502-a8b4-01966fd3c7ee / ext4 defaults 0 1
-UUID=C5B9-A0CA /boot vfat defaults 0 2
+/dev/mmcblk0p2  / ext4 defaults 0 1
+/dev/mmcblk0p1  /boot vfat defaults 0 2
 /dev/mmcblk0p3  /home  ext4 defaults 0 2

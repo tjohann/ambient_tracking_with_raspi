@@ -15,7 +15,7 @@ The basic user interface are make targets, which then start the corresponding sc
     | Example:                                                  |
     | make build              -> build all code subfolders      |
     | make clean              -> clean all dir/subdirs          |
-	| make distclean          -> complete cleanup/delete        |
+    | make distclean          -> complete cleanup/delete        |
     | make install            -> install some scripts to        |
     |                            $(HOME)/bin                    |
     | make uninstall          -> remove scripts from            |
@@ -30,7 +30,7 @@ If you face a bug then pls use https://github.com/tjohann/ambient_tracking_with_
 Requirement
 -----------
 
-The only yet know software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir).
+The only yet known software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir) and wget (to download the image tarballs from sourceforge).
 
 To use the scripts below, you need to source the pi-env_env file wich sets some shell values:
 
