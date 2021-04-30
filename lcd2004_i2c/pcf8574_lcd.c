@@ -1,4 +1,27 @@
 /*
+ * pcf8574_lcd.c -> userspace lcd application
+ *
+ * GPL
+ * (c) 2021, thorsten.johannvorderbrueggen@t-online.de
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+/*
+ * !!!! ACTUAL state of development !!!!
+ *
  * initial version to learn how to trigger a LCD2004/LCD1602
  * via PCF8574 which is connected to I2C
  *
@@ -30,7 +53,8 @@
 /* time in usec -> 1000000 == 1s */
 #define BLINK_TIME 1000000
 
-int main(void)
+
+void __attribute__((noreturn)) blink_leds(void)
 {
 	int value = LED_OFF;
 	int fd = -1;
@@ -58,6 +82,11 @@ int main(void)
 
 		usleep(BLINK_TIME);
 	}
+}
+
+int main(void)
+{
+	blink_leds();
 
 	return EXIT_SUCCESS;
 }
