@@ -12,13 +12,6 @@ Display
 -------
 
 https://tutorials-raspberrypi.de/hd44780-lcd-display-per-i2c-mit-dem-raspberry-pi-ansteuern
-https://github.com/tjohann/mydriver/tree/master/userspace_examples/pcf8574_lcd1602
-
-
-Build kernel
-------------
-
-https://www.raspberrypi.org/documentation/linux/kernel/building.md
 
 
 DockerPi Sensor Hub
