@@ -146,7 +146,7 @@ void toogle_en_pin(int fd, unsigned char data)
 
 	int err = usleep(1); /* PWen > 450ns */
 
-	value = data | ~EN | BL;
+	value = data | BL;
 	printf("zweites byte -> value 0x%x in %s\n", value, __FUNCTION__);
 
 	if (write(fd, &value, 1) != 1) {
@@ -214,12 +214,12 @@ void init_lcd(void)
 	}
 
 	write_cmd(fd, 0x03);
-	usleep(BLINK_TIME);
+	usleep(5);
 	write_cmd(fd, 0x03);
-	usleep(BLINK_TIME);
+	usleep(1);
 	write_cmd(fd, 0x03);
 
-	usleep(BLINK_TIME);
+	usleep(1);
 	write_cmd(fd, 0x02);
 
 
