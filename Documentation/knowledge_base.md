@@ -7,6 +7,10 @@ Raspi 2
 
 https://www.raspberrypi.org/products/raspberry-pi-2-model-b
 
+Raspi I2C topics:
+
+	https://www.waveshare.com/wiki/Raspberry_Pi_Tutorial_Series:_I2C
+
 
 Display
 -------
