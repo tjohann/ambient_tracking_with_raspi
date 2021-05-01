@@ -134,9 +134,9 @@ void __attribute__((noreturn)) blink_leds(void)
 /*
  * toogle EN and keep BL on
  */
-void toogle_en_pin(int fd)
+void toogle_en_pin(int fd, unsigned char data)
 {
-	int value = EN | BL;
+	unsigned char value = data | EN | BL;
 
 	printf("erstes byte -> value 0x%x in %s\n", value, __FUNCTION__);
 
@@ -146,7 +146,7 @@ void toogle_en_pin(int fd)
 
 	int err = usleep(1); /* PWen > 450ns */
 
-	value = BL;
+	value = data | ~EN | BL;
 	printf("zweites byte -> value 0x%x in %s\n", value, __FUNCTION__);
 
 	if (write(fd, &value, 1) != 1) {
@@ -158,7 +158,7 @@ void toogle_en_pin(int fd)
 
 void write_cmd(int fd, unsigned char data)
 {
-	int value = (data & 0xF0) | BL;
+	unsigned char value = (data & 0xF0) | BL;
 
 	printf("erstes byte -> value 0x%x in %s\n", value, __FUNCTION__);
 
@@ -166,13 +166,15 @@ void write_cmd(int fd, unsigned char data)
 		printf("write error: %s\n", strerror(errno));
 	}
 
-	toogle_en_pin(fd);
+	toogle_en_pin(fd, value);
 
 	value = ((data << 4) & 0xF0) | BL;
 	printf("zweites byte -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+
+	toogle_en_pin(fd, value);
 }
 
 /*
