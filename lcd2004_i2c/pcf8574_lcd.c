@@ -138,7 +138,7 @@ void toogle_en_pin(int fd, unsigned char data)
 {
 	unsigned char value = data | EN | BL;
 
-	printf("erstes byte -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("first byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
@@ -147,7 +147,7 @@ void toogle_en_pin(int fd, unsigned char data)
 	int err = usleep(1); /* PWen > 450ns */
 
 	value = data | BL;
-	printf("zweites byte -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
@@ -160,7 +160,7 @@ void write_cmd(int fd, unsigned char data)
 {
 	unsigned char value = (data & 0xF0) | BL;
 
-	printf("erstes byte -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("first byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
@@ -169,7 +169,7 @@ void write_cmd(int fd, unsigned char data)
 	toogle_en_pin(fd, value);
 
 	value = ((data << 4) & 0xF0) | BL;
-	printf("zweites byte -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
@@ -177,25 +177,67 @@ void write_cmd(int fd, unsigned char data)
 	toogle_en_pin(fd, value);
 }
 
+
+void write_data_lcd(int fd, unsigned char data)
+{
+	unsigned char value = 0x00 | RS | EN | BL;
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+
+	value = (data & 0xF0) | RS | EN | BL;
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+
+	value = ~(EN);
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+
+	value = 0x00 | RS | EN | BL;
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+
+	value = ((data << 4) & 0xF0) | RS | EN | BL;
+	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+
+	value = ~(EN);
+	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+}
+
+
 /*
  * Init LCD:
  *
  * - Power supply on -> HD44780 goes through reset, so the following
  *   is not always needed, but doing it does not harm and brings the
  *   controller up in defined state
- * - RS R/W DB7 DB6 DB5 DB4
- *   0   0   0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
+ * - RS R/W || DB7 DB6 DB5 DB4
+ *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
  * - wait for > 4.1ms
- * - RS R/W DB7 DB6 DB5 DB4
- *   0   0   0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
+ * - RS R/W || DB7 DB6 DB5 DB4
+ *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
  * - wait for > 100us
- * - RS R/W DB7 DB6 DB5 DB4
- *   0   0   0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
+ * - RS R/W || DB7 DB6 DB5 DB4
+ *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
  *
  * Setup the LCD to wanted operation mode:
- * - RS R/W DB7 DB6 DB5 DB4
- *   0   0   0   0   1   0   -> 0x02  (Function set -> 4 bit mode)
+ * - RS R/W || DB7 DB6 DB5 DB4
+ *   0   0  ||  0   0   1   0   -> 0x20  (Function set -> 4 bit mode)
  *
+ * -
  */
 void init_lcd(void)
 {
@@ -213,15 +255,14 @@ void init_lcd(void)
 		exit(EXIT_FAILURE);
 	}
 
-	write_cmd(fd, 0x03);
+	write_lcd(fd, 0x30);
 	usleep(5);
-	write_cmd(fd, 0x03);
+	write_lcd(fd, 0x30);
 	usleep(1);
-	write_cmd(fd, 0x03);
+	write_lcd(fd, 0x30);
 
 	usleep(1);
-	write_cmd(fd, 0x02);
-
+	write_lcd(fd, 0x20); /* <- set to 4 bit mode */
 
 	close(fd);
 }
