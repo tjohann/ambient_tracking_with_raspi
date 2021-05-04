@@ -145,20 +145,20 @@ void __attribute__((noreturn)) blink_leds(void)
 void lcd_write_nibble(int fd, unsigned char data)
 {
 	unsigned char value = 0x00 | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 
-	value = (data << 4) & 0xF0 | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	value = ((data << 4) & 0xF0) | EN | BL;
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
-	value = value | ~(EN);
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	value = value & ~(EN);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
@@ -171,39 +171,39 @@ void lcd_write_nibble(int fd, unsigned char data)
 void lcd_write_data(int fd, unsigned char data)
 {
 	unsigned char value = 0x00 | RS | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 
 	value = (data & 0xF0) | RS | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
-	value = value | ~(EN);
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	value = value & ~(EN);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 
 	value = 0x00 | RS | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
-	value = value | ~(EN);
-	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	value = value & ~(EN);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
