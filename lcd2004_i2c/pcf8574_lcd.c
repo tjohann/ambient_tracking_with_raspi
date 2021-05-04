@@ -150,7 +150,7 @@ void lcd_write_nibble(int fd, unsigned char data)
 		printf("write error: %s\n", strerror(errno));
 	}
 
-	value = data | EN | BL;
+	value = (data << 4) & 0xF0 | EN | BL;
 	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
