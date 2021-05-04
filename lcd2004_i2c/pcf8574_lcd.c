@@ -189,12 +189,6 @@ void lcd_write_data(int fd, unsigned char data)
 		printf("write error: %s\n", strerror(errno));
 	}
 
-	value = 0x00 | RS | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
-	if (write(fd, &value, 1) != 1) {
-		printf("write error: %s\n", strerror(errno));
-	}
-
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
@@ -271,7 +265,11 @@ void init_lcd(void)
 	lcd_write_nibble(fd, 0x06); /*                      */
 	usleep(1);
 
-	lcd_write_data(fd, 0x37 );
+	lcd_write_data(fd, 'H' );
+	lcd_write_data(fd, 'a' );
+	lcd_write_data(fd, 'l' );
+	lcd_write_data(fd, 'l' );
+	lcd_write_data(fd, 'o' );
 
 	usleep(1);
 	close(fd);
