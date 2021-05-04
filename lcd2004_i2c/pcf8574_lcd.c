@@ -261,7 +261,7 @@ void init_lcd(void)
 	lcd_write_nibble(fd, 0x08); /* <- 2 lines/5x8 fonts */
 
 	lcd_write_nibble(fd, 0x00); /* <- display off       */
-	lcd_write_nibble(fd, 0x08); /*                      */
+	lcd_write_nibble(fd, 0x0F); /*                      */
 	usleep(1);
 
 	lcd_write_nibble(fd, 0x00); /* <- display clear     */
@@ -269,6 +269,9 @@ void init_lcd(void)
 
 	lcd_write_nibble(fd, 0x00); /* <- entry mode        */
 	lcd_write_nibble(fd, 0x06); /*                      */
+	usleep(1);
+
+	lcd_write_data(fd, 0x37 );
 
 	usleep(1);
 	close(fd);
