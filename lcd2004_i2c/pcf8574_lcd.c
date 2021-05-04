@@ -142,7 +142,7 @@ void __attribute__((noreturn)) blink_leds(void)
 /*
  * write nibble to lcd (handle only EN and BL)
  */
-void lcd_write_nibble(int fd, unsigned char data)
+static void lcd_write_nibble(int fd, unsigned char data)
 {
 	unsigned char value = 0x00 | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -168,7 +168,7 @@ void lcd_write_nibble(int fd, unsigned char data)
 /*
  * write 8 bit of data to lcd (RS == 1)
  */
-void lcd_write_data(int fd, unsigned char data)
+static void lcd_write_data(int fd, unsigned char data)
 {
 	unsigned char value = 0x00 | RS | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -226,7 +226,7 @@ void lcd_write_data(int fd, unsigned char data)
  *
  * - ...
  */
-void init_lcd(void)
+int init_lcd(unsigned char addr)
 {
 	int fd = -1;
 
@@ -236,7 +236,7 @@ void init_lcd(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LCD) < 0) {
+	if (ioctl(fd, I2C_SLAVE, addr) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -263,7 +263,19 @@ void init_lcd(void)
 
 	lcd_write_nibble(fd, 0x00); /* <- entry mode        */
 	lcd_write_nibble(fd, 0x06); /*                      */
+
 	usleep(1);
+
+	return fd;
+}
+
+
+int main(void)
+{
+	int fd = init_lcd(I2C_ADDR_LCD);
+
+	lcd_write_nibble(fd, 0x09);
+	lcd_write_nibble(fd, 0x04);
 
 	lcd_write_data(fd, 'H' );
 	lcd_write_data(fd, 'a' );
@@ -273,12 +285,6 @@ void init_lcd(void)
 
 	usleep(1);
 	close(fd);
-}
-
-
-int main(void)
-{
-	init_lcd();
 
 	return EXIT_SUCCESS;
 }
