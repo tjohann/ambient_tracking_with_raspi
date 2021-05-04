@@ -242,7 +242,7 @@ void init_lcd(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LED) < 0) {
+	if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LCD) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -252,10 +252,25 @@ void init_lcd(void)
 	lcd_write_nibble(fd, 0x03);
 	usleep(1);
 	lcd_write_nibble(fd, 0x03);
+  	usleep(1);
 
-	usleep(1);
 	lcd_write_nibble(fd, 0x02); /* <- set to 4 bit mode */
 
+	/* function set */
+	lcd_write_nibble(fd, 0x02); /* <- 4 bit mode        */
+	lcd_write_nibble(fd, 0x08); /* <- 2 lines/5x8 fonts */
+
+	lcd_write_nibble(fd, 0x00); /* <- display off       */
+	lcd_write_nibble(fd, 0x08); /*                      */
+	usleep(1);
+
+	lcd_write_nibble(fd, 0x00); /* <- display clear     */
+	lcd_write_nibble(fd, 0x01); /*                      */
+
+	lcd_write_nibble(fd, 0x00); /* <- entry mode        */
+	lcd_write_nibble(fd, 0x06); /*                      */
+
+	usleep(1);
 	close(fd);
 }
 
