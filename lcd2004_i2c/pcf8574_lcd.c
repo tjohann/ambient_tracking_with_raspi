@@ -274,14 +274,53 @@ int main(void)
 {
 	int fd = init_lcd(I2C_ADDR_LCD);
 
+	/* line 4 -> 0xD4*/
+	lcd_write_nibble(fd, 0x0D);
+	lcd_write_nibble(fd, 0x04);
+
+	lcd_write_data(fd, 'l' );
+	lcd_write_data(fd, 'i' );
+	lcd_write_data(fd, 'n' );
+	lcd_write_data(fd, 'e' );
+	lcd_write_data(fd, ':' );
+	lcd_write_data(fd, '4' );
+	usleep(5);
+
+	/* line 3 -> 0x94 */
 	lcd_write_nibble(fd, 0x09);
 	lcd_write_nibble(fd, 0x04);
 
-	lcd_write_data(fd, 'H' );
-	lcd_write_data(fd, 'a' );
 	lcd_write_data(fd, 'l' );
+	lcd_write_data(fd, 'i' );
+	lcd_write_data(fd, 'n' );
+	lcd_write_data(fd, 'e' );
+	lcd_write_data(fd, ':' );
+	lcd_write_data(fd, '3' );
+	usleep(5);
+
+	/* line 2 -> 0xC0 */
+	lcd_write_nibble(fd, 0x0C);
+	lcd_write_nibble(fd, 0x00);
+
 	lcd_write_data(fd, 'l' );
-	lcd_write_data(fd, 'o' );
+	lcd_write_data(fd, 'i' );
+	lcd_write_data(fd, 'n' );
+	lcd_write_data(fd, 'e' );
+	lcd_write_data(fd, ':' );
+	lcd_write_data(fd, '2' );
+	usleep(5);
+
+	/* line 1 -> 0x80 */
+	lcd_write_nibble(fd, 0x08);
+	lcd_write_nibble(fd, 0x00);
+
+	lcd_write_data(fd, 'l' );
+	lcd_write_data(fd, 'i' );
+	lcd_write_data(fd, 'n' );
+	lcd_write_data(fd, 'e' );
+	lcd_write_data(fd, ':' );
+	lcd_write_data(fd, '1' );
+	usleep(5);
 
 	usleep(1);
 	close(fd);
