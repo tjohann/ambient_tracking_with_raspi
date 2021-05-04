@@ -37,7 +37,7 @@
  *
  *  Pinning:
  *
- *  LCD    PCF8574
+ *  LCD  -- PCF8574
  * ----------------
  *   rs  --  P0
  *   rw  --  P1
@@ -47,6 +47,14 @@
  *  db5  --  P5
  *  db6  --  P6
  *  db7  --  P7
+ *
+ * Functions using the "pinning" model:
+ * - lcd_write_nibble
+ * - ...
+ *
+ * Functions using the byte mode:
+ * - lcd_write_data_lcd
+ * - ...
  */
 
 #include <stdio.h>
@@ -132,53 +140,35 @@ void __attribute__((noreturn)) blink_leds(void)
 
 
 /*
- * toogle EN and keep BL on
+ * write nibble to lcd (handle only EN and BL)
  */
-void toogle_en_pin(int fd, unsigned char data)
+void lcd_write_nibble(int fd, unsigned char data)
 {
-	unsigned char value = data | EN | BL;
-
-	printf("first byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
-
+	unsigned char value = 0x00 | EN | BL;
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 
-	int err = usleep(1); /* PWen > 450ns */
-
-	value = data | BL;
-	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
-
+	value = data | EN | BL;
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 
-	err = usleep(1);
-}
-
-void write_cmd(int fd, unsigned char data)
-{
-	unsigned char value = (data & 0xF0) | BL;
-
-	printf("first byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
-
+	value = value | ~(EN);
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
-
-	toogle_en_pin(fd, value);
-
-	value = ((data << 4) & 0xF0) | BL;
-	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
-	if (write(fd, &value, 1) != 1) {
-		printf("write error: %s\n", strerror(errno));
-	}
-
-	toogle_en_pin(fd, value);
 }
 
 
-void write_data_lcd(int fd, unsigned char data)
+/*
+ * write 8 bit of data to lcd (RS == 1)
+ */
+void lcd_write_data(int fd, unsigned char data)
 {
 	unsigned char value = 0x00 | RS | EN | BL;
 	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
@@ -191,8 +181,9 @@ void write_data_lcd(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 
-	value = ~(EN);
+	value = value | ~(EN);
 	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
@@ -205,13 +196,14 @@ void write_data_lcd(int fd, unsigned char data)
 	}
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
-	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 
-	value = ~(EN);
-	printf("second byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
+	value = value | ~(EN);
+	printf("byte to send -> value 0x%x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
@@ -224,24 +216,24 @@ void write_data_lcd(int fd, unsigned char data)
  * - Power supply on -> HD44780 goes through reset, so the following
  *   is not always needed, but doing it does not harm and brings the
  *   controller up in defined state
+ * - BL and EN == 0
  * - RS R/W || DB7 DB6 DB5 DB4
- *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
+ *   0   0  ||  0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
  * - wait for > 4.1ms
  * - RS R/W || DB7 DB6 DB5 DB4
- *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
+ *   0   0  ||  0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
  * - wait for > 100us
  * - RS R/W || DB7 DB6 DB5 DB4
- *   0   0  ||  0   0   1   1   -> 0x30  (Function set -> 8 bit mode)
+ *   0   0  ||  0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
  *
  * Setup the LCD to wanted operation mode:
  * - RS R/W || DB7 DB6 DB5 DB4
- *   0   0  ||  0   0   1   0   -> 0x20  (Function set -> 4 bit mode)
+ *   0   0  ||  0   0   1   0   -> 0x02  (Function set -> 4 bit mode)
  *
- * -
+ * - ...
  */
 void init_lcd(void)
 {
-	int value = LED_OFF;
 	int fd = -1;
 
 	fd = open("/dev/i2c-1", O_RDWR);
@@ -255,14 +247,14 @@ void init_lcd(void)
 		exit(EXIT_FAILURE);
 	}
 
-	write_lcd(fd, 0x30);
+	lcd_write_nibble(fd, 0x03);
 	usleep(5);
-	write_lcd(fd, 0x30);
+	lcd_write_nibble(fd, 0x03);
 	usleep(1);
-	write_lcd(fd, 0x30);
+	lcd_write_nibble(fd, 0x03);
 
 	usleep(1);
-	write_lcd(fd, 0x20); /* <- set to 4 bit mode */
+	lcd_write_nibble(fd, 0x02); /* <- set to 4 bit mode */
 
 	close(fd);
 }
