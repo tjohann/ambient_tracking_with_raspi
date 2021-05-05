@@ -141,14 +141,24 @@ void __attribute__((noreturn)) blink_leds(void)
 
 /*
  * write nibble to lcd (handle only EN and BL)
+ *
+ * see timing char of datasheet (HD44780)
  */
 static void lcd_write_nibble(int fd, unsigned char data)
 {
-	unsigned char value = 0x00 | EN | BL;
+	unsigned char value = 0x00 | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+
+	/* maybe this is not needed -> TODO: check
+	value = 0x00 | EN | BL;
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+	*/
 
 	value = ((data << 4) & 0xF0) | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -162,6 +172,7 @@ static void lcd_write_nibble(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 }
 
 
@@ -175,6 +186,7 @@ static void lcd_write_data(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 
 	value = (data & 0xF0) | RS | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -188,6 +200,7 @@ static void lcd_write_data(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -201,6 +214,14 @@ static void lcd_write_data(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
+
+	value = value & ~(RS);
+	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+	usleep(1);
 }
 
 
