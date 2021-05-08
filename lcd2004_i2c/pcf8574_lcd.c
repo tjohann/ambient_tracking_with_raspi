@@ -17,23 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-/*
- * !!!! ACTUAL state of development !!!!
  *
- * initial version to learn how to trigger a LCD2004/LCD1602
- * via PCF8574 which is connected to I2C
- *
- * function:
- * - connect LEDs with output of PCF8574
- * - let all LED blink
- *
- * !!! TODO:   !!!!
- * - handle usleep EINTR
- *
- *
- * !!!! REAL stuff !!!!
+ * ----------------------------------------------------------------------------
  *
  *  Pinning:
  *
@@ -48,13 +33,6 @@
  *  db6  --  P6
  *  db7  --  P7
  *
- * Functions using the "pinning" model:
- * - lcd_write_nibble
- * - ...
- *
- * Functions using the byte mode:
- * - lcd_write_data_lcd
- * - ...
  */
 
 #include <stdio.h>
@@ -93,56 +71,20 @@ enum bit_pos_priv {
 #define EN BIT2
 #define BL BIT3
 
-
-/* the first PCF8574 address -> LCD */
+/* PCF8574 address of the LCD */
 #define I2C_ADDR_LCD 0x22
 
-/* the second PCF8574 address -> LEDs */
-#define I2C_ADDR_LED 0x27
+/* HD44780 internal setup time */
+#define SETUP_TIME 10000
 
-/* trigger all LEDs on/off*/
-#define LED_ON  0xFF
-#define LED_OFF 0x00
-
-/* time in usec -> 1000000 == 1s */
-#define BLINK_TIME 1000000
-
-
-void __attribute__((noreturn)) blink_leds(void)
-{
-	int value = LED_OFF;
-	int fd = -1;
-
-	fd = open("/dev/i2c-1", O_RDWR);
-	if (fd < 0) {
-		printf("open error: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	if (ioctl(fd, I2C_SLAVE, I2C_ADDR_LED) < 0) {
-		printf("ioctl error: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
-	}
-
-	while (1) {
-		if (value == LED_ON)
-			value = LED_OFF;
-		else
-			value = LED_ON;
-
-		if (write(fd, &value, 1) != 1) {
-			printf("write error: %s\n", strerror(errno));
-		}
-
-		usleep(BLINK_TIME);
-	}
-}
+/* HD44780 default exceution time */
+#define EXEC_TIME 10000
 
 
 /*
  * write nibble to lcd (handle only EN and BL)
  *
- * see timing char of datasheet (HD44780)
+ * see timing chart of datasheet (HD44780)
  */
 static void lcd_write_nibble(int fd, unsigned char data)
 {
@@ -165,7 +107,7 @@ static void lcd_write_nibble(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
-	usleep(1);
+	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -193,7 +135,7 @@ static void lcd_write_data(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
-	usleep(1);
+	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -207,7 +149,7 @@ static void lcd_write_data(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
-	usleep(1);
+	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
@@ -226,11 +168,98 @@ static void lcd_write_data(int fd, unsigned char data)
 
 
 /*
+ * ----------------------------------------------------------------------------
+ * ----------------------------------------------------------------------------
+ */
+
+
+/*
+ * clear the display
+ */
+void lcd_clear(int fd)
+{
+	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(fd, 0x01);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * set cursor to home
+ */
+void lcd_cursor_home(int fd)
+{
+	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(fd, 0x02);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * lcd display on
+ * - cursor on
+ * - cursor blinking
+ */
+void lcd_display_on(int fd)
+{
+	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(fd, 0x0F);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * lcd display on
+ * - cursor on
+ * - cursor blinking OFF
+ */
+void lcd_display_on_2(int fd)
+{
+	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(fd, 0x0E);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * lcd display on
+ * - cursor OFF
+ * - cursor blinking OFF
+ */
+void lcd_display_on_3(int fd)
+{
+	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(fd, 0x0C);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * cursor shift right
+ */
+void lcd_cursor_shift_right(int fd)
+{
+	lcd_write_nibble(fd, 0x01);
+	lcd_write_nibble(fd, 0x04);
+
+	usleep(EXEC_TIME);
+}
+
+/*
+ * cursor shift left
+ */
+void lcd_cursor_shift_left(int fd)
+{
+	lcd_write_nibble(fd, 0x01);
+	lcd_write_nibble(fd, 0x00);
+
+	usleep(EXEC_TIME);
+}
+
+/*
  * Init LCD:
  *
- * - Power supply on -> HD44780 goes through reset, so the following
- *   is not always needed, but doing it does not harm and brings the
- *   controller up in defined state
+ * - Power supply on -> HD44780 goes through reset, this take 10ms
  * - BL and EN == 0
  * - RS R/W || DB7 DB6 DB5 DB4
  *   0   0  ||  0   0   1   1   -> 0x03  (Function set -> 8 bit mode)
@@ -262,6 +291,8 @@ int init_lcd(unsigned char addr)
 		exit(EXIT_FAILURE);
 	}
 
+	usleep(SETUP_TIME); /* HD44780 internal setup time   */
+
 	lcd_write_nibble(fd, 0x03);
 	usleep(5);
 	lcd_write_nibble(fd, 0x03);
@@ -269,23 +300,18 @@ int init_lcd(unsigned char addr)
 	lcd_write_nibble(fd, 0x03);
   	usleep(1);
 
-	lcd_write_nibble(fd, 0x02); /* <- set to 4 bit mode */
+	lcd_write_nibble(fd, 0x02); /* <- set to 4 bit mode   */
 
 	/* function set */
-	lcd_write_nibble(fd, 0x02); /* <- 4 bit mode        */
-	lcd_write_nibble(fd, 0x08); /* <- 2 lines/5x8 fonts */
+	lcd_write_nibble(fd, 0x02); /* <- 4 bit mode          */
+	lcd_write_nibble(fd, 0x08); /* <- 2 lines/5x8 fonts   */
 
-	lcd_write_nibble(fd, 0x00); /* <- display off       */
-	lcd_write_nibble(fd, 0x0F); /*                      */
-	usleep(1);
+	lcd_display_on(fd);
+	lcd_clear(fd);
 
-	lcd_write_nibble(fd, 0x00); /* <- display clear     */
-	lcd_write_nibble(fd, 0x01); /*                      */
-
-	lcd_write_nibble(fd, 0x00); /* <- entry mode        */
-	lcd_write_nibble(fd, 0x06); /*                      */
-
-	usleep(1);
+	lcd_write_nibble(fd, 0x00); /* <- entry mode          */
+	lcd_write_nibble(fd, 0x06); /*                        */
+	usleep(EXEC_TIME);
 
 	return fd;
 }
