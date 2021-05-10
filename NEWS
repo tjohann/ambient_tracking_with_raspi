@@ -3,25 +3,51 @@
 #
 
 
-2021-05-10 -> add external folder to clone dependencies like libbalue
+2021-05-10 -> ## repo stuff
+	      add external folder to clone dependencies like libbalue
+	      add env file to include in /etc/profile.d on the target
               some documentation adds
               smaller script change
 	      smaller Makefile changes/adds/cleanups
+
+	      ## target stuff
+	      add gpm and raspi folders
+	      add pi-env_env.sh to /etc/profile.de
+
+	      ## lcd2004_i2c stuff
+	      add README.md
 	      lcd2004_i2c updates
 
-2021-05-08 -> add some userfunctions
+	      ## sensor_pi stuff
+	      add README.md
 
-2021-05-05 -> some approvements (debugging mode)
+2021-05-08 -> ## lcd2004_i2c stuff
+	      add some userfunctions
 
-2021-05-04 -> send data/nibble (debugging mode)
+2021-05-05 -> ## lcd2004_i2c stuff
+	      some approvements (debugging mode)
 
-2021-05-03 -> send data (debugging mode)
+2021-05-04 -> ## lcd2004_i2c stuff
+	      send data/nibble (debugging mode)
 
-2021-05-01 -> documentation adds
+2021-05-03 -> ## lcd2004_i2c stuff
+	      send data (debugging mode)
+
+2021-05-01 -> ## repo stuff
+	      documentation adds
+
+	      ## lcd2004_i2c stuff
 	      try to init lcd (debugging mode)
 
-2021-04-30 -> license topics
+2021-04-30 -> ## repo stuff
+	      license topics
 
-2021-04-24 -> first release
 
-2021-04-23 -> setup initial parts of the repository
+################## 2021-04-24 -> PI-ENV_V0.0.1 ################################
+
+
+2021-04-24 -> ## target & repo stuff
+	      first release
+
+2021-04-23 -> ## target & repo stuff
+	      setup initial parts of the repository

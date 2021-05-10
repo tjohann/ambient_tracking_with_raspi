@@ -10,7 +10,7 @@
 #
 
 ## lcd2004_i2c stuff
-- check timing between writes (~EN for example)
+- check timing between writes (~EN for example)             [2021-05-10 -> done]
 
 
 #
@@ -30,7 +30,7 @@
 #
 # -------------- 2021-XX-XX ----------------------------------------------------
 #
-## system stuff
+## repo stuff
 - ...                                                       [20XX-XX-XX -> done]
 - ...                                                   [20XX-XX-XX -> canceled]
 
