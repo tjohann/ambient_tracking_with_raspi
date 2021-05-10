@@ -105,6 +105,8 @@ void init_lcd(unsigned char addr);
 static void cleanup(void)
 {
 	lcd_clear();
+
+	close(fd);
 }
 
 /*
@@ -426,7 +428,6 @@ int main(void)
 	lcd_write_data('1' );
 
 	usleep(1000000);
-	close(fd);
 
 	return EXIT_SUCCESS;
 }
