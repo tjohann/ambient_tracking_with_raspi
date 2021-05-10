@@ -9,11 +9,13 @@
               some documentation adds
               smaller script change
 	      smaller Makefile changes/adds/cleanups
+	      update kernel config
 
 	      ## target stuff
 	      add gpm and raspi folders
 	      add pi-env_env.sh to /etc/profile.de
 	      add manpages
+	      update kernel to 5.10.35
 
 	      ## lcd2004_i2c stuff
 	      add README.md

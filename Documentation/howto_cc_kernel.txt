@@ -103,7 +103,7 @@ Install modules
 ---------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.10.31 modules_install
+KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.10.35 modules_install
 
 
 Deploy SD-Card
@@ -132,7 +132,7 @@ Copy modules
 
 # Note: maybe your need to remove the old one
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: sudo rsync -avz ../modules_5.10.31/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
+KDO: sudo rsync -avz ../modules_5.10.35/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
 
 
 Copy cleaned source to sd card
@@ -165,7 +165,7 @@ KDO: make scripts
 Prepare modules to link
 -----------------------
 
-DIR: /lib/modules/5.10.31
+DIR: /lib/modules/5.10.35
 KDO: rm build
 KDO: rm source
 KDO: ln -s /usr/src/linux source

@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm 5.10.31 Kernel Configuration
+# Linux/arm 5.10.35 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="armv7l-linux-musleabihf-gcc (GCC) 10.2.1 20201203"
 CONFIG_CC_IS_GCC=y

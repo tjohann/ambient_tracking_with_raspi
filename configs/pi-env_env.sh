@@ -7,6 +7,7 @@ export MY_HOST_ARCH=$(uname -m)
 
 # home of the git repo
 export RASPI_HOME=${HOME}/Projects/ambient_tracking_with_raspi
+export AMBIENT_REPO=${HOME}/Projects/ambient_tracking_with_raspi
 
 # extend PATH for our PI-Env stuff
 export PATH=$PATH:${RASPI_HOME}/bin
