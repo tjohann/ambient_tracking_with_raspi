@@ -78,87 +78,163 @@ enum bit_pos_priv {
 /* HD44780 default exceution time (37us + buffer) */
 #define EXEC_TIME 100
 
+/* address of lines */
+#define LINE1
+#define LINE2
+#define LINE3
+#define LINE4 0x04
+
+/* the lcd display */
+static int fd = -1;
+
+
+/* common functions */
+void lcd_clear(void);
+void lcd_cursor_home(void);
+void lcd_display_on(void);
+void lcd_display_on_2(void);
+void lcd_display_on_3(void);
+void lcd_cursor_shift_right(void);
+void lcd_cursor_shift_left(void);
+void init_lcd(unsigned char addr);
+
+
+/*
+ * clear display
+ */
+static void cleanup(void)
+{
+	lcd_clear();
+}
 
 /*
  * write nibble to lcd (handle only EN and BL)
  *
  * see timing chart of datasheet (HD44780)
  */
-static void lcd_write_nibble(int fd, unsigned char data)
+static void lcd_write_nibble(unsigned char data)
 {
 	unsigned char value = 0x00 | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
+	usleep(1);
+
+	value = 0x00 | EN | BL;
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+	usleep(1);
 
 	value = ((data << 4) & 0xF0) | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 }
 
-
 /*
  * write 8 bit of data to lcd (RS == 1)
  */
-static void lcd_write_data(int fd, unsigned char data)
+static void lcd_write_data(unsigned char data)
 {
-	unsigned char value = 0x00 | RS | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
+	unsigned char value = 0x00 | RS | BL;
+	if (write(fd, &value, 1) != 1) {
+		printf("write error: %s\n", strerror(errno));
+	}
+	usleep(1);
+
+	value = 0x00 | RS | EN | BL;
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = (data & 0xF0) | RS | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = value & ~(RS);
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 }
 
+/*
+ * goto line 1 -> 0x80
+ */
+static void goto_line1(void)
+{
+	lcd_write_nibble(0x08);
+	lcd_write_nibble(0x00);
+
+	usleep(1);
+}
+
+/*
+ * goto line 2 -> 0xC0
+ */
+static void goto_line2(void)
+{
+	lcd_write_nibble(0x0C);
+	lcd_write_nibble(0x00);
+
+	usleep(1);
+}
+
+/*
+ * goto line 3 -> 0x94
+ */
+static void goto_line3(void)
+{
+	lcd_write_nibble(0x09);
+	lcd_write_nibble(0x04);
+
+	usleep(1);
+}
+
+/*
+ * goto line 4 -> 0xD4
+ */
+static void goto_line4(void)
+{
+	lcd_write_nibble(0x0D);
+	lcd_write_nibble(0x04);
+
+	usleep(1);
+}
+
 
 /*
  * ----------------------------------------------------------------------------
+ * ############################################################################
  * ----------------------------------------------------------------------------
  */
 
@@ -166,10 +242,10 @@ static void lcd_write_data(int fd, unsigned char data)
 /*
  * clear the display
  */
-void lcd_clear(int fd)
+void lcd_clear(void)
 {
-	lcd_write_nibble(fd, 0x00);
-	lcd_write_nibble(fd, 0x01);
+	lcd_write_nibble(0x00);
+	lcd_write_nibble(0x01);
 
 	usleep(EXEC_TIME);
 }
@@ -177,10 +253,10 @@ void lcd_clear(int fd)
 /*
  * set cursor to home
  */
-void lcd_cursor_home(int fd)
+void lcd_cursor_home(void)
 {
-	lcd_write_nibble(fd, 0x00);
-	lcd_write_nibble(fd, 0x02);
+	lcd_write_nibble(0x00);
+	lcd_write_nibble(0x02);
 
 	usleep(EXEC_TIME);
 }
@@ -190,10 +266,10 @@ void lcd_cursor_home(int fd)
  * - cursor on
  * - cursor blinking
  */
-void lcd_display_on(int fd)
+void lcd_display_on(void)
 {
-	lcd_write_nibble(fd, 0x00);
-	lcd_write_nibble(fd, 0x0F);
+	lcd_write_nibble(0x00);
+	lcd_write_nibble(0x0F);
 
 	usleep(EXEC_TIME);
 }
@@ -203,10 +279,10 @@ void lcd_display_on(int fd)
  * - cursor on
  * - cursor blinking OFF
  */
-void lcd_display_on_2(int fd)
+void lcd_display_on_2(void)
 {
-	lcd_write_nibble(fd, 0x00);
-	lcd_write_nibble(fd, 0x0E);
+	lcd_write_nibble(0x00);
+	lcd_write_nibble(0x0E);
 
 	usleep(EXEC_TIME);
 }
@@ -216,10 +292,10 @@ void lcd_display_on_2(int fd)
  * - cursor OFF
  * - cursor blinking OFF
  */
-void lcd_display_on_3(int fd)
+void lcd_display_on_3(void)
 {
-	lcd_write_nibble(fd, 0x00);
-	lcd_write_nibble(fd, 0x0C);
+	lcd_write_nibble(0x00);
+	lcd_write_nibble(0x0C);
 
 	usleep(EXEC_TIME);
 }
@@ -227,10 +303,10 @@ void lcd_display_on_3(int fd)
 /*
  * cursor shift right
  */
-void lcd_cursor_shift_right(int fd)
+void lcd_cursor_shift_right(void)
 {
-	lcd_write_nibble(fd, 0x01);
-	lcd_write_nibble(fd, 0x04);
+	lcd_write_nibble(0x01);
+	lcd_write_nibble(0x04);
 
 	usleep(EXEC_TIME);
 }
@@ -238,10 +314,10 @@ void lcd_cursor_shift_right(int fd)
 /*
  * cursor shift left
  */
-void lcd_cursor_shift_left(int fd)
+void lcd_cursor_shift_left(void)
 {
-	lcd_write_nibble(fd, 0x01);
-	lcd_write_nibble(fd, 0x00);
+	lcd_write_nibble(0x01);
+	lcd_write_nibble(0x00);
 
 	usleep(EXEC_TIME);
 }
@@ -266,10 +342,8 @@ void lcd_cursor_shift_left(int fd)
  *
  * - ...
  */
-int init_lcd(unsigned char addr)
+void init_lcd(unsigned char addr)
 {
-	int fd = -1;
-
 	fd = open("/dev/i2c-1", O_RDWR);
 	if (fd < 0) {
 		printf("open error: %s\n", strerror(errno));
@@ -283,85 +357,75 @@ int init_lcd(unsigned char addr)
 
 	usleep(SETUP_TIME); /* HD44780 internal setup time   */
 
-	lcd_write_nibble(fd, 0x03);
-	usleep(5);
-	lcd_write_nibble(fd, 0x03);
+	lcd_write_nibble(0x03);
+	usleep(5000);
+	lcd_write_nibble(0x03);
 	usleep(1);
-	lcd_write_nibble(fd, 0x03);
+	lcd_write_nibble(0x03);
   	usleep(1);
 
-	lcd_write_nibble(fd, 0x02); /* <- set to 4 bit mode   */
+	lcd_write_nibble(0x02); /* <- set to 4 bit mode   */
+  	usleep(1);
 
 	/* function set */
-	lcd_write_nibble(fd, 0x02); /* <- 4 bit mode          */
-	lcd_write_nibble(fd, 0x08); /* <- 2 lines/5x8 fonts   */
-
-	lcd_display_on(fd);
-	lcd_clear(fd);
-
-	lcd_write_nibble(fd, 0x00); /* <- entry mode          */
-	lcd_write_nibble(fd, 0x06); /*                        */
+	lcd_write_nibble(0x02); /* <- 4 bit mode          */
+	lcd_write_nibble(0x08); /* <- 2 lines/5x8 fonts   */
 	usleep(EXEC_TIME);
 
-	return fd;
+	lcd_display_on();
+	lcd_clear();
+
+	lcd_write_nibble(0x00); /* <- entry mode          */
+	lcd_write_nibble(0x06); /*                        */
+	usleep(EXEC_TIME);
 }
 
 
 int main(void)
 {
-	int fd = init_lcd(I2C_ADDR_LCD);
+	init_lcd(I2C_ADDR_LCD);
 
-	lcd_clear(fd);
+	int err = atexit(cleanup);
+	if (err != 0)
+		exit(EXIT_FAILURE);
 
-	/* line 4 -> 0xD4*/
-	lcd_write_nibble(fd, 0x0D);
-	lcd_write_nibble(fd, 0x04);
+	goto_line4();
 
-	lcd_write_data(fd, 'l' );
-	lcd_write_data(fd, 'i' );
-	lcd_write_data(fd, 'n' );
-	lcd_write_data(fd, 'e' );
-	lcd_write_data(fd, ':' );
-	lcd_write_data(fd, '4' );
-	usleep(5);
+	lcd_write_data('l' );
+	lcd_write_data('i' );
+	lcd_write_data('n' );
+	lcd_write_data('e' );
+	lcd_write_data(':' );
+	lcd_write_data('4' );
 
-	/* line 3 -> 0x94 */
-	lcd_write_nibble(fd, 0x09);
-	lcd_write_nibble(fd, 0x04);
+	goto_line3();
 
-	lcd_write_data(fd, 'l' );
-	lcd_write_data(fd, 'i' );
-	lcd_write_data(fd, 'n' );
-	lcd_write_data(fd, 'e' );
-	lcd_write_data(fd, ':' );
-	lcd_write_data(fd, '3' );
-	usleep(5);
+	lcd_write_data('l' );
+	lcd_write_data('i' );
+	lcd_write_data('n' );
+	lcd_write_data('e' );
+	lcd_write_data(':' );
+	lcd_write_data('3' );
 
-	/* line 2 -> 0xC0 */
-	lcd_write_nibble(fd, 0x0C);
-	lcd_write_nibble(fd, 0x00);
+	goto_line2();
 
-	lcd_write_data(fd, 'l' );
-	lcd_write_data(fd, 'i' );
-	lcd_write_data(fd, 'n' );
-	lcd_write_data(fd, 'e' );
-	lcd_write_data(fd, ':' );
-	lcd_write_data(fd, '2' );
-	usleep(5);
+	lcd_write_data('l' );
+	lcd_write_data('i' );
+	lcd_write_data('n' );
+	lcd_write_data('e' );
+	lcd_write_data(':' );
+	lcd_write_data('2' );
 
-	/* line 1 -> 0x80 */
-	lcd_write_nibble(fd, 0x08);
-	lcd_write_nibble(fd, 0x00);
+	goto_line1();
 
-	lcd_write_data(fd, 'l' );
-	lcd_write_data(fd, 'i' );
-	lcd_write_data(fd, 'n' );
-	lcd_write_data(fd, 'e' );
-	lcd_write_data(fd, ':' );
-	lcd_write_data(fd, '1' );
-	usleep(5);
+	lcd_write_data('l' );
+	lcd_write_data('i' );
+	lcd_write_data('n' );
+	lcd_write_data('e' );
+	lcd_write_data(':' );
+	lcd_write_data('1' );
 
-	usleep(1);
+	usleep(1000000);
 	close(fd);
 
 	return EXIT_SUCCESS;
