@@ -17,7 +17,6 @@ The basic interface are make targets:
     | make clean              -> clean all                      |
     | make distclean          -> clean and uninstall            |
     | make install            -> install bin to $(HOME)/bin     |
-    |                            $(HOME)/bin                    |
     | make uninstall          -> remove bin from $(HOME)/bin    |
     +-----------------------------------------------------------+
 
