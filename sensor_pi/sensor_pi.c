@@ -1,6 +1,4 @@
 /*
- * sensor_pi.c -> userspace application to interact with the sensor_pi module
- *
  * GPL
  * (c) 2021, thorsten.johannvorderbrueggen@t-online.de
  *

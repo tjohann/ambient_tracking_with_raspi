@@ -114,6 +114,9 @@ terminus-font
 termsyn-font
 powertop
 gpm
+manpages-de
+man-pages-devel
+man-pages-posix
 
 #
 # addtional installations via source

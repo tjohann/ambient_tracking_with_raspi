@@ -13,6 +13,7 @@
 	      ## target stuff
 	      add gpm and raspi folders
 	      add pi-env_env.sh to /etc/profile.de
+	      add manpages
 
 	      ## lcd2004_i2c stuff
 	      add README.md

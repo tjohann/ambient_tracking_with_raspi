@@ -1,6 +1,4 @@
 /*
- * pcf8574_lcd.c -> userspace lcd application
- *
  * GPL
  * (c) 2021, thorsten.johannvorderbrueggen@t-online.de
  *
@@ -77,8 +75,8 @@ enum bit_pos_priv {
 /* HD44780 internal setup time */
 #define SETUP_TIME 10000
 
-/* HD44780 default exceution time */
-#define EXEC_TIME 37
+/* HD44780 default exceution time (37us + buffer) */
+#define EXEC_TIME 100
 
 
 /*
@@ -312,6 +310,8 @@ int init_lcd(unsigned char addr)
 int main(void)
 {
 	int fd = init_lcd(I2C_ADDR_LCD);
+
+	lcd_clear(fd);
 
 	/* line 4 -> 0xD4*/
 	lcd_write_nibble(fd, 0x0D);
