@@ -374,7 +374,7 @@ void init_lcd(unsigned char addr)
 	lcd_write_nibble(0x08); /* <- 2 lines/5x8 fonts   */
 	usleep(EXEC_TIME);
 
-	lcd_display_on();
+	lcd_display_on_3();
 	lcd_clear();
 
 	lcd_write_nibble(0x00); /* <- entry mode          */
@@ -427,7 +427,7 @@ int main(void)
 	lcd_write_data(':' );
 	lcd_write_data('1' );
 
-	usleep(1000000);
+	usleep(10000000);
 
 	return EXIT_SUCCESS;
 }
