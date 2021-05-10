@@ -17,3 +17,8 @@ distclean: clean
 
 get_kernel::
 	(git clone --depth=1 https://github.com/raspberrypi/linux)
+
+update_all::
+ifneq ($(wildcard ./linux),)
+	(cd linux && git pull)
+endif
