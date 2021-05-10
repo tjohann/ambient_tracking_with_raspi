@@ -8,12 +8,12 @@ all::
 clean::
 	rm -f *~
 	rm -f .*~
-	rm -rf modules_*
+ifneq ($(wildcard ./linux),)
 	(cd linux && make clean)
+endif
 
 distclean: clean
-	(cd linux && make clean)
 	rm -rf modules_*
 
-clone_kernel::
+get_kernel::
 	(git clone --depth=1 https://github.com/raspberrypi/linux)

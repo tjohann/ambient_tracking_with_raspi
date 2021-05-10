@@ -4,7 +4,7 @@
 
 MODULES = pics configs scripts bin Documentation raspi2 schematics
 MODULES_BUILD = lcd2004_i2c sensor_pi
-MODULES_EXTRA = kernel
+MODULES_EXTRA = kernel external
 
 all::
 	@echo "+-----------------------------------------------------------+"

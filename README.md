@@ -5,7 +5,7 @@ This is all content around my ambient tracking modul with a Raspi2. It collects 
 
 [Related links](Documentation/links.md).
 
-The basic user interface are make targets, which then start the corresponding scripts or actvivate something:
+The basic user interface are make targets, which then start the corresponding scripts or directly actvivate something:
 
     +-----------------------------------------------------------+
     |                                                           |
@@ -24,7 +24,7 @@ The basic user interface are make targets, which then start the corresponding sc
 
 WARNING: This is work in progress! Don't expect things to be complete in any dimension.
 
-If you face a bug then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an issue.
+If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an ticket.
 
 
 Requirement
@@ -32,16 +32,22 @@ Requirement
 
 The only yet known software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir) and wget (to download the image tarballs from sourceforge).
 
-To use the scripts below, you need to source the pi-env_env file wich sets some shell values:
+To use the my scripts, you need to source the pi-env_env file, wich sets some shell values:
 
 	. ./pi-env_env
 
-Additional mountpoints:
+
+Additional mountpoints
+----------------------
+
+The scripts expect some mountpoints:
 
 	# raspi
 	LABEL=KERNEL_RPI /mnt/raspi/raspi_kernel  auto     noauto,user,rw     0       0
 	LABEL=ROOTFS_RPI /mnt/raspi/raspi_rootfs  auto     noauto,user,rw     0       0
 	LABEL=HOME_RPI   /mnt/raspi/raspi_home    auto     noauto,user,rw     0       0
+
+If you create the images with my scripts, then the partitions will get an label, used to mount everthing.
 
 
 Images
@@ -59,16 +65,16 @@ The sd-card needs 3 different partitions which are reflected by the images tarba
 User
 ----
 
+The user baalue is available on all images, you can use it to login via ssh and then use sudo or su -l for root tasks.
+
     root (password: root)
     baalue (password: baalue)
-
-The user baalue is available on all images, you can use it to login via ssh and then use sudo or su -l for root tasks.
 
 
 Network and distcc
 ------------------
 
-For testing purpose i have a physical network (see also https://github.com/tjohann/a20_sdk) where all devices are conneted to. The easiest way to use it is to add a usb-ethernet adapter to your main machine and add your target device to it, otherwise you have to change the configuration by hand.
+For testing purpose i have a physical network (see also https://github.com/tjohann/a20_sdk), where all devices are conneted to. The easiest way to use it is to add a usb-ethernet adapter to your main machine and add your target device to it, otherwise you have to change the configuration by hand.
 
 My cluster:
 
@@ -91,7 +97,9 @@ My cluster:
 	192.168.178.96            baalue-96.my.domain             baalue-16
 
 
-You can use the build cluster based with this device (to build a kernel or ...). Addtional check https://github.com/tjohann/baalue_distcc . Here you should find all informations needed. The base configuration is already included in my image.
+You can use the build cluster based with this device (to build a kernel or ...). Additional check https://github.com/tjohann/baalue_distcc . Here you should find all information and hints you need.
+
+Note: The base configuration is already included in my image.
 
 
 Versioninfo
@@ -123,6 +131,7 @@ Some technial data:
 	1GB RAM
 
 My development environment:
+
 ![Alt text](pics/development_environment.jpg?raw=true "Development environment")
 
 
@@ -135,31 +144,35 @@ See folder schematics for more info.
 Build kernel
 ------------
 
-I use a custom kernel [Build custom kernel for the Raspi2](Documentation/howto_kernel.txt).
+I use a custom kernel, see [build custom kernel for the Raspi2](Documentation/howto_kernel.txt) for a simpel howto.
+
+Actual kernel version:
+
+	5.10.x (NO RT-PREEMPT)
 
 
 DockerPi Sensor Hub
 -------------------
 
-I use the DockerPi Sensor shield, direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **conservative**
+I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **conservative**.
 
 
 Display
 -------
 
-I use a LCD2004 display connected to the raspi via I2C modul.
+I use one of the very common LCD2004 displays, connected to the raspi via I2C modul (see http://wiki.sunfounder.cc/index.php?title=I2C_LCD2004 as an example).
 
 
 Powermanagement
 ---------------
 
-The default CPUFreq governor is **conservative**, which results in a frequency of 600MHz instead of 900MHz.
+The default CPUFreq governor is **conservative**, which results in a frequency mostly of 600MHz instead of 900MHz.
 
 
 Additional libraries/tools
 --------------------------
 
-To control the device i use my daemon baalued (https://github.com/tjohann/baalued) which is based on libbalue (https://github.com/tjohann/libbaalue).
+To control the device i use my daemon baalued (https://github.com/tjohann/baalued), which is based on libbalue (https://github.com/tjohann/libbaalue).
 
 
 Additional scripts
@@ -203,9 +216,15 @@ Mount/Unmount a sd-card:
 
 Download the tarballs from sourceforge:
 
-	t.b.d.
+	+--------------------------------------------------------+
+	|                                                        |
+	| Usage: get_image_tarballs.sh
+	|        [-v] -> print version info                      |
+	|        [-h] -> this help                               |
+	|                                                        |
+	+--------------------------------------------------------+
 
-Untar the downloaded images:
+Untar the downloaded images to the sd-card:
 
 	+--------------------------------------------------------+
 	|                                                        |
@@ -214,3 +233,9 @@ Untar the downloaded images:
 	|        [-h] -> this help                               |
 	|                                                        |
 	+--------------------------------------------------------+
+
+
+The code
+--------
+
+For more details on the code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).

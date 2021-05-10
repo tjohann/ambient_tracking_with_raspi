@@ -1,2 +1,3 @@
 # ignore cloned kernel tree
 /linux
+/modules_*

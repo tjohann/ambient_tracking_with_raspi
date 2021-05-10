@@ -3,6 +3,11 @@
 #
 
 
+2021-05-10 -> add external folder to clone dependencies like libbalue
+              some documentation adds
+              smaller script change
+	      smaller Makefile changes/adds/cleanups
+
 2021-05-08 -> add some userfunctions
 
 2021-05-05 -> some approvements (debugging mode)

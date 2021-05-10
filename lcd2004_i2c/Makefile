@@ -25,6 +25,6 @@ clean:
 	rm -rf *.o
 	rm -rf $(PROG)
 
-distclean: clean
+distclean: clean uninstall
 
 .PHONY: clean uninstall

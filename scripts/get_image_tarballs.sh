@@ -24,11 +24,12 @@
 #
 ################################################################################
 #
-# Date/Beginn :    24.04.2021/24.04.2021
+# Date/Beginn :    10.05.2021/24.04.2021
 #
-# Version     :    V1.01
+# Version     :    V0.02
 #
-# Milestones  :    V0.01 (apr 2021) -> first functional version
+# Milestones  :    V0.02 (may 2021) -> minor update
+#                  V0.01 (apr 2021) -> first functional version
 #
 # Requires    :
 #
@@ -42,7 +43,7 @@
 #
 
 # VERSION-NUMBER
-VER='0.01'
+VER='0.02'
 
 # if env is sourced
 MISSING_ENV='false'
@@ -61,9 +62,11 @@ my_usage()
 {
     echo " "
     echo "+--------------------------------------------------------+"
+    echo "|                                                        |"
     echo "| Usage: ${PROGRAM_NAME} "
     echo "|        [-v] -> print version info                      |"
     echo "|        [-h] -> this help                               |"
+    echo "|                                                        |"
     echo "+--------------------------------------------------------+"
     echo " "
     exit
