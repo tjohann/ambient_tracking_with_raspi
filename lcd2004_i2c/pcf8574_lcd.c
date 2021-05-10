@@ -78,7 +78,7 @@ enum bit_pos_priv {
 #define SETUP_TIME 10000
 
 /* HD44780 default exceution time */
-#define EXEC_TIME 10000
+#define EXEC_TIME 37
 
 
 /*
@@ -93,14 +93,6 @@ static void lcd_write_nibble(int fd, unsigned char data)
 	if (write(fd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
-
-	/* maybe this is not needed -> TODO: check
-	value = 0x00 | EN | BL;
-	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
-	if (write(fd, &value, 1) != 1) {
-		printf("write error: %s\n", strerror(errno));
-	}
-	*/
 
 	value = ((data << 4) & 0xF0) | EN | BL;
 	printf("byte to send -> value 0x%2x in %s\n", value, __FUNCTION__);
