@@ -172,7 +172,7 @@ The default CPUFreq governor is **conservative**, which results in a frequency m
 Additional libraries/tools
 --------------------------
 
-To control the device i use my daemon baalued (https://github.com/tjohann/baalued), which is based on libbalue (https://github.com/tjohann/libbaalue).
+To control the device, i use my daemon baalued (https://github.com/tjohann/baalued), which is based on libbalue (https://github.com/tjohann/libbaalue).
 
 
 Additional scripts
@@ -238,4 +238,4 @@ Untar the downloaded images to the sd-card:
 The code
 --------
 
-For more details on the code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
+Common parts like become_damon() are located in a static library, see [Helper librarie](libhelper/README.md). For more details on the application code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
