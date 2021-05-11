@@ -17,18 +17,11 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
-#ifndef _LIGHELPER_PRIVATE_H_
-#define _LIGHELPER_PRIVATE_H_
+#ifndef _LIBHELPER_PRIVATE_H_
+#define _LIBHELPER_PRIVATE_H_
 
-#define LIGHELPER_EXPORT __attribute__ ((visibility ("default")))
-#define LIGHELPER_LOCAL __attribute__ ((visibility ("hidden")))
-
-#define err_and_ret(err_txt, ret_val) do {			\
-		fprintf(stderr, err_txt "\n");			\
-		return ret_val;					\
-	}							\
-	while(0)
-
+#define LIBHELPER_EXPORT __attribute__ ((visibility ("default")))
+#define LIBHELPER_LOCAL __attribute__ ((visibility ("hidden")))
 
 
 #endif

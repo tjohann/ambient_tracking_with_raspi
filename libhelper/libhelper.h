@@ -28,13 +28,27 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <signal.h>
+#include <syslog.h>
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
 
+/* shortcut for old signal api (my_signal()) */
+typedef	void sigfunc(int);
+
 /*
- * alloc a string
+ * alloc a string from heap
  */
 char * alloc_string(const char *s);
 
+/*
+ * become a daemon and setup syslog
+ */
+int become_daemon(const char* name);
+
+/*
+ * signal function similiar to Richard Stevens proposal
+ */
+sigfunc * my_signal(int signo, sigfunc *func);
 
 #endif
