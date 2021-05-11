@@ -1,18 +1,19 @@
 #
-# build sensor_pi.c
+# build sensor_pid.c
 #
 
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -std=gnu11 -Wall -Wextra
+LDLIBS = -I../libhelper -L../libhelper -lhelper
 
-PROG = sensor_pi
-OBJ = sensor_pi.o
+PROG = sensor_pid
+OBJ = sensor_pid.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	$(CC) -o $@ $^ -lc
+	$(CC) -o $@ $^ -lc $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)
@@ -25,6 +26,6 @@ clean:
 	rm -rf *.o
 	rm -rf $(PROG)
 
-distclean: clean
+distclean: clean uninstall
 
 .PHONY: clean uninstall

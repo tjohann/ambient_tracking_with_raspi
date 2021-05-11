@@ -1,18 +1,19 @@
 #
-# build pcf8574_lcd.c
+# build pcf8574_lcdd.c
 #
 
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS =  -std=gnu11 -Wall -Wextra
+LDLIBS = -I../libhelper -L../libhelper -lhelper
 
-PROG = pcf8574_lcd
-OBJ = pcf8574_lcd.o
+PROG = pcf8574_lcdd
+OBJ = pcf8574_lcdd.o
 
 %.o: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(LDLIBS)
 
 $(PROG): $(OBJ)
-	$(CC) -o $@ $^ -lc
+	$(CC) -o $@ $^ -lc $(LDLIBS)
 
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)

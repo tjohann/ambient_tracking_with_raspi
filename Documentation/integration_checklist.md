@@ -21,9 +21,10 @@ build/config updates on device:
 	- reboot
 	- xbps-remove -Oo
 	- date > UPDATE_ROOTFS_DATE
-	- update, build and install libbaalue/baalued
-	- update, build and install lcd2004_i2c
-	- update, build and install sensor_pi
+	- update, build and install libbaalue/baalued (if needed)
+	- update, build and install libhelper (if needed)
+	- update, build and install lcd2004_i2c (if needed)
+	- update, build and install sensor_pi (if needed)
 	- mupdatedb
 
 tool checks on device:
@@ -37,8 +38,8 @@ sdk checks:
 
 
 
- (25.04.2021)
----------------------------
+PI-ENV_V0.0.1 (25.04.2021)
+--------------------------
 
 	Common checks                                           [2021-04-25 -> done]
 

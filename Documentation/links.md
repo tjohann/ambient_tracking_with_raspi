@@ -23,7 +23,7 @@ https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP
 A20_SDK
 -------
 
-https://github.com/tjohann/a20_sdk
+https://github.com/tjohann/a20_sdk.git
 https://sourceforge.net/projects/a20devices
 
 
@@ -34,3 +34,8 @@ https://sourceforge.net/projects/pi-env/
 https://sourceforge.net/projects/pi-env/files/
 
 
+Baalue
+------
+
+https://github.com/tjohann/libbaalue.git
+https://github.com/tjohann/baalued.git

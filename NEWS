@@ -3,10 +3,24 @@
 #
 
 
+2021-05-11 -> ## repo stuff
+	      add libhelper which provides common functions
+	      remove dependency to libbaalue
+	      some documentation adds/changes/fixes/improvements
+
+              ## libhelper stuff
+              add skeleton for libhelper
+
+              ## lcd2004_i2c stuff
+	      add usage of libhelper (static lib!)
+
+	      ## sensor_pi stuff
+	      add usage of libhelper
+
 2021-05-10 -> ## repo stuff
 	      add external folder to clone dependencies like libbalue
 	      add env file to include in /etc/profile.d on the target
-              some documentation adds
+              some documentation adds/changes/fixes/improvements
               smaller script change
 	      smaller Makefile changes/adds/cleanups
 	      update kernel config
@@ -14,7 +28,7 @@
 	      ## target stuff
 	      add gpm and raspi folders
 	      add pi-env_env.sh to /etc/profile.de
-	      add manpages
+	      add man-pages
 	      update kernel to 5.10.35
 
 	      ## lcd2004_i2c stuff

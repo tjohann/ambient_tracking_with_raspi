@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-To build everthing, you need libbaalue (https://github.com/tjohann/libbaalue).
+No additional libaries are needed.
 
 
 DockerPi-Shield

@@ -33,16 +33,8 @@
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <errno.h>
+#include <libhelper.h>
 #include <linux/i2c-dev.h>
-
 
 /* define bit/pin positions to be used below */
 enum bit_pos_priv {
