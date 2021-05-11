@@ -238,4 +238,4 @@ Untar the downloaded images to the sd-card:
 The code
 --------
 
-Common parts like become_damon() are located in a static library, see [Helper librarie](libhelper/README.md). For more details on the application code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
+Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the application code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
