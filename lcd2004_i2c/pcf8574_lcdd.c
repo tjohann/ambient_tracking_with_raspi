@@ -70,14 +70,10 @@ enum bit_pos_priv {
 /* HD44780 default exceution time (37us + buffer) */
 #define EXEC_TIME 100
 
-/* address of lines */
-#define LINE1
-#define LINE2
-#define LINE3
-#define LINE4 0x04
-
 /* the lcd display */
-static int fd = -1;
+static int lcd = -1;
+
+extern char *__progname;
 
 
 /* common functions */
@@ -88,17 +84,31 @@ void lcd_display_on_2(void);
 void lcd_display_on_3(void);
 void lcd_cursor_shift_right(void);
 void lcd_cursor_shift_left(void);
-void init_lcd(unsigned char addr);
+void init_lcd(char *adapter, unsigned char addr);
 
 
-/*
- * clear display
- */
+static void
+__attribute__((noreturn)) usage(void)
+{
+	putchar('\n');
+	fprintf(stdout, "Usage: ./%s -[a:dhi:]               \n", __progname);
+	fprintf(stdout, "       -d            -> become a daemon         \n");
+	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter             \n");
+	fprintf(stdout, "       -a 22         -> LCD address (in hex)    \n");
+	fprintf(stdout, "       -h            -> show this help          \n");
+	putchar('\n');
+	fprintf(stdout, "Example: LCD at first adapter with address 0x22 \n");
+	fprintf(stdout, "        ./%s -i /dev/i2c-1 -a 22    \n", __progname);
+
+	exit(EXIT_FAILURE);
+}
+
 static void cleanup(void)
 {
 	lcd_clear();
 
-	close(fd);
+	if (lcd > 0)
+		close(lcd);
 }
 
 /*
@@ -109,25 +119,25 @@ static void cleanup(void)
 static void lcd_write_nibble(unsigned char data)
 {
 	unsigned char value = 0x00 | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = 0x00 | EN | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = ((data << 4) & 0xF0) | EN | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
@@ -139,50 +149,50 @@ static void lcd_write_nibble(unsigned char data)
 static void lcd_write_data(unsigned char data)
 {
 	unsigned char value = 0x00 | RS | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = 0x00 | RS | EN | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = (data & 0xF0) | RS | EN | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 
 	value = value & ~(RS);
-	if (write(fd, &value, 1) != 1) {
+	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
 	}
 	usleep(1);
 }
 
 /*
- * goto line 1 -> 0x80
+ * line 1 -> 0x80
  */
 static void goto_line1(void)
 {
@@ -193,7 +203,7 @@ static void goto_line1(void)
 }
 
 /*
- * goto line 2 -> 0xC0
+ * line 2 -> 0xC0
  */
 static void goto_line2(void)
 {
@@ -204,7 +214,7 @@ static void goto_line2(void)
 }
 
 /*
- * goto line 3 -> 0x94
+ * line 3 -> 0x94
  */
 static void goto_line3(void)
 {
@@ -215,7 +225,7 @@ static void goto_line3(void)
 }
 
 /*
- * goto line 4 -> 0xD4
+ * line 4 -> 0xD4
  */
 static void goto_line4(void)
 {
@@ -233,9 +243,6 @@ static void goto_line4(void)
  */
 
 
-/*
- * clear the display
- */
 void lcd_clear(void)
 {
 	lcd_write_nibble(0x00);
@@ -244,9 +251,6 @@ void lcd_clear(void)
 	usleep(EXEC_TIME);
 }
 
-/*
- * set cursor to home
- */
 void lcd_cursor_home(void)
 {
 	lcd_write_nibble(0x00);
@@ -294,9 +298,6 @@ void lcd_display_on_3(void)
 	usleep(EXEC_TIME);
 }
 
-/*
- * cursor shift right
- */
 void lcd_cursor_shift_right(void)
 {
 	lcd_write_nibble(0x01);
@@ -305,9 +306,6 @@ void lcd_cursor_shift_right(void)
 	usleep(EXEC_TIME);
 }
 
-/*
- * cursor shift left
- */
 void lcd_cursor_shift_left(void)
 {
 	lcd_write_nibble(0x01);
@@ -336,15 +334,15 @@ void lcd_cursor_shift_left(void)
  *
  * - ...
  */
-void init_lcd(unsigned char addr)
+void init_lcd(char *adapter, unsigned char addr)
 {
-	fd = open("/dev/i2c-1", O_RDWR);
-	if (fd < 0) {
+	lcd = open(adapter, O_RDWR);
+	if (lcd < 0) {
 		printf("open error: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
-	if (ioctl(fd, I2C_SLAVE, addr) < 0) {
+	if (ioctl(lcd, I2C_SLAVE, addr) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
 		exit(EXIT_FAILURE);
 	}
@@ -375,9 +373,48 @@ void init_lcd(unsigned char addr)
 }
 
 
-int main(void)
+int main(int argc, char *argv[])
 {
-	init_lcd(I2C_ADDR_LCD);
+	char *adapter = NULL;
+	unsigned char addr = 0x00;
+	bool run_as_daemon = false;
+
+	int c;
+	while ((c = getopt(argc, argv, "a:dhi:")) != -1) {
+		switch (c) {
+		case 'i':
+			adapter = optarg;
+			break;
+		case 'a':
+			addr = (unsigned char) strtoul(optarg, NULL, 16);
+			break;
+		case 'd':
+			run_as_daemon = true;
+			break;
+		case 'h':
+			usage();
+			break;
+		default:
+			eprintf("ERROR -> no valid argument\n");
+			usage();
+		}
+	}
+
+	if ((adapter == NULL) || (addr == 0))
+		usage();
+
+	fprintf(stdout, "Try to open %s@0x%x and run as a daemon (?) -> %s\n",
+		adapter, (int) addr, (run_as_daemon) ? "yes" : "no");
+
+	if (access(adapter, R_OK | W_OK) == -1 ) {
+		perror("ERROR: Can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
+		usage();
+	}
+
+	init_lcd(adapter, addr);
+
+	if (run_as_daemon)
+		become_daemon(__progname);
 
 	int err = atexit(cleanup);
 	if (err != 0)

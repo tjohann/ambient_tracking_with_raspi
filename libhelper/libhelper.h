@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -37,18 +38,11 @@
 typedef	void sigfunc(int);
 
 /*
- * alloc a string from heap
- */
-char * alloc_string(const char *s);
-
-/*
- * become a daemon and setup syslog
- */
-int become_daemon(const char* name);
-
-/*
  * signal function similiar to Richard Stevens proposal
  */
 sigfunc * my_signal(int signo, sigfunc *func);
+
+char * alloc_string(const char *s);
+int become_daemon(const char* name);
 
 #endif

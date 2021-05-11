@@ -14,6 +14,7 @@
 
               ## lcd2004_i2c stuff
 	      add usage of libhelper (static lib!)
+	      add kdo argument handling
 
 	      ## sensor_pi stuff
 	      add usage of libhelper
