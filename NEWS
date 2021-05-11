@@ -10,6 +10,7 @@
 
               ## libhelper stuff
               add skeleton for libhelper
+	      add some first functions
 
               ## lcd2004_i2c stuff
 	      add usage of libhelper (static lib!)

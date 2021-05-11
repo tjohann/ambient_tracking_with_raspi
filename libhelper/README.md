@@ -35,7 +35,6 @@ Funcions
 --------
 
 	char * alloc_string(const char *s);
-	become a daemon and setup syslog
 	int become_daemon(const char* name);
 	sigfunc * my_signal(int signo, sigfunc *func);
 
