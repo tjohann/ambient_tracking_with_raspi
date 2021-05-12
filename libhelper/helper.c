@@ -57,11 +57,82 @@ LIBHELPER_EXPORT sigfunc * my_signal(int signo, sigfunc *func)
                 actual.sa_flags |= SA_RESTART;
 
         if (sigaction(signo, &actual, &old_actual) < 0) {
-                perror("my_signal -> sigaction()");
+                perror("sigaction in my_sginal()");
                 return SIG_ERR;
         }
 
         return old_actual.sa_handler;
+}
+
+
+LIBHELPER_EXPORT int set_cloexec(int fd)
+{
+	int err = fcntl(fd, F_GETFD, 0);
+	if (err == -1) {
+		perror("fcntl in set_cloexec()");
+		return -1;
+	}
+
+	int new = err | FD_CLOEXEC;
+
+	if (fcntl(fd, F_SETFD, new) == -1) {
+		perror("fcntl in set_cloexec() -> second call");
+		return -1;
+	}
+
+	return 0;
+}
+
+LIBHELPER_EXPORT int lock_file(int fd)
+{
+	struct flock fl;
+
+	fl.l_type = F_WRLCK;
+	fl.l_whence = SEEK_SET;
+	fl.l_start = 0;
+	fl.l_len = 0;
+
+	if (fcntl(fd, F_SETLK, &fl) == -1) {
+		perror("fcntl in lock_file()");
+		return -1;
+	}
+
+	return 0;
+}
+
+LIBHELPER_EXPORT int already_running(const char* lockfile)
+{
+	int fd = open(lockfile, O_RDWR | O_CREAT, LOCKMODE);
+	if (fd < 0) {
+		perror("open in already_running()");
+		return -1;
+	}
+
+	if (lock_file(fd) < 0) {
+		if ((errno == EAGAIN) || (errno == EACCES)) {
+			close(fd);
+			return 1;
+		}
+		eprintf("can`t lock lockfile in already_running()\n");
+		return -1;
+	}
+
+	if (ftruncate(fd, 0) < 0) {
+		perror("ftruncate in already_running()");
+		return -1;
+	}
+
+#define MAX 16
+	char buf[MAX];
+	memset(buf, 0, MAX);
+	snprintf(buf, MAX, "%ld", (long) getpid());
+
+	if (write(fd, buf, strlen(buf) + 1) < 0 ){
+		perror("write in already_running()");
+		return -1;
+	}
+
+	return 0;
 }
 
 LIBHELPER_EXPORT int become_daemon(const char* name)
@@ -70,27 +141,27 @@ LIBHELPER_EXPORT int become_daemon(const char* name)
 
 	pid_t pid = fork();
 	if (pid == -1) {
-		eprintf("Can't fork");
+		eprintf("fork in become_daemon()");
 		exit (EXIT_FAILURE);
 	}
 	if (pid)
 		_exit(EXIT_SUCCESS);
 
 	if (setsid() == -1)
-		perror("setsid");
+		perror("setsid in become_daemon()");
 
 	my_signal(SIGHUP, SIG_IGN);
 
 	pid = fork();
 	if (pid == -1) {
-		perror("Can't fork -> second one");
+		perror("fork in become_daemon() -> second call");
 		return -1;
 	}
 	if (pid)
 		_exit(EXIT_SUCCESS);
 
 	if (chdir("/") == -1) {
-		perror("Can't chdir");
+		perror("chdir in become_daemon()");
 		return -1;
 	}
 
@@ -109,7 +180,8 @@ LIBHELPER_EXPORT int become_daemon(const char* name)
 	openlog(name, LOG_PID | LOG_CONS, LOG_DAEMON);
 
 	if (fd0 != 0 || fd1 != 1 || fd2 != 2)
-		syslog(LOG_ERR, "Couldn't open fd's\n");
+		syslog(LOG_ERR, "fd0...fd2 not correct in become_daemon()\n");
 
 	return 0;
 }
+

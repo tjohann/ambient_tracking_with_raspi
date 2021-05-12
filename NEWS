@@ -4,6 +4,16 @@
 
 
 2021-05-11 -> ## repo stuff
+	      add folder etc with ruint service definitions
+	      some documentation adds/changes/fixes/improvements
+
+              ## libhelper stuff
+	      add some more functions
+
+              ## lcd2004_i2c stuff
+	      finalize daemon handling
+
+2021-05-11 -> ## repo stuff
 	      add libhelper which provides common functions
 	      remove dependency to libbaalue
 	      some documentation adds/changes/fixes/improvements

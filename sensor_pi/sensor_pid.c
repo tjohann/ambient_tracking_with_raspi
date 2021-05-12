@@ -36,5 +36,21 @@ int main(void)
 {
 	puts("\nHello env_sensor modul!\n");
 
+	/*
+	if (become_daemon(__progname) < 0) {
+			eprintf("ERROR: can't become a daemon\n");
+			exit(EXIT_FAILURE);
+	}
+
+	int err = already_running(LOCKFILE);
+	if (err == 1) {
+		syslog(LOG_ERR, "i'm already runningn");
+		exit(EXIT_FAILURE);
+	} else if (err < 0) {
+		syslog(LOG_ERR, "can't setup lockfile");
+		exit(EXIT_FAILURE);
+	}
+	*/
+
 	return EXIT_SUCCESS;
 }

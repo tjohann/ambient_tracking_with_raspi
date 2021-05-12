@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/sensor_pid 2>&1

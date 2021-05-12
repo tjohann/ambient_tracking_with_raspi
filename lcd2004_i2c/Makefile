@@ -18,6 +18,9 @@ $(PROG): $(OBJ)
 install: $(PROG)
 	install $(PROG) $(HOME)/bin/$(PROG)
 
+deploy: $(PROG)
+	install $(PROG) /usr/bin/$(PROG)
+
 uninstall:
 	rm -rf $(HOME)/bin/$(PROG)
 

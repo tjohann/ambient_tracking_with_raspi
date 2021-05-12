@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -d /var/log/lcd_daemon ] || mkdir -p /var/log/lcd_daemon
+exec chpst -u root:users svlogd -t /var/log/lcd_daemon

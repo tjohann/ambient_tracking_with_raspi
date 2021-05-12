@@ -36,7 +36,9 @@ Funcions
 
 	char * alloc_string(const char *s);
 	int become_daemon(const char* name);
-	sigfunc * my_signal(int signo, sigfunc *func);
+	int set_cloexec(int fd);
+	int lock_file(int fd);
+	int already_running(const char* lockfile);
 
 
 Configuraion

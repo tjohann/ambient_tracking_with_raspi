@@ -7,20 +7,19 @@ This is all content around my ambient tracking modul with a Raspi2. It collects 
 
 The basic user interface are make targets, which then start the corresponding scripts or directly actvivate something:
 
-    +-----------------------------------------------------------+
-    |                                                           |
-    |                  Nothing to build                         |
-    |                                                           |
-    +-----------------------------------------------------------+
-    | Example:                                                  |
-    | make build              -> build all code subfolders      |
-    | make clean              -> clean all dir/subdirs          |
-    | make distclean          -> complete cleanup/delete        |
-    | make install            -> install some scripts to        |
-    |                            $(HOME)/bin                    |
-    | make uninstall          -> remove scripts from            |
-    |                            $(HOME)/bin                    |
-    +-----------------------------------------------------------+
+	+-----------------------------------------------------------+
+	|                                                           |
+	|                  Nothing to build                         |
+	|                                                           |
+	+-----------------------------------------------------------+
+	| Example:                                                  |
+	| make build              -> build all code subfolders      |
+	| make clean              -> clean all dir/subdirs          |
+	| make distclean          -> clean + kernel folder          |
+	| make install            -> install all to $(HOME)/...     |
+	| make uninstall          -> remove all from $(HOME)/...    |
+	| make deploy             -> install bin's to /usr/bin      |
+	+-----------------------------------------------------------+
 
 WARNING: This is work in progress! Don't expect things to be complete in any dimension.
 
@@ -233,6 +232,12 @@ Untar the downloaded images to the sd-card:
 	|        [-h] -> this help                               |
 	|                                                        |
 	+--------------------------------------------------------+
+
+
+Ruint service definition
+------------------------
+
+In folder ./etc you find the runit service definition. Note, that you have to change the I2C configuration! See [Runit service files](etc/README.md)
 
 
 The code

@@ -21,12 +21,15 @@ install: $(LIB)
 uninstall:
 	rm -rf $(HOME)/lib/$(LIB)
 
+deploy:
+	@echo "Nothing to do"
+
 clean:
 	rm -rf *~
 	rm -rf .*~
 	rm -rf *.o
 	rm -rf $(LIB)
 
-distclean: clean uninstall
+distclean: clean uninstall deploy
 
 .PHONY: clean uninstall

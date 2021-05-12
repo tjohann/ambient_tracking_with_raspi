@@ -70,6 +70,8 @@ enum bit_pos_priv {
 /* HD44780 default exceution time (37us + buffer) */
 #define EXEC_TIME 100
 
+#define LOCKFILE "/var/run/lcd_daemon.pid"
+
 /* the lcd display */
 static int lcd = -1;
 
@@ -84,7 +86,7 @@ void lcd_display_on_2(void);
 void lcd_display_on_3(void);
 void lcd_cursor_shift_right(void);
 void lcd_cursor_shift_left(void);
-void init_lcd(char *adapter, unsigned char addr);
+int init_lcd(char *adapter, unsigned char addr);
 
 
 static void
@@ -92,7 +94,6 @@ __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
 	fprintf(stdout, "Usage: ./%s -[a:dhi:]               \n", __progname);
-	fprintf(stdout, "       -d            -> become a daemon         \n");
 	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter             \n");
 	fprintf(stdout, "       -a 22         -> LCD address (in hex)    \n");
 	fprintf(stdout, "       -h            -> show this help          \n");
@@ -105,7 +106,7 @@ __attribute__((noreturn)) usage(void)
 
 static void cleanup(void)
 {
-	lcd_clear();
+	lcd_clear(); /* ignore errors */
 
 	if (lcd > 0)
 		close(lcd);
@@ -334,17 +335,17 @@ void lcd_cursor_shift_left(void)
  *
  * - ...
  */
-void init_lcd(char *adapter, unsigned char addr)
+int init_lcd(char *adapter, unsigned char addr)
 {
 	lcd = open(adapter, O_RDWR);
 	if (lcd < 0) {
 		printf("open error: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
+		return -1;
 	}
 
 	if (ioctl(lcd, I2C_SLAVE, addr) < 0) {
 		printf("ioctl error: %s\n", strerror(errno));
-		exit(EXIT_FAILURE);
+		return -1;
 	}
 
 	usleep(SETUP_TIME); /* HD44780 internal setup time   */
@@ -370,6 +371,8 @@ void init_lcd(char *adapter, unsigned char addr)
 	lcd_write_nibble(0x00); /* <- entry mode          */
 	lcd_write_nibble(0x06); /*                        */
 	usleep(EXEC_TIME);
+
+	return 0;
 }
 
 
@@ -377,19 +380,15 @@ int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
-	bool run_as_daemon = false;
 
 	int c;
-	while ((c = getopt(argc, argv, "a:dhi:")) != -1) {
+	while ((c = getopt(argc, argv, "a:hi:")) != -1) {
 		switch (c) {
 		case 'i':
 			adapter = optarg;
 			break;
 		case 'a':
 			addr = (unsigned char) strtoul(optarg, NULL, 16);
-			break;
-		case 'd':
-			run_as_daemon = true;
 			break;
 		case 'h':
 			usage();
@@ -403,20 +402,31 @@ int main(int argc, char *argv[])
 	if ((adapter == NULL) || (addr == 0))
 		usage();
 
-	fprintf(stdout, "Try to open %s@0x%x and run as a daemon (?) -> %s\n",
-		adapter, (int) addr, (run_as_daemon) ? "yes" : "no");
+	fprintf(stdout, "try to open %s@0x%x\n", adapter, (int) addr);
 
 	if (access(adapter, R_OK | W_OK) == -1 ) {
-		perror("ERROR: Can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
+		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
 		usage();
+	}
+
+	if (become_daemon(__progname) < 0) {
+			eprintf("ERROR: can't become a daemon\n");
+			exit(EXIT_FAILURE);
+	}
+
+	int err = already_running(LOCKFILE);
+	if (err == 1) {
+		syslog(LOG_ERR, "i'm already runningn");
+		exit(EXIT_FAILURE);
+	} else if (err < 0) {
+		syslog(LOG_ERR, "can't setup lockfile");
+		exit(EXIT_FAILURE);
 	}
 
 	init_lcd(adapter, addr);
 
-	if (run_as_daemon)
-		become_daemon(__progname);
 
-	int err = atexit(cleanup);
+	err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
 

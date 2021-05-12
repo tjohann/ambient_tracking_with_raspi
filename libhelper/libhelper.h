@@ -33,6 +33,7 @@
 #include <syslog.h>
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
+#define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
@@ -44,5 +45,8 @@ sigfunc * my_signal(int signo, sigfunc *func);
 
 char * alloc_string(const char *s);
 int become_daemon(const char* name);
+int set_cloexec(int fd);
+int lock_file(int fd);
+int already_running(const char* lockfile);
 
 #endif

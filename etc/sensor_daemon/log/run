@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -d /var/log/sensor_pid ] || mkdir -p /var/log/sensor_pid
+exec chpst -u root:users svlogd -t /var/log/sensor_pid
