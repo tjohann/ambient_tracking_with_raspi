@@ -72,6 +72,19 @@ enum bit_pos_priv {
 
 #define LOCKFILE "/var/run/lcd_daemon.pid"
 
+#define LCD_WRITE_NIBBLE(data) do {					\
+		if (lcd_write_nibble(data) < 0) {			\
+			syslog(LOG_ERR, "error in lcd_write_nibble()"); \
+			return -1; }					\
+	} while(0)
+
+#define LCD_WRITE_DATA(data) do {					\
+		if (lcd_write_data(data) < 0) {				\
+			syslog(LOG_ERR, "error in lcd_write_data()");	\
+			return -1; }					\
+	} while(0)
+
+
 /* the lcd display */
 static int lcd = -1;
 
@@ -79,13 +92,13 @@ extern char *__progname;
 
 
 /* common functions */
-void lcd_clear(void);
-void lcd_cursor_home(void);
-void lcd_display_on(void);
-void lcd_display_on_2(void);
-void lcd_display_on_3(void);
-void lcd_cursor_shift_right(void);
-void lcd_cursor_shift_left(void);
+int lcd_clear(void);
+int lcd_cursor_home(void);
+int lcd_display_on(void);
+int lcd_display_on_2(void);
+int lcd_display_on_3(void);
+int lcd_cursor_shift_right(void);
+int lcd_cursor_shift_left(void);
 int init_lcd(char *adapter, unsigned char addr);
 
 
@@ -117,123 +130,142 @@ static void cleanup(void)
  *
  * see timing chart of datasheet (HD44780)
  */
-static void lcd_write_nibble(unsigned char data)
+static int lcd_write_nibble(unsigned char data)
 {
 	unsigned char value = 0x00 | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = 0x00 | EN | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = ((data << 4) & 0xF0) | EN | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
+
+	return 0;
 }
 
 /*
  * write 8 bit of data to lcd (RS == 1)
  */
-static void lcd_write_data(unsigned char data)
+static int lcd_write_data(unsigned char data)
 {
 	unsigned char value = 0x00 | RS | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = 0x00 | RS | EN | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = (data & 0xF0) | RS | EN | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = ((data << 4) & 0xF0) | RS | EN | BL;
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(EXEC_TIME);
 
 	value = value & ~(EN);
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
 
 	value = value & ~(RS);
 	if (write(lcd, &value, 1) != 1) {
 		printf("write error: %s\n", strerror(errno));
+		return -1;
 	}
 	usleep(1);
+
+	return 0;
 }
 
 /*
  * line 1 -> 0x80
  */
-static void goto_line1(void)
+static int goto_line1(void)
 {
-	lcd_write_nibble(0x08);
-	lcd_write_nibble(0x00);
+	LCD_WRITE_NIBBLE(0x08);
+	LCD_WRITE_NIBBLE(0x00);
 
 	usleep(1);
+	return 0;
 }
 
 /*
  * line 2 -> 0xC0
  */
-static void goto_line2(void)
+static int goto_line2(void)
 {
 	lcd_write_nibble(0x0C);
 	lcd_write_nibble(0x00);
 
 	usleep(1);
+	return 0;
 }
 
 /*
  * line 3 -> 0x94
  */
-static void goto_line3(void)
+static int goto_line3(void)
 {
-	lcd_write_nibble(0x09);
-	lcd_write_nibble(0x04);
+	LCD_WRITE_NIBBLE(0x09);
+	LCD_WRITE_NIBBLE(0x04);
 
 	usleep(1);
+	return 0;
 }
 
 /*
  * line 4 -> 0xD4
  */
-static void goto_line4(void)
+static int goto_line4(void)
 {
-	lcd_write_nibble(0x0D);
-	lcd_write_nibble(0x04);
+	LCD_WRITE_NIBBLE(0x0D);
+	LCD_WRITE_NIBBLE(0x04);
 
 	usleep(1);
+	return 0;
 }
 
 
@@ -244,20 +276,22 @@ static void goto_line4(void)
  */
 
 
-void lcd_clear(void)
+int lcd_clear(void)
 {
-	lcd_write_nibble(0x00);
-	lcd_write_nibble(0x01);
+	LCD_WRITE_NIBBLE(0x00);
+	LCD_WRITE_NIBBLE(0x01);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
-void lcd_cursor_home(void)
+int lcd_cursor_home(void)
 {
-	lcd_write_nibble(0x00);
-	lcd_write_nibble(0x02);
+	LCD_WRITE_NIBBLE(0x00);
+	LCD_WRITE_NIBBLE(0x02);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
 /*
@@ -265,12 +299,13 @@ void lcd_cursor_home(void)
  * - cursor on
  * - cursor blinking
  */
-void lcd_display_on(void)
+int lcd_display_on(void)
 {
-	lcd_write_nibble(0x00);
-	lcd_write_nibble(0x0F);
+	LCD_WRITE_NIBBLE(0x00);
+	LCD_WRITE_NIBBLE(0x0F);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
 /*
@@ -278,12 +313,13 @@ void lcd_display_on(void)
  * - cursor on
  * - cursor blinking OFF
  */
-void lcd_display_on_2(void)
+int lcd_display_on_2(void)
 {
-	lcd_write_nibble(0x00);
-	lcd_write_nibble(0x0E);
+	LCD_WRITE_NIBBLE(0x00);
+	LCD_WRITE_NIBBLE(0x0E);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
 /*
@@ -291,28 +327,31 @@ void lcd_display_on_2(void)
  * - cursor OFF
  * - cursor blinking OFF
  */
-void lcd_display_on_3(void)
+int lcd_display_on_3(void)
 {
-	lcd_write_nibble(0x00);
-	lcd_write_nibble(0x0C);
+	LCD_WRITE_NIBBLE(0x00);
+	LCD_WRITE_NIBBLE(0x0C);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
-void lcd_cursor_shift_right(void)
+int lcd_cursor_shift_right(void)
 {
-	lcd_write_nibble(0x01);
-	lcd_write_nibble(0x04);
+	LCD_WRITE_NIBBLE(0x01);
+	LCD_WRITE_NIBBLE(0x04);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
-void lcd_cursor_shift_left(void)
+int lcd_cursor_shift_left(void)
 {
-	lcd_write_nibble(0x01);
-	lcd_write_nibble(0x00);
+	LCD_WRITE_NIBBLE(0x01);
+	LCD_WRITE_NIBBLE(0x00);
 
 	usleep(EXEC_TIME);
+	return 0;
 }
 
 /*
@@ -350,26 +389,26 @@ int init_lcd(char *adapter, unsigned char addr)
 
 	usleep(SETUP_TIME); /* HD44780 internal setup time   */
 
-	lcd_write_nibble(0x03);
+	LCD_WRITE_NIBBLE(0x03);
 	usleep(5000);
-	lcd_write_nibble(0x03);
+	LCD_WRITE_NIBBLE(0x03);
 	usleep(1);
-	lcd_write_nibble(0x03);
+	LCD_WRITE_NIBBLE(0x03);
   	usleep(1);
 
-	lcd_write_nibble(0x02); /* <- set to 4 bit mode   */
+	LCD_WRITE_NIBBLE(0x02); /* <- set to 4 bit mode   */
   	usleep(1);
 
 	/* function set */
-	lcd_write_nibble(0x02); /* <- 4 bit mode          */
-	lcd_write_nibble(0x08); /* <- 2 lines/5x8 fonts   */
+	LCD_WRITE_NIBBLE(0x02); /* <- 4 bit mode          */
+        LCD_WRITE_NIBBLE(0x08); /* <- 2 lines/5x8 fonts   */
 	usleep(EXEC_TIME);
 
 	lcd_display_on_3();
 	lcd_clear();
 
-	lcd_write_nibble(0x00); /* <- entry mode          */
-	lcd_write_nibble(0x06); /*                        */
+	LCD_WRITE_NIBBLE(0x00); /* <- entry mode          */
+	LCD_WRITE_NIBBLE(0x06); /*                        */
 	usleep(EXEC_TIME);
 
 	return 0;
@@ -425,46 +464,47 @@ int main(int argc, char *argv[])
 
 	init_lcd(adapter, addr);
 
-
 	err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
 
+	syslog(LOG_INFO, "daemon is up and running");
+
 	goto_line4();
 
-	lcd_write_data('l' );
-	lcd_write_data('i' );
-	lcd_write_data('n' );
-	lcd_write_data('e' );
-	lcd_write_data(':' );
-	lcd_write_data('4' );
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('4' );
 
 	goto_line3();
 
-	lcd_write_data('l' );
-	lcd_write_data('i' );
-	lcd_write_data('n' );
-	lcd_write_data('e' );
-	lcd_write_data(':' );
-	lcd_write_data('3' );
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('3' );
 
 	goto_line2();
 
-	lcd_write_data('l' );
-	lcd_write_data('i' );
-	lcd_write_data('n' );
-	lcd_write_data('e' );
-	lcd_write_data(':' );
-	lcd_write_data('2' );
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('2' );
 
 	goto_line1();
 
-	lcd_write_data('l' );
-	lcd_write_data('i' );
-	lcd_write_data('n' );
-	lcd_write_data('e' );
-	lcd_write_data(':' );
-	lcd_write_data('1' );
+        LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('1' );
 
 	usleep(10000000);
 

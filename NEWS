@@ -3,7 +3,18 @@
 #
 
 
-2021-05-11 -> ## repo stuff
+
+
+2021-05-13 -> ## target stuff
+	      add agetty.tty7/8 and activte them
+	      activate rsyslog and add config for tty11 and tty12
+	      copy lcd/sensor_daemon runit scripts to /etc/sv
+	      some documentation adds/changes/fixes/improvements
+
+	      ## lcd2004_i2c stuff
+	      add error handling
+
+2021-05-12 -> ## repo stuff
 	      add folder etc with ruint service definitions
 	      some documentation adds/changes/fixes/improvements
 
