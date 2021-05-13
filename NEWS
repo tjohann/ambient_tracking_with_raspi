@@ -13,6 +13,13 @@
 
 	      ## lcd2004_i2c stuff
 	      add error handling
+	      add first parts of fifo handling
+
+              ## libhelper stuff
+	      add first parts of fifo handling
+
+              ## sensor_pi stuff
+	      add run script
 
 2021-05-12 -> ## repo stuff
 	      add folder etc with ruint service definitions

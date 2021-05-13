@@ -35,18 +35,6 @@
 
 #include <libhelper.h>
 
-/* define bit/pin positions to be used below */
-enum bit_pos_priv {
-	BIT0 = 1 << 0,
-	BIT1 = 1 << 1,
-	BIT2 = 1 << 2,
-	BIT3 = 1 << 3,
-	BIT4 = 1 << 4,
-	BIT5 = 1 << 5,
-	BIT6 = 1 << 6,
-	BIT7 = 1 << 7
-};
-
 /*
  * Define pins and set pin to high!
  *
@@ -93,6 +81,10 @@ enum bit_pos_priv {
 
 /* the lcd display */
 static int lcd = -1;
+/* the daemon read fifo */
+static int read_fifo = -1;
+/* the daemon write fifo -> only as dummy */
+static int write_fifo = -1;
 
 extern char *__progname;
 
@@ -125,12 +117,40 @@ __attribute__((noreturn)) usage(void)
 
 static void cleanup(void)
 {
-	lcd_clear(); /* ignore errors */
+	 /* ignore all errors */
+
+	lcd_clear();
 
 	if (lcd > 0)
 		close(lcd);
 
+	unlink(DAEMON_FIFO);
+	unlink(LOCKFILE);
+
 	syslog(LOG_INFO, "daemon is down -> bye");
+}
+
+static void server_handling(void)
+{
+	if (become_daemon(__progname) < 0) {
+		eprintf("ERROR: can't become a daemon\n");
+		exit(EXIT_FAILURE);
+	}
+
+	int err = already_running(LOCKFILE);
+	if (err == 1) {
+		syslog(LOG_ERR, "i'm already running");
+		exit(EXIT_FAILURE);
+	} else if (err < 0) {
+		syslog(LOG_ERR, "can't setup lockfile");
+		exit(EXIT_FAILURE);
+	}
+
+	read_fifo = create_read_fifo(DAEMON_FIFO);
+	if (read_fifo < 0) {
+		syslog(LOG_ERR, "can't setup read fifo");
+		exit(EXIT_FAILURE);
+	}
 }
 
 /*
@@ -448,25 +468,17 @@ int main(int argc, char *argv[])
 		usage();
 	}
 
-	if (become_daemon(__progname) < 0) {
-			eprintf("ERROR: can't become a daemon\n");
-			exit(EXIT_FAILURE);
-	}
-
-	int err = already_running(LOCKFILE);
-	if (err == 1) {
-		syslog(LOG_ERR, "i'm already runningn");
-		exit(EXIT_FAILURE);
-	} else if (err < 0) {
-		syslog(LOG_ERR, "can't setup lockfile");
-		exit(EXIT_FAILURE);
-	}
-
-	init_lcd(adapter, addr);
-
-	err = atexit(cleanup);
+	int err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
+
+	server_handling();
+
+	err = init_lcd(adapter, addr);
+	if (err < 0) {
+		syslog(LOG_ERR, "can't init LCD");
+		exit(EXIT_FAILURE);
+	}
 
 	syslog(LOG_INFO, "daemon is up and running");
 

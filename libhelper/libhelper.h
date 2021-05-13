@@ -35,6 +35,32 @@
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
 #define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
+#define FIFOMODE (S_IRUSR | S_IWUSR | S_IWGRP)
+
+/* define bit/pin positions to be used */
+enum bit_pos_priv {
+	BIT0 = 1 << 0,
+	BIT1 = 1 << 1,
+	BIT2 = 1 << 2,
+	BIT3 = 1 << 3,
+	BIT4 = 1 << 4,
+	BIT5 = 1 << 5,
+	BIT6 = 1 << 6,
+	BIT7 = 1 << 7
+};
+
+/* the fifo request struct for LCD2004 */
+struct lcd_2004_request {
+	char str[21]; /* 20 char per line + \0 */
+	char line;    /* 1 ... 4 the line      */
+};
+
+/* the fifo request struct for LCD1602 */
+struct lcd_1602_request {
+	char str[17]; /* 16 char per line + \0 */
+	char line;     /* 1 ... 2 the line     */
+};
+
 
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
@@ -50,5 +76,7 @@ int set_cloexec(int fd);
 int lock_file(int fd);
 int already_running(const char* lockfile);
 int init_i2c_device(char *adapter, unsigned char addr);
+int create_read_fifo(char *name);
+int create_write_fifo(char *name);
 
 #endif

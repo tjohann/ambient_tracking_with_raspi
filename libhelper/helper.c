@@ -140,7 +140,7 @@ LIBHELPER_EXPORT int become_daemon(const char* name)
 
 	pid_t pid = fork();
 	if (pid == -1) {
-		eprintf("fork in become_daemon()");
+		perror("fork in become_daemon()");
 		exit (EXIT_FAILURE);
 	}
 	if (pid)
@@ -188,12 +188,48 @@ LIBHELPER_EXPORT int init_i2c_device(char *adapter, unsigned char addr)
 {
 	int fd = open(adapter, O_RDWR);
 	if (fd < 0) {
-		printf("open error: %s\n", strerror(errno));
+		perror("open in init_i2c_device()");
 		return -1;
 	}
 
 	if (ioctl(fd, I2C_SLAVE, addr) < 0) {
-		printf("ioctl error: %s\n", strerror(errno));
+		perror("ioctl in init_i2c_device()");
+		return -1;
+	}
+
+	return fd;
+}
+
+LIBHELPER_EXPORT int create_read_fifo(char *name)
+{
+	umask(0);
+
+	if ((mkfifo(name, FIFOMODE) < 0) && (errno != EEXIST)) {
+		perror("can't make fifo in create_fifo()");
+		return -1;
+	}
+
+	int fd = open(name, O_RDONLY);
+	if (fd < 0) {
+		perror("open in create_read_fifo()");
+		return -1;
+	}
+
+	return fd;
+}
+
+LIBHELPER_EXPORT int create_write_fifo(char *name)
+{
+	umask(0);
+
+	if ((mkfifo(name, FIFOMODE) < 0) && (errno != EEXIST)) {
+		perror("can't make fifo in create_fifo()");
+		return -1;
+	}
+
+	int fd = open(name, O_WRONLY);
+	if (fd < 0) {
+		perror("open in create_read_fifo()");
 		return -1;
 	}
 
