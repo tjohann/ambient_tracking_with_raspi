@@ -4,7 +4,7 @@
 
 CC = gcc
 CFLAGS =  -std=gnu11 -Wall -Wextra
-LDLIBS = -I../libhelper -L../libhelper -lhelper
+LDLIBS = -I../libhelper -L../libhelper -lhelper -pthread
 
 PROG = pcf8574_lcdd
 OBJ = pcf8574_lcdd.o

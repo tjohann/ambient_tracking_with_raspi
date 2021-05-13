@@ -149,7 +149,7 @@ LIBHELPER_EXPORT int become_daemon(const char* name)
 	if (setsid() == -1)
 		perror("setsid in become_daemon()");
 
-	my_signal(SIGHUP, SIG_IGN);
+	(void) my_signal(SIGHUP, SIG_IGN);
 
 	pid = fork();
 	if (pid == -1) {

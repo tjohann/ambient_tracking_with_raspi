@@ -83,11 +83,8 @@
 static int lcd = -1;
 /* the daemon read fifo */
 static int read_fifo = -1;
-/* the daemon write fifo -> only as dummy */
-static int write_fifo = -1;
 
 extern char *__progname;
-
 
 /* common functions */
 int lcd_clear(void);
@@ -130,7 +127,7 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
-static void server_handling(void)
+static void daemon_handling(void)
 {
 	if (become_daemon(__progname) < 0) {
 		eprintf("ERROR: can't become a daemon\n");
@@ -143,12 +140,6 @@ static void server_handling(void)
 		exit(EXIT_FAILURE);
 	} else if (err < 0) {
 		syslog(LOG_ERR, "can't setup lockfile");
-		exit(EXIT_FAILURE);
-	}
-
-	read_fifo = create_read_fifo(DAEMON_FIFO);
-	if (read_fifo < 0) {
-		syslog(LOG_ERR, "can't setup read fifo");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -434,6 +425,72 @@ int init_lcd(char *adapter, unsigned char addr)
 	return 0;
 }
 
+/* the main thread */
+void * server_handling(void *arg)
+{
+	goto_line4();
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('4' );
+
+	goto_line3();
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('3' );
+
+	goto_line2();
+	LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('2' );
+
+	goto_line1();
+        LCD_WRITE_DATA('l' );
+	LCD_WRITE_DATA('i' );
+	LCD_WRITE_DATA('n' );
+	LCD_WRITE_DATA('e' );
+	LCD_WRITE_DATA(':' );
+	LCD_WRITE_DATA('1' );
+
+	/* this call blocks until some opens the fifo */
+	read_fifo = create_read_fifo(DAEMON_FIFO);
+	if (read_fifo < 0) {
+		syslog(LOG_ERR, "can't setup read fifo");
+		exit(EXIT_FAILURE);
+	}
+
+	/* no EOF possible */
+	int dummy_fd = open(DAEMON_FIFO, O_WRONLY);
+	if (dummy_fd < 0) {
+		perror("open in server_handling()");
+		exit(EXIT_FAILURE);
+	}
+
+	struct lcd_2004_request req;
+	size_t len = sizeof(struct lcd_2004_request);
+	memset(&req, 0, len);
+
+	for(;;) {
+		if (read(read_fifo, &req, len) != len) {
+			syslog(LOG_ERR,
+				"len of request not valid -> ignore it");
+			continue;
+		}
+
+		syslog(LOG_INFO, req.str);
+		memset(&req, 0, len);
+	}
+
+	return NULL;
+}
 
 int main(int argc, char *argv[])
 {
@@ -472,7 +529,7 @@ int main(int argc, char *argv[])
 	if (err != 0)
 		exit(EXIT_FAILURE);
 
-	server_handling();
+	daemon_handling();
 
 	err = init_lcd(adapter, addr);
 	if (err < 0) {
@@ -480,45 +537,16 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	pthread_t tid;
+	err = pthread_create(&tid, NULL, server_handling, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't create thread");
+		exit(EXIT_FAILURE);
+	}
+
 	syslog(LOG_INFO, "daemon is up and running");
 
-	goto_line4();
-
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('4' );
-
-	goto_line3();
-
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('3' );
-
-	goto_line2();
-
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('2' );
-
-	goto_line1();
-
-        LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('1' );
-
-	usleep(10000000);
+	(void) pthread_join(tid, NULL);
 
 	return EXIT_SUCCESS;
 }

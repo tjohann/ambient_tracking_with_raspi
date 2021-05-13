@@ -3,8 +3,6 @@
 #
 
 
-
-
 2021-05-13 -> ## target stuff
 	      add agetty.tty7/8 and activte them
 	      activate rsyslog and add config for tty11 and tty12
@@ -16,6 +14,7 @@
 	      ## lcd2004_i2c stuff
 	      add error handling
 	      add first parts of fifo handling
+	      add thread for fifo handling
 
               ## libhelper stuff
 	      add first parts of fifo handling
