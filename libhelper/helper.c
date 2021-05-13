@@ -64,7 +64,6 @@ LIBHELPER_EXPORT sigfunc * my_signal(int signo, sigfunc *func)
         return old_actual.sa_handler;
 }
 
-
 LIBHELPER_EXPORT int set_cloexec(int fd)
 {
 	int err = fcntl(fd, F_GETFD, 0);
@@ -185,3 +184,18 @@ LIBHELPER_EXPORT int become_daemon(const char* name)
 	return 0;
 }
 
+LIBHELPER_EXPORT int init_i2c_device(char *adapter, unsigned char addr)
+{
+	int fd = open(adapter, O_RDWR);
+	if (fd < 0) {
+		printf("open error: %s\n", strerror(errno));
+		return -1;
+	}
+
+	if (ioctl(fd, I2C_SLAVE, addr) < 0) {
+		printf("ioctl error: %s\n", strerror(errno));
+		return -1;
+	}
+
+	return fd;
+}

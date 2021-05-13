@@ -29,14 +29,57 @@
  */
 
 #include <libhelper.h>
-#include <linux/i2c-dev.h>
+
+#define LOCKFILE "/var/run/sensor_daemon.pid"
+#define DAEMON_FIFO "/var/run/sensor_daemon.fifo"
 
 
-int main(void)
+extern char *__progname;
+
+/* common functions */
+
+
+static void
+__attribute__((noreturn)) usage(void)
 {
-	puts("\nHello env_sensor modul!\n");
+	putchar('\n');
+	fprintf(stdout, "Usage: ./%s -[h]                    \n", __progname);
+	fprintf(stdout, "       -h            -> show this help          \n");
+	putchar('\n');
+	fprintf(stdout, "Example:                                        \n");
+	fprintf(stdout, "        ./%s                        \n", __progname);
+
+	exit(EXIT_FAILURE);
+}
+
+static void cleanup(void)
+{
+	syslog(LOG_INFO, "daemon is down -> bye");
+}
+
+
+
+int main(int argc, char *argv[])
+{
+	int c;
+	while ((c = getopt(argc, argv, "h")) != -1) {
+		switch (c) {
+		case 'h':
+			usage();
+			break;
+		default:
+			eprintf("ERROR -> no valid argument\n");
+			usage();
+		}
+	}
+
 
 	/*
+	 * check kdo arguments
+	 * check access to I2C sensors
+	 * ...
+	 */
+
 	if (become_daemon(__progname) < 0) {
 			eprintf("ERROR: can't become a daemon\n");
 			exit(EXIT_FAILURE);
@@ -50,7 +93,18 @@ int main(void)
 		syslog(LOG_ERR, "can't setup lockfile");
 		exit(EXIT_FAILURE);
 	}
-	*/
+
+	err = atexit(cleanup);
+	if (err != 0)
+		exit(EXIT_FAILURE);
+
+	/*
+	 * setup I2C and do the "rest"
+	 */
+
+	syslog(LOG_INFO, "daemon is up and running");
+
+	usleep(10000000);
 
 	return EXIT_SUCCESS;
 }

@@ -34,7 +34,6 @@
  */
 
 #include <libhelper.h>
-#include <linux/i2c-dev.h>
 
 /* define bit/pin positions to be used below */
 enum bit_pos_priv {
@@ -71,6 +70,7 @@ enum bit_pos_priv {
 #define EXEC_TIME 100
 
 #define LOCKFILE "/var/run/lcd_daemon.pid"
+#define DAEMON_FIFO "/var/run/lcd_daemon.fifo"
 
 #define LCD_WRITE_NIBBLE(data) do {					\
 		if (lcd_write_nibble(data) < 0) {			\
@@ -84,6 +84,12 @@ enum bit_pos_priv {
 			return -1; }					\
 	} while(0)
 
+#define INIT_LCD_DEVICE(adapter, addr) do {				\
+		lcd = init_i2c_device(adapter, addr);			\
+		if (lcd < 0) {						\
+			eprintf("ERROR: can't init LCD");		\
+			return -1; }					\
+	} while(0)
 
 /* the lcd display */
 static int lcd = -1;
@@ -106,7 +112,7 @@ static void
 __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
-	fprintf(stdout, "Usage: ./%s -[a:dhi:]               \n", __progname);
+	fprintf(stdout, "Usage: ./%s -[a:hi:]                \n", __progname);
 	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter             \n");
 	fprintf(stdout, "       -a 22         -> LCD address (in hex)    \n");
 	fprintf(stdout, "       -h            -> show this help          \n");
@@ -123,6 +129,8 @@ static void cleanup(void)
 
 	if (lcd > 0)
 		close(lcd);
+
+	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
 /*
@@ -376,17 +384,7 @@ int lcd_cursor_shift_left(void)
  */
 int init_lcd(char *adapter, unsigned char addr)
 {
-	lcd = open(adapter, O_RDWR);
-	if (lcd < 0) {
-		printf("open error: %s\n", strerror(errno));
-		return -1;
-	}
-
-	if (ioctl(lcd, I2C_SLAVE, addr) < 0) {
-		printf("ioctl error: %s\n", strerror(errno));
-		return -1;
-	}
-
+	INIT_LCD_DEVICE(adapter, addr);
 	usleep(SETUP_TIME); /* HD44780 internal setup time   */
 
 	LCD_WRITE_NIBBLE(0x03);
@@ -404,8 +402,10 @@ int init_lcd(char *adapter, unsigned char addr)
         LCD_WRITE_NIBBLE(0x08); /* <- 2 lines/5x8 fonts   */
 	usleep(EXEC_TIME);
 
-	lcd_display_on_3();
-	lcd_clear();
+	if (lcd_display_on_3() < 0)
+		return -1;
+	if (lcd_clear() < 0)
+		return -1;
 
 	LCD_WRITE_NIBBLE(0x00); /* <- entry mode          */
 	LCD_WRITE_NIBBLE(0x06); /*                        */

@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <syslog.h>
+#include <linux/i2c-dev.h>
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
 #define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
@@ -48,5 +49,6 @@ int become_daemon(const char* name);
 int set_cloexec(int fd);
 int lock_file(int fd);
 int already_running(const char* lockfile);
+int init_i2c_device(char *adapter, unsigned char addr);
 
 #endif

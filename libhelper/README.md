@@ -39,6 +39,7 @@ Funcions
 	int set_cloexec(int fd);
 	int lock_file(int fd);
 	int already_running(const char* lockfile);
+	int init_i2c_device(char *adapter, unsigned char addr);
 
 
 Configuraion
