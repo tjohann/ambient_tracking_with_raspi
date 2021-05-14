@@ -3,6 +3,14 @@
 #
 
 
+2021-05-14 -> ## amtrack stuff
+              add skeleton
+
+              ## repo stuff
+	      some documentation adds/changes/fixes/improvements
+	      add amtrack folder
+
+
 2021-05-13 -> ## target stuff
 	      add agetty.tty7/8 and activte them
 	      activate rsyslog and add config for tty11 and tty12

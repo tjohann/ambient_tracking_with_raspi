@@ -150,18 +150,6 @@ Actual kernel version:
 	5.10.x (NO RT-PREEMPT)
 
 
-DockerPi Sensor Hub
--------------------
-
-I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **conservative**.
-
-
-Display
--------
-
-I use one of the very common LCD2004 displays, connected to the raspi via I2C modul (see http://wiki.sunfounder.cc/index.php?title=I2C_LCD2004 as an example).
-
-
 Powermanagement
 ---------------
 
@@ -240,7 +228,21 @@ Ruint service definition
 In folder ./etc you find the runit service definition. Note, that you have to change the I2C configuration! See [Runit service files](etc/README.md)
 
 
+DockerPi Sensor Hub
+-------------------
+
+I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **conservative**.
+
+
+Display
+-------
+
+I use one of the very common LCD2004 displays, connected to the raspi via I2C modul (see http://wiki.sunfounder.cc/index.php?title=I2C_LCD2004 as an example).
+
+
 The code
 --------
 
-Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the application code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
+Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the daemon code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
+
+The application amtrack connect both daemon to a useful system wich shows the relevant informations like temperature on the display, see [mmbient tracker](amtrack/README.md)
