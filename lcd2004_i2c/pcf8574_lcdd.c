@@ -460,19 +460,22 @@ void * server_handling(void *arg)
 	LCD_WRITE_DATA(':' );
 	LCD_WRITE_DATA('1' );
 
-	/* this call blocks until some opens the fifo */
+	/* this call won't block -> clear of flag is below */
 	read_fifo = create_read_fifo(DAEMON_FIFO);
 	if (read_fifo < 0) {
 		syslog(LOG_ERR, "can't setup read fifo");
 		exit(EXIT_FAILURE);
 	}
 
-	/* no EOF possible */
+	/* now no EOF possible */
 	int dummy_fd = open(DAEMON_FIFO, O_WRONLY);
 	if (dummy_fd < 0) {
 		perror("open in server_handling()");
 		exit(EXIT_FAILURE);
 	}
+
+	/* clear O_NONBLOCK -> the read will now block */
+	clr_flag(read_fifo, O_NONBLOCK);
 
 	struct lcd_2004_request req;
 	size_t len = sizeof(struct lcd_2004_request);

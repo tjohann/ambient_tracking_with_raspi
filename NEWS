@@ -10,6 +10,11 @@
 	      some documentation adds/changes/fixes/improvements
 	      add amtrack folder
 
+              ## lcd2004_i2c stuff
+              optimize fifo handling
+
+              ## libhelper stuff
+	      add clear_flags function
 
 2021-05-13 -> ## target stuff
 	      add agetty.tty7/8 and activte them

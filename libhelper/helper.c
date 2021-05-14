@@ -64,6 +64,9 @@ LIBHELPER_EXPORT sigfunc * my_signal(int signo, sigfunc *func)
         return old_actual.sa_handler;
 }
 
+/*
+ * errors could lead to problems -> return value provided
+ */
 LIBHELPER_EXPORT int set_cloexec(int fd)
 {
 	int err = fcntl(fd, F_GETFD, 0);
@@ -209,7 +212,9 @@ LIBHELPER_EXPORT int create_read_fifo(char *name)
 		return -1;
 	}
 
-	int fd = open(name, O_RDONLY);
+	/* hint: don't forget to clear the O_NON_BLOCK after opening the
+	   dummy write fd -> use clr_flag() below */
+	int fd = open(name, O_RDONLY | O_NONBLOCK);
 	if (fd < 0) {
 		perror("open in create_read_fifo()");
 		return -1;
@@ -234,4 +239,19 @@ LIBHELPER_EXPORT int create_write_fifo(char *name)
 	}
 
 	return fd;
+}
+
+/*
+ * ignore errors -> there`re not really a hard problem
+ */
+LIBHELPER_EXPORT void clr_flag(int fd, int flags)
+{
+	int val;
+	if ((val = fcntl(fd, F_GETFL, 0)) < 0)
+		perror("fcntl in clr_flag() -> ignore error!");
+
+	val &= ~flags;
+
+	if (fcntl(fd, F_SETFL, val) < 0)
+		perror("fcntl in clr_flag() -> ignore error!");
 }
