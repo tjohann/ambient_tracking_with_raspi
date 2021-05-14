@@ -31,8 +31,8 @@ Requirement
 No additional libaries are needed.
 
 
-Funcions
---------
+Functions
+---------
 
 	char * alloc_string(const char *s);
 	int become_daemon(const char* name);

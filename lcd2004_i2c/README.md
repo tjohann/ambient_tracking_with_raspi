@@ -37,16 +37,19 @@ Display
 I use one of the very common LCD2004 displays, connected to the raspi via I2C modul (see http://wiki.sunfounder.cc/index.php?title=I2C_LCD2004 as an example).
 
 
-Funcions
---------
-
-t.b.d.
-
-
 Start and usage
 ---------------
 
-t.b.d.
+Usage: ./pcf8574_lcdd -[a:hi:]
+       -i /dev/i2c-X -> I2C adapter
+       -a 22         -> LCD address (in hex)
+       -h            -> show this help
+
+Example: LCD at first adapter with address 0x22
+        ./pcf8574_lcdd -i /dev/i2c-1 -a 22
+
+
+see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)
 
 
 Configuraion

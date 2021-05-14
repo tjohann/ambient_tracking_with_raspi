@@ -231,7 +231,7 @@ In folder ./etc you find the runit service definition. Note, that you have to ch
 DockerPi Sensor Hub
 -------------------
 
-I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. Thats on of the reason, why the CPUFreq governor is **conservative**.
+I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. One way around is to make shure, that the ecu consumes as less power as possible.
 
 
 Display
@@ -245,4 +245,4 @@ The code
 
 Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the daemon code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
 
-The application amtrack connect both daemon to a useful system wich shows the relevant informations like temperature on the display, see [mmbient tracker](amtrack/README.md)
+The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md)

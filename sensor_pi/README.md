@@ -37,16 +37,16 @@ DockerPi-Shield
 I use one of this DockerPi Shield: https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106
 
 
-Funcions
---------
-
-t.b.d.
-
-
 Start and usage
 ---------------
 
-t.b.d.
+sage: ./sensor_pid -[h]
+       -h            -> show this help
+
+Example:
+        ./sensor_pid
+
+see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)
 
 
 Configuraion
