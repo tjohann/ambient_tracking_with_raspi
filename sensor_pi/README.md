@@ -40,11 +40,13 @@ I use one of this DockerPi Shield: https://wiki.52pi.com/index.php/DockerPi_Sens
 Start and usage
 ---------------
 
+```
 sage: ./sensor_pid -[h]
        -h            -> show this help
 
 Example:
         ./sensor_pid
+```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)
 
