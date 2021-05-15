@@ -79,5 +79,6 @@ int already_running(const char* lockfile);
 int init_i2c_device(char *adapter, unsigned char addr);
 int create_read_fifo(char *name);
 int create_write_fifo(char *name);
+void clr_flag(int fd, int flags);
 
 #endif
