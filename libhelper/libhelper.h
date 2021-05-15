@@ -38,6 +38,8 @@
 #define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define FIFOMODE (S_IRUSR | S_IWUSR | S_IWGRP)
 
+#define LCD_FIFO "/var/run/lcd_daemon.fifo"
+
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
 	BIT0 = 1 << 0,

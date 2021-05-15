@@ -58,7 +58,7 @@
 #define EXEC_TIME 100
 
 #define LOCKFILE "/var/run/lcd_daemon.pid"
-#define DAEMON_FIFO "/var/run/lcd_daemon.fifo"
+#define DAEMON_FIFO LCD_FIFO
 
 #define LCD_WRITE_NIBBLE(data) do {					\
 		if (lcd_write_nibble(data) < 0) {			\
