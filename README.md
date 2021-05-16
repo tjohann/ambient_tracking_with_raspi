@@ -131,7 +131,10 @@ Some technial data:
 
 My development environment:
 
-![Alt text](pics/development_environment.jpg?raw=true "Development environment")
+![Alt text](pics/development_environment_01.jpg?raw=true "With GPIO")
+![Alt text](pics/development_environment_02.jpg?raw=true "With 2 LCD's")
+![Alt text](pics/development_environment_03.jpg?raw=true "I2C connection")
+
 
 
 Schematics
