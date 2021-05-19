@@ -57,14 +57,6 @@ enum bit_pos_priv {
 #define LCD1602 1
 #define LCD2004 2
 
-/* the lcd request struct */
-struct lcd_request {
-	unsigned char lcd_type;  /* only for validation */
-	unsigned char line;
-	unsigned char curs_pos;
-	char *str;
-};
-
 /* LCD 2004 specific defines */
 #define LCD2004_MAX_COL 20
 #define LCD2004_MAX_LINE 4
@@ -72,6 +64,14 @@ struct lcd_request {
 /* LCD 1602 specific defines */
 #define LCD1602_MAX_COL 16
 #define LCD1602_MAX_LINE 2
+
+/* the lcd request struct */
+struct lcd_request {
+	unsigned char line;
+	unsigned char cur_pos;
+	char str[LCD2004_MAX_COL + 1];
+};
+
 
 /* docker-pi specific defines */
 struct sensor_data {
@@ -96,9 +96,5 @@ int init_i2c_device(char *adapter, unsigned char addr);
 int create_read_fifo(char *name);
 int create_write_fifo(char *name);
 void clr_flag(int fd, int flags);
-int write_lcd_fifo(int fd, unsigned char lcd_type,
-		unsigned char line, unsigned curs_pos,
-		char *str);
-int write_lcd_fifo_2(int fd, struct lcd_request req);
 
 #endif
