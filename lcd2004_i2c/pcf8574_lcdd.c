@@ -504,7 +504,6 @@ void * server_handling(void *arg)
 	clr_flag(read_fifo, O_NONBLOCK);
 
 	struct lcd_request req;
-	size_t len = 0;
 	if (lcd_type == LCD1602) {
 		req.str = malloc(LCD1602_MAX_COL + 1);
 	}else if (lcd_type == LCD2004) {
@@ -519,19 +518,35 @@ void * server_handling(void *arg)
 		exit(EXIT_FAILURE);
 	}
 
-	len = sizeof(req);
-	memset(&req, 0, len);
-
+	size_t len = lcd_max_col + 1;
 	for(;;) {
-		if (read(read_fifo, &req, len) != (int) len) {
+		if (read(read_fifo, &req.line, 1) != 1) {
 			syslog(LOG_ERR,
-				"len of request not valid -> ignore it");
+				"len of req.line not valid -> ignore it");
 			continue;
 		}
 
 		if (req.line > lcd_max_line) {
 			syslog(LOG_ERR,
 				"line of request not valid -> ignore it");
+			continue;
+		}
+
+		if (read(read_fifo, &req.curs_pos, 1) != 1) {
+			syslog(LOG_ERR,
+				"len of req.curs_pos not valid -> ignore it");
+			continue;
+		}
+
+		if (req.line > lcd_max_col) {
+			syslog(LOG_ERR,
+				"column of request not valid -> ignore it");
+			continue;
+		}
+
+		if (read(read_fifo, &req.str, len) != len) {
+			syslog(LOG_ERR,
+				"len of request not valid -> ignore it");
 			continue;
 		}
 
@@ -558,10 +573,10 @@ void * server_handling(void *arg)
 		}
 
 		syslog(LOG_INFO, "value of req.line: %d", req.line);
+		syslog(LOG_INFO, "value of req.curs_pos: %d", req.curs_pos);
 		syslog(LOG_INFO, "value of req.str: %s", req.str);
-		syslog(LOG_INFO, "len of lcd_struct %d", (int) len);
 
-		memset(&req, 0, len);
+		memset(&req.str, 0, len);
 	}
 
 	if (req.str != NULL)

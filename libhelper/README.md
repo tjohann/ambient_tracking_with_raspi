@@ -43,6 +43,10 @@ Functions
 	int create_read_fifo(char *name);
 	int create_write_fifo(char *name);
 	void clr_flag(int fd, int flags);
+	int write_lcd_fifo(int fd, unsigned char lcd_type,
+	                unsigned char line, unsigned curs_pos,
+		            char *str);
+	int write_lcd_fifo_2(int fd, struct lcd_request req);
 
 
 Configuraion

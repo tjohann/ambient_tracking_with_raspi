@@ -87,21 +87,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	struct lcd_request req;
-	req.str = malloc(LCD2004_MAX_COL + 1);
-	size_t len = sizeof(req);
-	memset(&req, 0, len);
-
-	printf("len of struct lcd_request %d\n", (int) len);
-
-	/* test the fifo ... */
-	req.line = 4;
-	strncpy(req.str, "do some string testing and check if to long",
-		LCD2004_MAX_COL);
-
-	err = write(lcd_fd, &req, len);
-	printf("value of err %d\n", err);
-	/* end of test the fifo ... */
+	(void) write_lcd_fifo(lcd_fd, LCD2004, 2, 5, "this is a test");
 
 	/* dummy waiting */
 	usleep(10000000);
