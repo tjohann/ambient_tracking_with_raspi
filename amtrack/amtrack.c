@@ -87,14 +87,17 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	struct lcd_2004_request req;
-	size_t len = sizeof(struct lcd_2004_request);
+	struct lcd_request req;
+	req.str = malloc(LCD2004_MAX_COL + 1);
+	size_t len = sizeof(req);
 	memset(&req, 0, len);
+
+	printf("len of struct lcd_request %d\n", (int) len);
 
 	/* test the fifo ... */
 	req.line = 4;
 	strncpy(req.str, "do some string testing and check if to long",
-		MAX_LINE_LCD2004);
+		LCD2004_MAX_COL);
 
 	err = write(lcd_fd, &req, len);
 	printf("value of err %d\n", err);

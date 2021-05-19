@@ -39,6 +39,7 @@
 #define FIFOMODE (S_IRUSR | S_IWUSR | S_IWGRP)
 
 #define LCD_FIFO "/var/run/lcd_daemon.fifo"
+#define SENSOR_FIFO "/var/run/sensor_daemon.fifo"
 
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
@@ -52,18 +53,27 @@ enum bit_pos_priv {
 	BIT7 = 1 << 7
 };
 
-#define MAX_LINE_LCD2004 20
-/* the fifo request struct for LCD2004 */
-struct lcd_2004_request {
-	char str[MAX_LINE_LCD2004 + 1]; /* 20 char per line + \0 */
-	char line;    /* 1 ... 4 the line      */
+/* define supported LCD types */
+#define LCD1602 1
+#define LCD2004 2
+
+/* the lcd request struct */
+struct lcd_request {
+	char *str;
+	char line;
 };
 
-#define MAX_LINE_LCD1602 16
-/* the fifo request struct for LCD1602 */
-struct lcd_1602_request {
-	char str[MAX_LINE_LCD1602 + 1]; /* 16 char per line + \0 */
-	char line;     /* 1 ... 2 the line     */
+/* LCD 2004 specific defines */
+#define LCD2004_MAX_COL 20
+#define LCD2004_MAX_LINE 4
+
+/* LCD 1602 specific defines */
+#define LCD1602_MAX_COL 16
+#define LCD1602_MAX_LINE 2
+
+/* docker-pi specific defines */
+struct sensor_data {
+	char dummy;                     /* dummy value          */
 };
 
 

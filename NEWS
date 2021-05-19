@@ -9,6 +9,17 @@
               ## lcd2004_i2c stuff
               add first tests
 	      smaller updates
+	      add LCD size via kdo arguments
+	      handle LCD size
+
+	      ## libhelper stuff
+	      add some LCD specific defines
+	      add some first docker-pi specific defines
+	      rework struct lcd_request
+
+              ## repo stuff
+              update runit files
+	      some documentation adds/changes/fixes/improvements
 
 2021-05-15 -> ## repo stuff
 	      add some new pics of the development environment

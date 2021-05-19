@@ -228,7 +228,7 @@ Untar the downloaded images to the sd-card:
 Ruint service definition
 ------------------------
 
-In folder ./etc you find the runit service definition. Note, that you have to change the I2C configuration! See [Runit service files](etc/README.md)
+In folder ./etc you find the runit service definition. Note, that you (normaly) have to change the I2C configuration! See [Runit service files](etc/README.md)
 
 
 DockerPi Sensor Hub

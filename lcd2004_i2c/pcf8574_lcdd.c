@@ -81,6 +81,11 @@
 
 /* the lcd display */
 static int lcd = -1;
+/* the lcd typ */
+static unsigned char lcd_type = 0;
+static unsigned char lcd_max_line = 0;
+static unsigned char lcd_max_col = 0;
+
 /* the daemon read fifo */
 static int read_fifo = -1;
 
@@ -94,20 +99,30 @@ int lcd_display_on_2(void);
 int lcd_display_on_3(void);
 int lcd_cursor_shift_right(void);
 int lcd_cursor_shift_left(void);
-int init_lcd(char *adapter, unsigned char addr);
+int init_lcd(char *adapter, unsigned char addr, int type);
 
 
 static void
 __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
-	fprintf(stdout, "Usage: ./%s -[a:hi:]                \n", __progname);
-	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter             \n");
-	fprintf(stdout, "       -a 22         -> LCD address (in hex)    \n");
-	fprintf(stdout, "       -h            -> show this help          \n");
+	fprintf(stdout, "Usage: ./%s -[a:hi:t:]                            \n",
+		__progname);
+	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter               \n");
+	fprintf(stdout, "       -a 22         -> LCD address (in hex)      \n");
+	fprintf(stdout, "       -t 2          -> LCD1602(:1)/LCD2004(:2)   \n");
+	fprintf(stdout, "       -h            -> show this help            \n");
 	putchar('\n');
-	fprintf(stdout, "Example: LCD at first adapter with address 0x22 \n");
-	fprintf(stdout, "        ./%s -i /dev/i2c-1 -a 22    \n", __progname);
+	fprintf(stdout, "Example(s): LCD at first adapter with address 0x22\n");
+	fprintf(stdout, "            from type LCD2004                     \n");
+	fprintf(stdout, "           ./%s -i /dev/i2c-1 -a 22 -t 2          \n",
+		__progname);
+	fprintf(stdout, "or                                                \n");
+	fprintf(stdout, "            LCD at first adapter with address 0x27\n");
+	fprintf(stdout, "            from type LCD1602                     \n");
+	fprintf(stdout, "            ./%s -i /dev/i2c-1 -a 27 -t 1         \n",
+		__progname);
+	putchar('\n');
 
 	exit(EXIT_FAILURE);
 }
@@ -295,11 +310,11 @@ static int say_hello(void)
 	int i = 0;
 
 	goto_line1();
-	for(i = 0; i < MAX_LINE_LCD2004; i++)
+	for(i = 0; i < LCD2004_MAX_COL; i++)
 		LCD_WRITE_DATA('*');
 
 	goto_line4();
-	for(i = 0; i < MAX_LINE_LCD2004; i++)
+	for(i = 0; i < LCD2004_MAX_COL; i++)
 		LCD_WRITE_DATA('*');
 
 	goto_line2();
@@ -420,8 +435,24 @@ int lcd_cursor_shift_left(void)
  *
  * - ...
  */
-int init_lcd(char *adapter, unsigned char addr)
+int init_lcd(char *adapter, unsigned char addr, int type)
 {
+	switch(type) {
+	case 1:
+		lcd_type = LCD1602;
+		lcd_max_line = LCD1602_MAX_LINE;
+		lcd_max_col = LCD1602_MAX_COL;
+		break;
+	case 2:
+		lcd_type = LCD2004;
+		lcd_max_line = LCD2004_MAX_LINE;
+		lcd_max_col = LCD2004_MAX_COL;
+		break;
+	default:
+		eprintf("LCD is not supported!\n");
+		return -1;
+	}
+
 	INIT_LCD_DEVICE(adapter, addr);
 	usleep(SETUP_TIME); /* HD44780 internal setup time   */
 
@@ -465,21 +496,42 @@ void * server_handling(void *arg)
 	/* now no EOF possible */
 	int dummy_fd = open(DAEMON_FIFO, O_WRONLY);
 	if (dummy_fd < 0) {
-		perror("open in server_handling()");
+		syslog(LOG_ERR, "open in server_handling()");
 		exit(EXIT_FAILURE);
 	}
 
 	/* clear O_NONBLOCK -> the read will now block */
 	clr_flag(read_fifo, O_NONBLOCK);
 
-	struct lcd_2004_request req;
-	size_t len = sizeof(struct lcd_2004_request);
+	struct lcd_request req;
+	size_t len = 0;
+	if (lcd_type == LCD1602) {
+		req.str = malloc(LCD1602_MAX_COL + 1);
+	}else if (lcd_type == LCD2004) {
+		req.str = malloc(LCD2004_MAX_COL + 1);
+	} else {
+		syslog(LOG_ERR, "LCD is not supported!");
+		exit(EXIT_FAILURE);
+	}
+
+	if (req.str == NULL) {
+		syslog(LOG_ERR, "can't alloc memory!");
+		exit(EXIT_FAILURE);
+	}
+
+	len = sizeof(req);
 	memset(&req, 0, len);
 
 	for(;;) {
 		if (read(read_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
+			continue;
+		}
+
+		if (req.line > lcd_max_line) {
+			syslog(LOG_ERR,
+				"line of request not valid -> ignore it");
 			continue;
 		}
 
@@ -507,9 +559,13 @@ void * server_handling(void *arg)
 
 		syslog(LOG_INFO, "value of req.line: %d", req.line);
 		syslog(LOG_INFO, "value of req.str: %s", req.str);
+		syslog(LOG_INFO, "len of lcd_struct %d", (int) len);
 
 		memset(&req, 0, len);
 	}
+
+	if (req.str != NULL)
+		free(req.str);
 
 	return NULL;
 }
@@ -518,15 +574,19 @@ int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
+	int type = -1;
 
 	int c;
-	while ((c = getopt(argc, argv, "a:hi:")) != -1) {
+	while ((c = getopt(argc, argv, "a:hi:t:")) != -1) {
 		switch (c) {
 		case 'i':
 			adapter = optarg;
 			break;
 		case 'a':
 			addr = (unsigned char) strtoul(optarg, NULL, 16);
+			break;
+		case 't':
+			type = atoi(optarg);
 			break;
 		case 'h':
 			usage();
@@ -537,7 +597,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((adapter == NULL) || (addr == 0))
+	if ((adapter == NULL) || (addr == 0) || (type == -1))
 		usage();
 
 	fprintf(stdout, "try to open %s@0x%x\n", adapter, (int) addr);
@@ -553,7 +613,7 @@ int main(int argc, char *argv[])
 
 	daemon_handling();
 
-	err = init_lcd(adapter, addr);
+	err = init_lcd(adapter, addr, type);
 	if (err < 0) {
 		syslog(LOG_ERR, "can't init LCD");
 		exit(EXIT_FAILURE);
