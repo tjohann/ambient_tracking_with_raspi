@@ -19,6 +19,8 @@
 
 #include <libhelper.h>
 
+/* the write to lcd_daemon fifo */
+static int lcd_fd = -1;
 
 extern char *__progname;
 
@@ -40,7 +42,10 @@ __attribute__((noreturn)) usage(void)
 
 static void cleanup(void)
 {
-	/* do something */
+	if (lcd_fd > 0)
+		close(lcd_fd);
+
+	fprintf(stdout, "application is down -> bye");
 }
 
 
@@ -75,6 +80,27 @@ int main(int argc, char *argv[])
 
 	puts("applications is up and running");
 
+
+	lcd_fd = open(LCD_FIFO, O_WRONLY);
+	if (lcd_fd < 0) {
+		perror("open in main()");
+		exit(EXIT_FAILURE);
+	}
+
+	struct lcd_2004_request req;
+	size_t len = sizeof(struct lcd_2004_request);
+	memset(&req, 0, len);
+
+	/* test the fifo ... */
+	req.line = 4;
+	strncpy(req.str, "do some string testing and check if to long",
+		MAX_LINE_LCD2004);
+
+	err = write(lcd_fd, &req, len);
+	printf("value of err %d\n", err);
+	/* end of test the fifo ... */
+
+	/* dummy waiting */
 	usleep(10000000);
 
 	return EXIT_SUCCESS;

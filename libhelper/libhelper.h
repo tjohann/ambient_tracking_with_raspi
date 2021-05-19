@@ -52,15 +52,17 @@ enum bit_pos_priv {
 	BIT7 = 1 << 7
 };
 
+#define MAX_LINE_LCD2004 20
 /* the fifo request struct for LCD2004 */
 struct lcd_2004_request {
-	char str[21]; /* 20 char per line + \0 */
+	char str[MAX_LINE_LCD2004 + 1]; /* 20 char per line + \0 */
 	char line;    /* 1 ... 4 the line      */
 };
 
+#define MAX_LINE_LCD1602 16
 /* the fifo request struct for LCD1602 */
 struct lcd_1602_request {
-	char str[17]; /* 16 char per line + \0 */
+	char str[MAX_LINE_LCD1602 + 1]; /* 16 char per line + \0 */
 	char line;     /* 1 ... 2 the line     */
 };
 

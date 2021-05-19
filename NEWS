@@ -3,6 +3,13 @@
 #
 
 
+2021-05-19 -> ## amtrack stuff
+              add first tests
+
+              ## lcd2004_i2c stuff
+              add first tests
+	      smaller updates
+
 2021-05-15 -> ## repo stuff
 	      add some new pics of the development environment
 	      some documentation adds/changes/fixes/improvements

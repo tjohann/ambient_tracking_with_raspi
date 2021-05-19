@@ -287,6 +287,33 @@ static int goto_line4(void)
 	return 0;
 }
 
+/*
+ * say hello after startup
+ */
+static int say_hello(void)
+{
+	int i = 0;
+
+	goto_line1();
+	for(i = 0; i < MAX_LINE_LCD2004; i++)
+		LCD_WRITE_DATA('*');
+
+	goto_line4();
+	for(i = 0; i < MAX_LINE_LCD2004; i++)
+		LCD_WRITE_DATA('*');
+
+	goto_line2();
+	LCD_WRITE_DATA('*' );
+	(void) lcd_cursor_shift_right();
+	LCD_WRITE_DATA('*' );
+
+	goto_line3();
+	LCD_WRITE_DATA('*' );
+	(void) lcd_cursor_shift_right();
+	LCD_WRITE_DATA('*' );
+
+	return 0;
+}
 
 /*
  * ----------------------------------------------------------------------------
@@ -428,38 +455,6 @@ int init_lcd(char *adapter, unsigned char addr)
 /* the main thread */
 void * server_handling(void *arg)
 {
-	goto_line4();
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('4' );
-
-	goto_line3();
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('3' );
-
-	goto_line2();
-	LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('2' );
-
-	goto_line1();
-        LCD_WRITE_DATA('l' );
-	LCD_WRITE_DATA('i' );
-	LCD_WRITE_DATA('n' );
-	LCD_WRITE_DATA('e' );
-	LCD_WRITE_DATA(':' );
-	LCD_WRITE_DATA('1' );
-
 	/* this call won't block -> clear of flag is below */
 	read_fifo = create_read_fifo(DAEMON_FIFO);
 	if (read_fifo < 0) {
@@ -482,13 +477,37 @@ void * server_handling(void *arg)
 	memset(&req, 0, len);
 
 	for(;;) {
-		if (read(read_fifo, &req, len) != len) {
+		if (read(read_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
 			continue;
 		}
 
-		syslog(LOG_INFO, req.str);
+		switch(req.line) {
+		case 1:
+			syslog(LOG_INFO, "line 1");
+			syslog(LOG_INFO, "value of req.str: %s", req.str);
+			break;
+		case 2:
+			syslog(LOG_INFO, "line 2");
+			syslog(LOG_INFO, "value of req.str: %s", req.str);
+			break;
+		case 3:
+			syslog(LOG_INFO, "line 3");
+			syslog(LOG_INFO, "value of req.str: %s", req.str);
+			break;
+		case 4:
+			syslog(LOG_INFO, "line 4");
+			syslog(LOG_INFO, "value of req.str: %s", req.str);
+			break;
+		default:
+			syslog(LOG_ERR, "value of req.line is to large: %d",
+				req.line);
+		}
+
+		syslog(LOG_INFO, "value of req.line: %d", req.line);
+		syslog(LOG_INFO, "value of req.str: %s", req.str);
+
 		memset(&req, 0, len);
 	}
 
@@ -548,8 +567,8 @@ int main(int argc, char *argv[])
 	}
 
 	syslog(LOG_INFO, "daemon is up and running");
+	(void) say_hello();
 
 	(void) pthread_join(tid, NULL);
-
 	return EXIT_SUCCESS;
 }
