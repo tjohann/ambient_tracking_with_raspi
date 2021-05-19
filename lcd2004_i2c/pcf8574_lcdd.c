@@ -81,7 +81,8 @@
 
 /* the lcd display */
 static int lcd = -1;
-/* the lcd typ */
+
+/* the lcd type info */
 static unsigned char lcd_type = 0;
 static unsigned char lcd_max_line = 0;
 static unsigned char lcd_max_col = 0;

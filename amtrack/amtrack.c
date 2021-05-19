@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 	req.cur_pos = 10;
 	strncpy(req.str, "this is a test", len);
 
+	printf("sizeof struct lcd_request %d\n", (int) len);
 	printf("value to send %s\n", req.str);
 	printf("to line: %d\n", req.line);
 	printf("to cursor position: %d\n", req.cur_pos);
