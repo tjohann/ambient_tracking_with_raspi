@@ -34,7 +34,14 @@ No additional libaries are needed.
 Start and usage
 ---------------
 
-t.b.d.
+```
+Usage: ./amtrack -[h]
+       -t 2          -> LCD1602(:1)/LCD2004(:2)
+       -h            -> show this help
+
+Example: LCD size 20x4
+        ./amtrack -t 2
+```
 
 
 Configuraion

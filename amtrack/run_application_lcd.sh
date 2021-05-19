@@ -1,0 +1,1 @@
+run_application_lcd2004.sh

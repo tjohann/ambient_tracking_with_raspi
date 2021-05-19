@@ -5,12 +5,14 @@
 
 2021-05-19 -> ## amtrack stuff
               add first tests
+	      add LCD size via kd argument
 
               ## lcd2004_i2c stuff
               add first tests
 	      smaller updates
-	      add LCD size via kdo arguments
+	      add LCD size via kdo argument
 	      handle LCD size
+	      add write line and write string function
 
 	      ## libhelper stuff
 	      add some LCD specific defines

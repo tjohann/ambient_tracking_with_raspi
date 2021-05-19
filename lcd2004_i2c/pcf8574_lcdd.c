@@ -100,6 +100,8 @@ int lcd_display_on_2(void);
 int lcd_display_on_3(void);
 int lcd_cursor_shift_right(void);
 int lcd_cursor_shift_left(void);
+int lcd_write_line(struct lcd_request req);
+int lcd_write_string (unsigned char cur_pos, char * str);
 int init_lcd(char *adapter, unsigned char addr, int type);
 
 
@@ -310,23 +312,47 @@ static int say_hello(void)
 {
 	int i = 0;
 
-	goto_line1();
-	for(i = 0; i < LCD2004_MAX_COL; i++)
+	switch(lcd_type) {
+	case LCD1602:
+		goto_line1();
+		LCD_WRITE_DATA('*');
+		for(i = 0; i < lcd_max_col - 1; i++)
+			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
-	goto_line4();
-	for(i = 0; i < LCD2004_MAX_COL; i++)
+		goto_line2();
+		LCD_WRITE_DATA('*' );
+		for(i = 0; i < lcd_max_col - 1; i++)
+			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
-	goto_line2();
-	LCD_WRITE_DATA('*' );
-	(void) lcd_cursor_shift_right();
-	LCD_WRITE_DATA('*' );
+		break;
+	case LCD2004:
+		goto_line1();
+		for(i = 0; i <lcd_max_col; i++)
+			LCD_WRITE_DATA('*');
 
-	goto_line3();
-	LCD_WRITE_DATA('*' );
-	(void) lcd_cursor_shift_right();
-	LCD_WRITE_DATA('*' );
+		goto_line4();
+		for(i = 0; i < lcd_max_col; i++)
+			LCD_WRITE_DATA('*');
+
+		goto_line2();
+		LCD_WRITE_DATA('*' );
+		for(i = 0; i < lcd_max_col - 1; i++)
+			(void) lcd_cursor_shift_right();
+		LCD_WRITE_DATA('*');
+
+		goto_line3();
+		LCD_WRITE_DATA('*' );
+		for(i = 0; i < lcd_max_col - 1; i++)
+			(void) lcd_cursor_shift_right();
+		LCD_WRITE_DATA('*');
+
+		break;
+	default:
+		eprintf("LCD is not supported!\n");
+		return -1;
+	}
 
 	return 0;
 }
@@ -413,6 +439,59 @@ int lcd_cursor_shift_left(void)
 	LCD_WRITE_NIBBLE(0x00);
 
 	usleep(EXEC_TIME);
+	return 0;
+}
+
+
+int lcd_write_string (unsigned char cur_pos, char *str)
+{
+	int i = 0;
+
+	if (cur_pos != 0)
+		for(i = 0; i < cur_pos; i++)
+			(void) lcd_cursor_shift_right();
+
+	for (i = 0; i < lcd_max_col - cur_pos; i++ )
+		LCD_WRITE_DATA(str[i]);
+
+	return 0;
+}
+
+int lcd_write_line(struct lcd_request req)
+{
+
+	syslog(LOG_INFO, "value of req.line: %d", req.line);
+	syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
+	syslog(LOG_INFO, "value of req.str: %s", req.str);
+
+	switch(req.line) {
+	case 1:
+		if (goto_line1() != 0)
+			return -1;
+		break;
+	case 2:
+		if (goto_line2() != 0)
+			return -1;
+		break;
+	case 3:
+		if (goto_line3() != 0)
+			return -1;
+		break;
+	case 4:
+		if (goto_line4() != 0)
+			return -1;
+		break;
+	default:
+		syslog(LOG_ERR, "value of req.line is to large: %d",
+			req.line);
+		return -1;
+	}
+
+	if (lcd_write_string(req.cur_pos, req.str) != 0) {
+		syslog(LOG_ERR, "can't write string %s", req.str);
+		return -1;
+	}
+
 	return 0;
 }
 
@@ -515,31 +594,11 @@ void * server_handling(void *arg)
 			continue;
 		}
 
-		switch(req.line) {
-		case 1:
-			syslog(LOG_INFO, "line 1");
-			syslog(LOG_INFO, "value of req.str: %s", req.str);
-			break;
-		case 2:
-			syslog(LOG_INFO, "line 2");
-			syslog(LOG_INFO, "value of req.str: %s", req.str);
-			break;
-		case 3:
-			syslog(LOG_INFO, "line 3");
-			syslog(LOG_INFO, "value of req.str: %s", req.str);
-			break;
-		case 4:
-			syslog(LOG_INFO, "line 4");
-			syslog(LOG_INFO, "value of req.str: %s", req.str);
-			break;
-		default:
-			syslog(LOG_ERR, "value of req.line is to large: %d",
-				req.line);
+		if (lcd_write_line(req) != 0) {
+			syslog(LOG_ERR,
+				"can't write request to lcd -> ignore it");
+			continue;
 		}
-
-		syslog(LOG_INFO, "value of req.line: %d", req.line);
-		syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
-		syslog(LOG_INFO, "value of req.str: %s", req.str);
 
 		memset(&req, 0, len);
 	}
