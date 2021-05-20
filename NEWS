@@ -3,6 +3,12 @@
 #
 
 
+2021-05-20 -> ## amtrack stuff
+	      some improvements for the functional testing
+
+              ## lcd2004_i2c stuff
+	      some improvements for the functional testing
+
 2021-05-19 -> ## amtrack stuff
               add first tests
 	      add LCD size via kd argument

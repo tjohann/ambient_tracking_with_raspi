@@ -316,35 +316,35 @@ static int say_hello(void)
 	case LCD1602:
 		goto_line1();
 		LCD_WRITE_DATA('*');
-		for(i = 1; i < lcd_max_col - 1; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
 		goto_line2();
 		LCD_WRITE_DATA('*' );
-		for(i = 1; i < lcd_max_col - 1; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
 		break;
 	case LCD2004:
 		goto_line1();
-		for(i = 1; i <lcd_max_col; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			LCD_WRITE_DATA('*');
 
 		goto_line4();
-		for(i = 1; i < lcd_max_col; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			LCD_WRITE_DATA('*');
 
 		goto_line2();
 		LCD_WRITE_DATA('*' );
-		for(i = 1; i < lcd_max_col - 1; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
 		goto_line3();
 		LCD_WRITE_DATA('*' );
-		for(i = 1; i < lcd_max_col - 1; i++)
+		for (i = 1; i < lcd_max_col; i++)
 			(void) lcd_cursor_shift_right();
 		LCD_WRITE_DATA('*');
 
@@ -362,7 +362,6 @@ static int say_hello(void)
  * ############################################################################
  * ----------------------------------------------------------------------------
  */
-
 
 int lcd_clear(void)
 {
@@ -448,10 +447,10 @@ int lcd_write_string (unsigned char cur_pos, char *str)
 	int i = 0;
 
 	if (cur_pos != 0)
-		for(i = 1; i < cur_pos; i++)
+		for (i = 1; i < cur_pos; i++)
 			(void) lcd_cursor_shift_right();
 
-	for (i = 1; i < lcd_max_col - cur_pos; i++ )
+	for (i = 0; i < lcd_max_col - cur_pos -1; i++ )
 		LCD_WRITE_DATA(str[i]);
 
 	return 0;
@@ -587,7 +586,7 @@ void * server_handling(void *arg)
 	size_t len = sizeof(struct lcd_request);
 	memset(&req, 0, len);
 
-	for(;;) {
+	for (;;) {
 		if (read(read_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");

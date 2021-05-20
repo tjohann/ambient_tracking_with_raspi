@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 	memset(&req, 0, len);
 
 	req.line = 2;
-	req.cur_pos = 5;
+	req.cur_pos = 3;
 	strncpy(req.str, "this is a test", len);
 
 	printf("sizeof struct lcd_request %d\n", (int) len);
