@@ -58,7 +58,6 @@ static void cleanup(void)
 }
 
 
-
 int main(int argc, char *argv[])
 {
 	int c;
@@ -105,6 +104,5 @@ int main(int argc, char *argv[])
 	syslog(LOG_INFO, "daemon is up and running");
 
 	usleep(10000000);
-
 	return EXIT_SUCCESS;
 }

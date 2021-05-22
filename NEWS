@@ -3,6 +3,12 @@
 #
 
 
+2021-05-22 -> ## repo stuff
+	      add __DEBUG__ tag
+
+	      ## lcd2004_i2c stuff
+              add lcd_write_cmd fuction
+
 2021-05-20 -> ## amtrack stuff
 	      some improvements for the functional testing
 

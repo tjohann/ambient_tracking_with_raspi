@@ -3,7 +3,7 @@
 #
 
 CC = gcc
-CFLAGS = -std=gnu11 -Wall -Wextra
+CFLAGS = -std=gnu11 -Wall -Wextra -D__DEBUG__
 LDLIBS = -I../libhelper -L../libhelper -lhelper
 
 PROG = sensor_pid

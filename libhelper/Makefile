@@ -3,7 +3,7 @@
 #
 
 CC = gcc
-CFLAGS = -std=gnu11 -Wall -Wextra
+CFLAGS = -std=gnu11 -Wall -Wextra -D__DEBUG__
 LDLIBS =
 
 LIB = libhelper.a

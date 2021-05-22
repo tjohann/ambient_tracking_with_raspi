@@ -274,8 +274,8 @@ static int goto_line1(void)
  */
 static int goto_line2(void)
 {
-	lcd_write_nibble(0x0C);
-	lcd_write_nibble(0x00);
+	LCD_WRITE_NIBBLE(0x0C);
+	LCD_WRITE_NIBBLE(0x00);
 
 	usleep(1);
 	return 0;
@@ -441,7 +441,6 @@ int lcd_cursor_shift_left(void)
 	return 0;
 }
 
-
 int lcd_write_string (unsigned char cur_pos, char *str)
 {
 	int i = 0;
@@ -459,9 +458,11 @@ int lcd_write_string (unsigned char cur_pos, char *str)
 int lcd_write_line(struct lcd_request req)
 {
 
+#ifdef __DEBUG__
 	syslog(LOG_INFO, "value of req.line: %d", req.line);
 	syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
 	syslog(LOG_INFO, "value of req.str: %s", req.str);
+#endif
 
 	switch(req.line) {
 	case 1:
@@ -488,6 +489,33 @@ int lcd_write_line(struct lcd_request req)
 
 	if (lcd_write_string(req.cur_pos, req.str) != 0) {
 		syslog(LOG_ERR, "can't write string %s", req.str);
+		return -1;
+	}
+
+	return 0;
+}
+
+int lcd_write_cmd(struct lcd_request req)
+{
+
+#ifdef __DEBUG__
+	syslog(LOG_INFO, "value of req.line: %d", req.line);
+	syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
+	syslog(LOG_INFO, "value of req.str: %s", req.str);
+#endif
+
+	switch(req.line) {
+	case LCD_CLEAR:
+		if (lcd_clear() != 0)
+			return -1;
+		break;
+	case LCD_HOME:
+		if (lcd_cursor_home() != 0)
+			return -1;
+		break;
+	default:
+		syslog(LOG_ERR, "value of req.line is to large: %d",
+			req.line);
 		return -1;
 	}
 
@@ -593,10 +621,18 @@ void * server_handling(void *arg)
 			continue;
 		}
 
-		if (lcd_write_line(req) != 0) {
-			syslog(LOG_ERR,
-				"can't write request to lcd -> ignore it");
-			continue;
+		if (req.line != 0) {
+			if (lcd_write_line(req) != 0) {
+				syslog(LOG_ERR,
+					"can't write line -> ignore it");
+				continue;
+			}
+		} else {
+			if (lcd_write_cmd(req) != 0) {
+				syslog(LOG_ERR,
+					"can't write cmd -> ignore it");
+				continue;
+			}
 		}
 
 		memset(&req, 0, len);

@@ -65,19 +65,25 @@ enum bit_pos_priv {
 #define LCD1602_MAX_COL 16
 #define LCD1602_MAX_LINE 2
 
-/* the lcd request struct */
+/* define LCD cmd's */
+#define LCD_CLEAR BIT1
+#define LCD_HOME  BIT2
+
+/*
+ * the lcd request struct
+ * note: if line > 0  -> str contains the text
+ *       if line == 0 -> str[0] = cmd (like clear-display)
+ */
 struct lcd_request {
 	unsigned char line;
 	unsigned char cur_pos;
 	char str[LCD2004_MAX_COL + 1];
 };
 
-
 /* docker-pi specific defines */
 struct sensor_data {
 	char dummy;               /* dummy value         */
 };
-
 
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
