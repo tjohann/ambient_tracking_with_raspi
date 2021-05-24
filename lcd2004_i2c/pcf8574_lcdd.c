@@ -497,6 +497,7 @@ int lcd_write_line(struct lcd_request req)
 
 int lcd_write_cmd(struct lcd_request req)
 {
+	char cmd = -1 * req.line;
 
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "value of req.line: %d", req.line);
@@ -504,7 +505,7 @@ int lcd_write_cmd(struct lcd_request req)
 	syslog(LOG_INFO, "value of req.str: %s", req.str);
 #endif
 
-	switch(req.line) {
+	switch(cmd) {
 	case LCD_CLEAR:
 		if (lcd_clear() != 0)
 			return -1;
@@ -621,7 +622,7 @@ void * server_handling(void *arg)
 			continue;
 		}
 
-		if (req.line != 0) {
+		if (req.line < 0) {
 			if (lcd_write_line(req) != 0) {
 				syslog(LOG_ERR,
 					"can't write line -> ignore it");

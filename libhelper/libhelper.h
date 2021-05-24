@@ -72,11 +72,11 @@ enum bit_pos_priv {
 /*
  * the lcd request struct
  * note: if line > 0  -> str contains the text
- *       if line == 0 -> str[0] = cmd (like clear-display)
+ *       if line < 0 -> cmd negativ of LCD_CLEAR
  */
 struct lcd_request {
-	unsigned char line;
-	unsigned char cur_pos;
+	char line;
+	char cur_pos;
 	char str[LCD2004_MAX_COL + 1];
 };
 

@@ -125,9 +125,30 @@ int main(int argc, char *argv[])
 	size_t len = sizeof(struct lcd_request);
 	memset(&req, 0, len);
 
+        /* dummy waiting after start */
+	usleep(500000);
+
+        /* clear display */
+	memset(&req, 0, len);
+	req.line = -1 * LCD_CLEAR;
+
+	printf("sizeof struct lcd_request %d\n", (int) len);
+	printf("value to send %s\n", req.str);
+	printf("to line: %d\n", req.line);
+	printf("to cursor position: %d\n", req.cur_pos);
+
+	err = write(lcd_fd, &req, len);
+	if (err != (int) len)
+		printf("error ... %d\n", err);
+
+        /* dummy waiting */
+	usleep(500000);
+
+	/* send dummy text */
+	memset(&req, 0, len);
 	req.line = 2;
 	req.cur_pos = 3;
-	strncpy(req.str, "this is a test", len);
+	strncpy(req.str, "Hello World!", len);
 
 	printf("sizeof struct lcd_request %d\n", (int) len);
 	printf("value to send %s\n", req.str);
