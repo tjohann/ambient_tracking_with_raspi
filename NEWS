@@ -3,6 +3,9 @@
 #
 
 
+2021-05-25 -> ## libhelper stuff
+	      fix signed/unsigned bug in request struct
+
 2021-05-24 -> ## repo stuff
 	      change cmd handling via fifo
 

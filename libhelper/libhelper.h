@@ -75,7 +75,7 @@ enum bit_pos_priv {
  *       if line < 0 -> cmd negativ of LCD_CLEAR
  */
 struct lcd_request {
-	char line;
+	signed char line;
 	char cur_pos;
 	char str[LCD2004_MAX_COL + 1];
 };
