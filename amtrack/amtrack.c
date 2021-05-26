@@ -53,7 +53,7 @@ static void cleanup(void)
 	if (lcd_fd > 0)
 		close(lcd_fd);
 
-	fprintf(stdout, "application is down -> bye");
+	fprintf(stdout, "application is down -> bye\n");
 }
 
 static int init_lcd(int type)
