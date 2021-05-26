@@ -9,6 +9,12 @@
 	      ## amtrack stuff
 	      some improvements for the functional testing
 
+	      ## sensor_pi stuff
+	      add kdo arguments
+
+	      ## repo stuff
+	      add runit script changes
+
 2021-05-25 -> ## libhelper stuff
 	      fix signed/unsigned bug in request struct
 

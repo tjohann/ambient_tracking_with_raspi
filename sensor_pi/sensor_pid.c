@@ -30,24 +30,33 @@
 
 #include <libhelper.h>
 
+/* setup time */
+#define SETUP_TIME 10000
+
 #define LOCKFILE "/var/run/sensor_daemon.pid"
 #define DAEMON_FIFO "/var/run/sensor_daemon.fifo"
 
+/* the sensor pi module */
+static int sensor = -1;
 
 extern char *__progname;
 
 /* common functions */
-
+int init_sensor_hub(char *adapter, unsigned char addr);
 
 static void
 __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
-	fprintf(stdout, "Usage: ./%s -[h]                    \n", __progname);
-	fprintf(stdout, "       -h            -> show this help          \n");
+	fprintf(stdout, "Usage: ./%s -[hi:a:]                          \n",
+		__progname);
+	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter           \n");
+	fprintf(stdout, "       -a 17         -> I2C address (in hex)  \n");
+	fprintf(stdout, "       -h            -> show this help        \n");
 	putchar('\n');
-	fprintf(stdout, "Example:                                        \n");
-	fprintf(stdout, "        ./%s                        \n", __progname);
+	fprintf(stdout, "Example:                                      \n");
+	fprintf(stdout, "        ./%s -i /dev/i2c-1 -a 17              \n",
+		__progname);
 
 	exit(EXIT_FAILURE);
 }
@@ -57,12 +66,50 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
+static void daemon_handling(void)
+{
+	if (become_daemon(__progname) < 0) {
+		eprintf("ERROR: can't become a daemon\n");
+		exit(EXIT_FAILURE);
+	}
+
+	int err = already_running(LOCKFILE);
+	if (err == 1) {
+		syslog(LOG_ERR, "i'm already running");
+		exit(EXIT_FAILURE);
+	} else if (err < 0) {
+		syslog(LOG_ERR, "can't setup lockfile");
+		exit(EXIT_FAILURE);
+	}
+}
+
+int init_sensor_hub(char *adapter, unsigned char addr)
+{
+	sensor = init_i2c_device(adapter, addr);
+	if (sensor < 0) {
+		eprintf("ERROR: can't init Sensor-Hub");
+		return -1;
+	}
+
+	usleep(SETUP_TIME);
+	return 0;
+}
+
 
 int main(int argc, char *argv[])
 {
+	char *adapter = NULL;
+	unsigned char addr = 0x00;
+
 	int c;
-	while ((c = getopt(argc, argv, "h")) != -1) {
+	while ((c = getopt(argc, argv, "a:hi:")) != -1) {
 		switch (c) {
+		case 'i':
+			adapter = optarg;
+			break;
+		case 'a':
+			addr = (unsigned char) strtoul(optarg, NULL, 16);
+			break;
 		case 'h':
 			usage();
 			break;
@@ -72,33 +119,30 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if ((adapter == NULL) || (addr == 0))
+		usage();
 
-	/*
-	 * check kdo arguments
-	 * check access to I2C sensors
-	 * ...
-	 */
+	fprintf(stdout, "try to open %s@0x%x\n", adapter, (int) addr);
 
-	if (become_daemon(__progname) < 0) {
-			eprintf("ERROR: can't become a daemon\n");
-			exit(EXIT_FAILURE);
+	if (access(adapter, R_OK | W_OK) == -1 ) {
+		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
+		usage();
 	}
 
-	int err = already_running(LOCKFILE);
-	if (err == 1) {
-		syslog(LOG_ERR, "i'm already runningn");
-		exit(EXIT_FAILURE);
-	} else if (err < 0) {
-		syslog(LOG_ERR, "can't setup lockfile");
-		exit(EXIT_FAILURE);
-	}
-
-	err = atexit(cleanup);
+	int err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
 
+	daemon_handling();
+
+	err = init_sensor_hub(adapter, addr);
+	if (err < 0) {
+		syslog(LOG_ERR, "can't init sensor hub");
+		exit(EXIT_FAILURE);
+	}
+
 	/*
-	 * setup I2C and do the "rest"
+	 * do the sensor stuff
 	 */
 
 	syslog(LOG_INFO, "daemon is up and running");

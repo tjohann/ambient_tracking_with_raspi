@@ -29,3 +29,17 @@ sensor_daemon
 -------------
 
 The sensor daemon -> sensor_pid.
+
+My configuration (Raspi2):
+
+	devnode -> /dev/i2c-1
+	address -> 0x17
+
+The different registers:
+
+	t.b.d.
+
+The status register:
+
+	t.b.d.
+

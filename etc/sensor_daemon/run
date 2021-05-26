@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/bin/sensor_pid 2>&1
+exec /usr/bin/sensor_pid -i /dev/i2c-1 -a 17 2>&1

@@ -48,9 +48,6 @@
 #define EN BIT2
 #define BL BIT3
 
-/* PCF8574 address of the LCD */
-#define I2C_ADDR_LCD 0x22
-
 /* HD44780 internal setup time */
 #define SETUP_TIME 10000
 
