@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	memset(&req, 0, len);
 	req.line = 2;
 	req.cur_pos = 3;
-	strncpy(req.str, "Hello World!", len);
+	strncpy(req.str, "This is a text, which is to large!", lcd_max_col);
 
 	printf("sizeof struct lcd_request %d\n", (int) len);
 	printf("value to send %s\n", req.str);
