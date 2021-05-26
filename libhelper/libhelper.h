@@ -66,8 +66,8 @@ enum bit_pos_priv {
 #define LCD1602_MAX_LINE 2
 
 /* define LCD cmd's */
-#define LCD_CLEAR BIT1
-#define LCD_HOME  BIT2
+#define LCD_CLEAR BIT0
+#define LCD_HOME  BIT1
 
 /*
  * the lcd request struct

@@ -130,10 +130,9 @@ __attribute__((noreturn)) usage(void)
 	exit(EXIT_FAILURE);
 }
 
+/* Note: we ignore all errors */
 static void cleanup(void)
 {
-	/* ignore all errors */
-
 	lcd_clear();
 
 	if (lcd > 0)
@@ -444,12 +443,13 @@ int lcd_cursor_shift_left(void)
 int lcd_write_string (unsigned char cur_pos, char *str)
 {
 	int i = 0;
+	int len = (int) strlen(str);
 
 	if (cur_pos != 0)
-		for (i = 1; i < (cur_pos - 1); i++)
+		for (i = 1; i < cur_pos; i++)
 			(void) lcd_cursor_shift_right();
 
-	for (i = 0; i < (lcd_max_col - cur_pos - 1); i++ )
+	for (i = 0; (i < len && i < lcd_max_col); i++ )
 		LCD_WRITE_DATA(str[i]);
 
 	return 0;
@@ -620,16 +620,16 @@ void * server_handling(void *arg)
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
 			continue;
-		}
+ 		}
 
 		if (req.line < 0) {
-			if (lcd_write_line(req) != 0) {
+			if (lcd_write_cmd(req) != 0) {
 				syslog(LOG_ERR,
 					"can't write line -> ignore it");
 				continue;
 			}
 		} else {
-			if (lcd_write_cmd(req) != 0) {
+			if (lcd_write_line(req) != 0) {
 				syslog(LOG_ERR,
 					"can't write cmd -> ignore it");
 				continue;
