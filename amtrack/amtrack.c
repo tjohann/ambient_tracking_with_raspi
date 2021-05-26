@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
 	usleep(500000);
 
         /* clear display */
-	memset(&req, 0, len);
 	req.line = -1 * LCD_CLEAR;
 
 	printf("sizeof struct lcd_request %d\n", (int) len);

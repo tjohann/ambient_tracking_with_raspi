@@ -3,6 +3,12 @@
 #
 
 
+2021-05-26 -> ## lcd2004_i2c stuff
+	      fix position handling@display
+
+	      ## amtrack stuff
+	      some improvements for the functional testing
+
 2021-05-25 -> ## libhelper stuff
 	      fix signed/unsigned bug in request struct
 
