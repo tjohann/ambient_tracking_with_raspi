@@ -4,7 +4,7 @@
 
 CC = gcc
 CFLAGS = -std=gnu11 -Wall -Wextra -D__DEBUG__
-LDLIBS =
+LDLIBS = -li2c
 
 LIB = libhelper.a
 OBJ = helper.o

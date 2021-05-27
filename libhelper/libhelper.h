@@ -32,6 +32,7 @@
 #include <signal.h>
 #include <syslog.h>
 #include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
 #include <pthread.h>
 
 #define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)

@@ -3,6 +3,9 @@
 #
 
 
+2021-05-27 -> ## sensor_pi stuff
+	      add first content to read out the values
+
 2021-05-26 -> ## lcd2004_i2c stuff
 	      fix position handling@display
 

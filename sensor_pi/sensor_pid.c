@@ -36,6 +36,24 @@
 #define LOCKFILE "/var/run/sensor_daemon.pid"
 #define DAEMON_FIFO "/var/run/sensor_daemon.fifo"
 
+/*
+ * the different register addresses
+ * (see https://wiki.52pi.com for more details)
+ */
+#define TEMP_REG              0x01 /* Ext. Temperature [Unit:degC] */
+#define LIGHT_REG_L           0x02 /* Light Brightness Low 8 Bit [Unit:Lux] */
+#define LIGHT_REG_H           0x03 /* Light Brightness High 8 Bit [Unit:Lux] */
+#define STATUS_REG            0x04 /* Status Function */
+#define ON_BOARD_TEMP_REG     0x05 /* OnBoard Temperature [Unit:degC] */
+#define ON_BOARD_HUMIDITY_REG 0x06 /* OnBoard Humidity [Uinit:%] */
+#define ON_BOARD_SENSOR_ERROR 0x07 /* 0(OK) - 1(Error) */
+#define BMP280_TEMP_REG       0x08 /* P. Temperature [Unit:degC] */
+#define BMP280_PRESSURE_REG_L 0x09 /* P. Pressure Low 8 Bit [Unit:Pa] */
+#define BMP280_PRESSURE_REG_M 0x0A /* P. Pressure Mid 8 Bit [Unit:Pa] */
+#define BMP280_PRESSURE_REG_H 0x0B /* P. Pressure High 8 Bit [Unit:Pa] */
+#define BMP280_STATUS 	      0x0C /* 0(OK) - 1(Error) */
+#define HUMAN_DETECT          0x0D /* 0(No Active Body) - 1(Active Body)  */
+
 /* the sensor pi module */
 static int sensor = -1;
 
@@ -81,6 +99,21 @@ static void daemon_handling(void)
 		syslog(LOG_ERR, "can't setup lockfile");
 		exit(EXIT_FAILURE);
 	}
+}
+
+int get_status_reg(void)
+{
+	char buf = 0x00;
+
+	int err = i2c_smbus_read_word_data(sensor, STATUS_REG);
+	if (err < 0) {
+		syslog(LOG_ERR, "i'm already running");
+		return -1;
+	}
+
+	syslog(LOG_INFO, "return value of STATUS_REQ: %d", buf);
+
+	return 0;
 }
 
 int init_sensor_hub(char *adapter, unsigned char addr)
@@ -141,7 +174,13 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	/*
+	err = get_status_reg();
+	if (err < 0) {
+		syslog(LOG_ERR, "can't get state");
+		exit(EXIT_FAILURE);
+	}
+
+        /*
 	 * do the sensor stuff
 	 */
 
