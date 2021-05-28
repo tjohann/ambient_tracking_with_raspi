@@ -311,6 +311,19 @@ void * read_sensor(void *arg)
 	return NULL;
 }
 
+/* the main thread -> one per request */
+void * server_handling(void *arg)
+{
+
+	for (;;) {
+		/* do something */
+
+		sleep(SENSOR_UPDATE_TIME);
+	}
+
+	return NULL;
+}
+
 int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
@@ -380,14 +393,16 @@ int main(int argc, char *argv[])
 			continue;
  		}
 
-		/* handle request and setup thread for it */
+		/*
+		 * handle request and setup thread for it
+		 */
 
 		memset(&req, 0, len);
 	}
 
 
 	/*
-	 * handle the rest
+	 * do the rest
 	 */
 
 	syslog(LOG_INFO, "daemon is up and running");

@@ -41,7 +41,7 @@
 
 #define LCD_FIFO "/var/run/lcd_daemon.fifo"
 #define SENSOR_FIFO "/var/run/sensor_daemon.fifo"
-#define SENSOR_CLIENT_FIFO "/var/run/sensor_client."
+#define SENSOR_CLIENT_FIFO "/var/run/sensor_client.%ld"
 
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
@@ -100,14 +100,18 @@ struct lcd_request {
 #define STATE_BARO_TEMP    BIT4
 #define STATE_PRESSURE     BIT5
 
+/* the minum update time for sensor pi values */
+#define SENSOR_UPDATE_TIME 60
+
 /* sensor-pi specific defines */
 struct sensor_data {
 	char dummy;               /* dummy value         */
 };
 
-/* request to create server -> client fifo  */
+/* request to create server - client fifo  */
 struct sensor_fifo_req {
 	pid_t pid;
+	unsigned char interval; /* multiple of SENSOR_UPDATE_TIME */
 };
 
 /* shortcut for old signal api (my_signal()) */
