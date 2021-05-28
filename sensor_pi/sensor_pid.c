@@ -264,7 +264,7 @@ int get_values(void)
 	}
 
 #ifdef __DEBUG__
-	syslog(LOG_INFO, "the actual sensor state: %d °C", sensor_state);
+	syslog(LOG_INFO, "the actual sensor state: 0x%x ", sensor_state);
 #endif
 
 	return 0;
