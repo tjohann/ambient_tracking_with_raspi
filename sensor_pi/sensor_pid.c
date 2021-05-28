@@ -109,13 +109,23 @@ int get_values(void)
 	memset(buf, 0, (LAST_REG + 1) * sizeof(__s32));
 
 	for (int i = FIRST_REG; i <= LAST_REG; i++) {
-		buf[i] = i2c_smbus_read_byte_data(sensor, STATUS_REG);
+		buf[i] = i2c_smbus_read_byte_data(sensor, i);
 		if (buf[i] < 0) {
 			syslog(LOG_ERR, "can't read register value");
 			return -1;
 		}
 
 		syslog(LOG_INFO, "value of register: %d", buf[i]);
+	}
+
+	/* handle external temp sensor */
+	if (buf[STATUS_REG] & 0x01) {
+		syslog(LOG_ERR, "external temperature sensor overrange");
+	} else if (buf[STATUS_REG] & 0x02) {
+		syslog(LOG_ERR, "no external temperature sensor");
+	} else {
+		syslog(LOG_INFO, "current external sensor temperature: %d cels",
+			buf[TEMP_REG]);
 	}
 
 	return 0;
