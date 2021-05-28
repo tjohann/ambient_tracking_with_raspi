@@ -119,14 +119,48 @@ int get_values(void)
 	}
 
 	/* handle external temp sensor */
-	if (buf[STATUS_REG] & 0x01) {
+	if (buf[STATUS_REG] & 0x01)
 		syslog(LOG_ERR, "external temperature sensor overrange");
-	} else if (buf[STATUS_REG] & 0x02) {
+	else if (buf[STATUS_REG] & 0x02)
 		syslog(LOG_ERR, "no external temperature sensor");
-	} else {
-		syslog(LOG_INFO, "current external sensor temperature: %d cels",
+	else
+		syslog(LOG_INFO, "current external sensor temperature: %d °C",
 			buf[TEMP_REG]);
-	}
+
+	/* handle onboard temp sensor */
+	if (buf[ON_BOARD_SENSOR_ERROR] != 0)
+		syslog(LOG_ERR, "onboard temperature sensor out-of-date error");
+	syslog(LOG_INFO, "current onboard sensor temperature: %d °C",
+			buf[ON_BOARD_TEMP_REG]);
+
+	/* handle onboard humidity sensor */
+	if (buf[ON_BOARD_SENSOR_ERROR] != 0)
+		syslog(LOG_ERR, "onboard humidity sensor out-of-date error");
+	syslog(LOG_INFO, "current onboard sensor humidity: %d °C",
+			buf[ON_BOARD_HUMIDITY_REG]);
+
+	/* handle brighness sensor */
+	if (buf[STATUS_REG] & 0x04)
+		syslog(LOG_ERR, "onboard brightness sensor overrange");
+	else if (buf[STATUS_REG] & 0x08)
+		syslog(LOG_ERR, "onboard brightness sensor failure");
+	else
+		syslog(LOG_INFO, "current onboard sensor brightness: %d lux",
+			((buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L]));
+
+	/* handle barometer temp */
+	if (buf[BMP280_STATUS] != 0)
+		syslog(LOG_ERR, "onboard barometer sensor error");
+	else
+		syslog(LOG_INFO, "current barometer sensor temperature: %d °C",
+			buf[BMP280_TEMP_REG]);
+
+	/* handle barometer pressure */
+	if (buf[BMP280_STATUS] != 0)
+		syslog(LOG_ERR, "onboard barometer sensor error");
+	else
+		syslog(LOG_INFO, "current barometer sensor pressure: %d pascal",
+			(buf[BMP280_PRESSURE_REG_L] | buf[BMP280_PRESSURE_REG_M] << 8 | buf[BMP280_PRESSURE_REG_H] << 16 ));
 
 	return 0;
 }
