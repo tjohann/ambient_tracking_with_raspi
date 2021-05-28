@@ -146,7 +146,7 @@ See folder schematics for more info.
 Build kernel
 ------------
 
-I use a custom kernel, see [build custom kernel for the Raspi2](Documentation/howto_kernel.txt) for a simpel howto.
+I use a custom kernel, see [build custom kernel for the Raspi2](Documentation/howto_kernel.txt) for a simpel howto and [build kernel via Baalue-Cluster](Documentation/howto_kernel_cluster_build.txt) for the cluster one.
 
 Actual kernel version:
 

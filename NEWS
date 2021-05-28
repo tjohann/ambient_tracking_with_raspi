@@ -3,6 +3,27 @@
 #
 
 
+2021-05-28 -> ## sensor_pi stuff
+              add more first test content
+              new requirement -> i2c-tools and i2c-tools-devel are needed.
+
+              ## lcd2004_i2c stuff
+	      new requirement -> i2c-tools and i2c-tools-devel are needed.
+
+              ## amtrack stuff
+	      new requirement -> i2c-tools and i2c-tools-devel are needed.
+
+              ## libhelper stuff
+	      new requirement -> i2c-tools and i2c-tools-devel are needed.
+
+	      ## target stuff
+	      update kernel to 5.10.x
+	      regular rootfs updates
+
+	      ## repo stuff
+	      rename kernel build howtos
+	      some documentation adds/changes/fixes/improvements
+
 2021-05-27 -> ## sensor_pi stuff
 	      add first content to read out the values
 

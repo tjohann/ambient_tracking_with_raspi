@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No additional libaries are needed.
+The i2c-tools and i2c-tools-devel are needed.
 
 
 DockerPi-Shield
@@ -41,11 +41,13 @@ Start and usage
 ---------------
 
 ```
-sage: ./sensor_pid -[h]
+Usage: ./sensor_pid -[hi:a:]
+       -i /dev/i2c-X -> I2C adapter
+       -a 17         -> I2C address (in hex)
        -h            -> show this help
 
 Example:
-        ./sensor_pid
+        ./sensor_pid -i /dev/i2c-1 -a 17
 ```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)

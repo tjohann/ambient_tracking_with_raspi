@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No additional libaries are needed.
+No direct additional libaries are needed, but to build libhelper you need i2c-tools and i2c-tools-devel.
 
 
 Start and usage

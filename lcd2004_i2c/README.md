@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No additional libaries are needed.
+No direct additional libaries are needed, but to build libhelper you need i2c-tools and i2c-tools-devel.
 
 
 Display
@@ -43,13 +43,19 @@ Start and usage
 ---------------
 
 ```
-Usage: ./pcf8574_lcdd -[a:hi:]
+Usage: ./pcf8574_lcdd -[a:hi:t:]
        -i /dev/i2c-X -> I2C adapter
        -a 22         -> LCD address (in hex)
+       -t 2          -> LCD1602(:1)/LCD2004(:2)
        -h            -> show this help
 
-Example: LCD at first adapter with address 0x22
-        ./pcf8574_lcdd -i /dev/i2c-1 -a 22
+Example(s): LCD at first adapter with address 0x22
+            from type LCD2004
+           ./pcf8574_lcdd -i /dev/i2c-1 -a 22 -t 2
+or
+            LCD at first adapter with address 0x27
+            from type LCD1602
+            ./pcf8574_lcdd -i /dev/i2c-1 -a 27 -t 1
 ```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)

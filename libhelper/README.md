@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No additional libaries are needed.
+The i2c-tools and i2c-tools-devel are needed.
 
 
 Functions

@@ -5,3 +5,4 @@
 - PI-ENV_V0.0.1
 
 Only the image parts are working ... the application NOT!
+A new requirement is added -> i2c-tools and i2c-tools-devel are needed.
