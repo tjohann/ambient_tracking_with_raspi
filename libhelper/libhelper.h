@@ -41,6 +41,7 @@
 
 #define LCD_FIFO "/var/run/lcd_daemon.fifo"
 #define SENSOR_FIFO "/var/run/sensor_daemon.fifo"
+#define SENSOR_CLIENT_FIFO "/var/run/sensor_client."
 
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
@@ -81,9 +82,32 @@ struct lcd_request {
 	char str[LCD2004_MAX_COL + 1];
 };
 
-/* docker-pi specific defines */
+/* position within the sensor pi value array */
+#define VAL_MAX_LEN  7
+#define EXT_TEMP     0x00
+#define ONBOARD_TEMP 0x01
+#define BARO_TEMP    0x02
+#define HUMINITY     0x03
+#define BRIGHTNESS   0x04
+#define PRESSURE     0x05
+#define BODY_DETECT  0x06
+
+/* status bits within the sensor pi state value */
+#define STATE_EXT_TEMP     BIT0
+#define STATE_BRIGHTNESS   BIT1
+#define STATE_ONBOARD_TEMP BIT2
+#define STATE_HUMINITY     BIT3
+#define STATE_BARO_TEMP    BIT4
+#define STATE_PRESSURE     BIT5
+
+/* sensor-pi specific defines */
 struct sensor_data {
 	char dummy;               /* dummy value         */
+};
+
+/* request to create server -> client fifo  */
+struct sensor_fifo_req {
+	pid_t pid;
 };
 
 /* shortcut for old signal api (my_signal()) */

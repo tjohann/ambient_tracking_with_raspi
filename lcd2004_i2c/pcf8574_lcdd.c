@@ -99,6 +99,7 @@ int lcd_cursor_shift_right(void);
 int lcd_cursor_shift_left(void);
 int lcd_write_line(struct lcd_request req);
 int lcd_write_string (unsigned char cur_pos, char * str);
+int lcd_write_cmd(struct lcd_request req);
 int init_lcd(char *adapter, unsigned char addr, int type);
 
 

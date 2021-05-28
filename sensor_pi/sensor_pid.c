@@ -56,32 +56,18 @@
 #define BMP280_STATUS 	      0x0C /* 0 -> ok -- 1 -> error                   */
 #define HUMAN_DETECT          0x0D /* 0 -> no nctive body -- 1 -> active body */
 
-/* position within the value array */
-#define VAL_MAX_LEN  7
-#define EXT_TEMP     0x00
-#define ONBOARD_TEMP 0x01
-#define BARO_TEMP    0x02
-#define HUMINITY     0x03
-#define BRIGHTNESS   0x04
-#define PRESSURE     0x05
-#define BODY_DETECT  0x06
-
 /* store of the sensor module values */
 static int values[VAL_MAX_LEN];
-
-/* status bits */
-#define STATE_EXT_TEMP     BIT0
-#define STATE_BRIGHTNESS   BIT1
-#define STATE_ONBOARD_TEMP BIT2
-#define STATE_HUMINITY     BIT3
-#define STATE_BARO_TEMP    BIT4
-#define STATE_PRESSURE     BIT5
 
 /* the status byte */
 static unsigned char sensor_state = 0x3F;
 
 /* the sensor pi module */
 static int sensor = -1;
+
+/* the daemon read fifo */
+static int read_fifo = -1;
+static int dummy_fd = -1; /* not used */
 
 extern char *__progname;
 
@@ -127,7 +113,30 @@ static void daemon_handling(void)
 	}
 }
 
-int get_values(void)
+static int init_server_fifo(void)
+{
+        /* this call won't block -> clear of flag is below */
+	read_fifo = create_read_fifo(DAEMON_FIFO);
+	if (read_fifo < 0) {
+		syslog(LOG_ERR, "can't setup read fifo");
+		exit(EXIT_FAILURE);
+	}
+
+	/* now no EOF possible */
+	dummy_fd = open(DAEMON_FIFO, O_WRONLY);
+	if (dummy_fd < 0) {
+		syslog(LOG_ERR, "open in server_handling()");
+		exit(EXIT_FAILURE);
+	}
+
+	/* clear O_NONBLOCK -> the read will now block */
+	clr_flag(read_fifo, O_NONBLOCK);
+
+	return 0;
+}
+
+
+static int get_values(void)
 {
 	__s32 buf[LAST_REG + 1];  /* ignore buf[0] */
 	memset(buf, 0, (LAST_REG + 1) * sizeof(__s32));
@@ -282,6 +291,25 @@ int init_sensor_hub(char *adapter, unsigned char addr)
 	return 0;
 }
 
+/* the sensor read thread */
+void * read_sensor(void *arg)
+{
+	int err = get_values();
+	if (err < 0) {
+		syslog(LOG_ERR, "can't read from sensor hub");
+		exit(EXIT_FAILURE);
+	}
+
+	for (;;) {
+		err = get_values();
+		if (err < 0)
+			syslog(LOG_ERR, "can't read from sensor hub");
+
+		sleep(60);
+	}
+
+	return NULL;
+}
 
 int main(int argc, char *argv[])
 {
@@ -328,18 +356,42 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	err = get_values();
+	err = init_server_fifo();
 	if (err < 0) {
-		syslog(LOG_ERR, "can't get state");
+		syslog(LOG_ERR, "can't init server fifo");
 		exit(EXIT_FAILURE);
 	}
 
-        /*
-	 * do the sensor stuff
+	pthread_t sensor_tid;
+	err = pthread_create(&sensor_tid, NULL, read_sensor, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't create thread");
+		exit(EXIT_FAILURE);
+	}
+
+	struct sensor_fifo_req req;
+	size_t len = sizeof(struct sensor_fifo_req);
+	memset(&req, 0, len);
+
+	for (;;) {
+		if (read(read_fifo, &req, len) != (int) len) {
+			syslog(LOG_ERR,
+				"len of request not valid -> ignore it");
+			continue;
+ 		}
+
+		/* handle request and setup thread for it */
+
+		memset(&req, 0, len);
+	}
+
+
+	/*
+	 * handle the rest
 	 */
 
 	syslog(LOG_INFO, "daemon is up and running");
 
-	usleep(10000000);
+	(void) pthread_join(sensor_tid, NULL);
 	return EXIT_SUCCESS;
 }
