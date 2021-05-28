@@ -40,6 +40,8 @@
  * the different register addresses
  * (see https://wiki.52pi.com for more details)
  */
+#define FIRST_REG             0x01 /* the address of the first register */
+#define LAST_REG              0x0D /* the address of the last register */
 #define TEMP_REG              0x01 /* Ext. Temperature [Unit:degC] */
 #define LIGHT_REG_L           0x02 /* Light Brightness Low 8 Bit [Unit:Lux] */
 #define LIGHT_REG_H           0x03 /* Light Brightness High 8 Bit [Unit:Lux] */
@@ -101,17 +103,20 @@ static void daemon_handling(void)
 	}
 }
 
-int get_status_reg(void)
+int get_values(void)
 {
-	char buf = 0x00;
+	__s32 buf[LAST_REG + 1]; /* ignore buf[0] */
+	memset(buf, 0, (LAST_REG + 1) * sizeof(__s32));
 
-	int err = i2c_smbus_read_word_data(sensor, STATUS_REG);
-	if (err < 0) {
-		syslog(LOG_ERR, "i'm already running");
-		return -1;
+	for (int i = FIRST_REG; i <= LAST_REG; i++) {
+		buf[i] = i2c_smbus_read_byte_data(sensor, STATUS_REG);
+		if (buf[i] < 0) {
+			syslog(LOG_ERR, "can't read register value");
+			return -1;
+		}
+
+		syslog(LOG_INFO, "value of register: %d", buf[i]);
 	}
-
-	syslog(LOG_INFO, "return value of STATUS_REQ: %d", buf);
 
 	return 0;
 }
@@ -174,7 +179,7 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	err = get_status_reg();
+	err = get_values();
 	if (err < 0) {
 		syslog(LOG_ERR, "can't get state");
 		exit(EXIT_FAILURE);
