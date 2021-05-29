@@ -3,6 +3,10 @@
 #
 
 
+
+2021-05-29 -> ## sensor_pi stuff
+              add first parts for client fifo thread handling
+
 2021-05-28 -> ## sensor_pi stuff
               add more first test content
               new requirement -> i2c-tools and i2c-tools-devel are needed

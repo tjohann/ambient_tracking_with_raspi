@@ -41,7 +41,10 @@
 
 #define LCD_FIFO "/var/run/lcd_daemon.fifo"
 #define SENSOR_FIFO "/var/run/sensor_daemon.fifo"
-#define SENSOR_CLIENT_FIFO "/var/run/sensor_client.%ld"
+
+#define MAX_LEN_FIFO_NAME 40
+#define SENSOR_CLIENT_FIFO "/var/run/sensor_client.%d"
+
 
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
@@ -54,6 +57,8 @@ enum bit_pos_priv {
 	BIT6 = 1 << 6,
 	BIT7 = 1 << 7
 };
+
+#define MAX_NUM_THREADS 10
 
 /* define supported LCD types */
 #define LCD1602 1

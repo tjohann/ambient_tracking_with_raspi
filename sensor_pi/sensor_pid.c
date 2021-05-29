@@ -18,14 +18,7 @@
  */
 
 /*
- * !!!! ACTUAL state of development !!!!
- *
- * initial version to learn how to get the values of the
- * sensorpi modul (see https://wiki.52pi.com for more details)
- * function:
- *
- * - ...
- * - ...
+ * for the sensorpi modul see https://wiki.52pi.com for more details
  */
 
 #include <libhelper.h>
@@ -68,6 +61,8 @@ static int sensor = -1;
 /* the daemon read fifo */
 static int read_fifo = -1;
 static int dummy_fd = -1; /* not used */
+
+static unsigned char actual_num_threads;
 
 extern char *__progname;
 
@@ -314,11 +309,29 @@ void * read_sensor(void *arg)
 /* the main thread -> one per request */
 void * server_handling(void *arg)
 {
+	struct sensor_fifo_req *reg = (struct sensor_fifo_req *) arg;
+
+	pid_t pid = reg->pid;
+	unsigned char interval = reg->interval;
+
+	char name_fifo[MAX_LEN_FIFO_NAME];
+	memset(name_fifo, 0, MAX_LEN_FIFO_NAME);
+
+	snprintf(name_fifo, MAX_LEN_FIFO_NAME, SENSOR_CLIENT_FIFO, pid);
+#ifdef __DEBUG__
+	syslog(LOG_INFO, "client fifo name %s", name_fifo);
+#endif
+
+	int fd = create_write_fifo(name_fifo);
+	if (fd < 0) {
+		syslog(LOG_ERR, "can't setup client fifo");
+		exit(EXIT_FAILURE);
+	}
 
 	for (;;) {
 		/* do something */
 
-		sleep(SENSOR_UPDATE_TIME);
+		sleep(SENSOR_UPDATE_TIME * interval);
 	}
 
 	return NULL;
@@ -375,16 +388,24 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	pthread_t sensor_tid;
-	err = pthread_create(&sensor_tid, NULL, read_sensor, NULL);
+	pthread_t tid;
+	err = pthread_create(&tid, NULL, read_sensor, NULL);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
+		exit(EXIT_FAILURE);
+	}
+
+	err = pthread_detach(tid);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't detach thread -> ignore it");
 		exit(EXIT_FAILURE);
 	}
 
 	struct sensor_fifo_req req;
 	size_t len = sizeof(struct sensor_fifo_req);
 	memset(&req, 0, len);
+
+	syslog(LOG_INFO, "daemon is up and running");
 
 	for (;;) {
 		if (read(read_fifo, &req, len) != (int) len) {
@@ -393,20 +414,27 @@ int main(int argc, char *argv[])
 			continue;
  		}
 
-		/*
-		 * handle request and setup thread for it
-		 */
+#ifdef __DEBUG__
+		syslog(LOG_INFO, "pid %d", req.pid);
+#endif
+		/* only for information -> could be okay */
+		if (actual_num_threads > MAX_NUM_THREADS)
+			syslog(LOG_ERR, "num threads > %d -> pls check",
+				actual_num_threads);
+
+		err = pthread_create(&tid, NULL, server_handling, &req);
+		if (err != 0) {
+			syslog(LOG_ERR, "can't create thread");
+			continue;
+		}
+		actual_num_threads++;
+
+		err = pthread_detach(tid);
+		if (err != 0)
+			syslog(LOG_ERR, "can't detach thread -> ignore it");
 
 		memset(&req, 0, len);
 	}
 
-
-	/*
-	 * do the rest
-	 */
-
-	syslog(LOG_INFO, "daemon is up and running");
-
-	(void) pthread_join(sensor_tid, NULL);
 	return EXIT_SUCCESS;
 }

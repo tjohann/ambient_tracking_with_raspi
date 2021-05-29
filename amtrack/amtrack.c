@@ -158,6 +158,11 @@ int main(int argc, char *argv[])
 	if (err != (int) len)
 		printf("error ... %d\n", err);
 
+
+	/*
+	 * get fifo for the sensor data
+	 */
+
 	/* dummy waiting */
 	usleep(1000000);
 
