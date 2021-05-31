@@ -157,8 +157,15 @@ void * ambient_handling(void *arg)
 	size_t len = sizeof(struct lcd_request);
 	memset(&req, 0, len);
 
+	int err = -1;
 	for (;;) {
-		if (read(sensor_fd, &data, len_data) != (int) len_data) {
+		err = read(sensor_fd, &data, len_data);
+		if (err != (int) len_data) {
+			if (err == -1 && errno == EBADF) {
+				perror("can`t read from sensor fifo!");
+				exit(EXIT_FAILURE); /* the only useful action */
+			}
+
 			perror("len of data request not valid -> ignore it");
 			continue;
  		}
@@ -169,12 +176,12 @@ void * ambient_handling(void *arg)
 		memset(&req, 0, len);
 
 		req.line = 2;
-		snprintf(req.str, lcd_max_col, "Onboard Temp: %d", data.onboard_temp);
+		snprintf(req.str, lcd_max_col, "Pressure: %d", data.pressure);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		req.line = 3;
-		snprintf(req.str, lcd_max_col, "Baro Temp: %d", data.baro_temp);
+		snprintf(req.str, lcd_max_col, "Brightness: %d", data.brightness);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
