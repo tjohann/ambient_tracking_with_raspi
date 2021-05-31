@@ -329,7 +329,7 @@ void * server_handling(void *arg)
 	}
 
 	for (;;) {
-		/* do something */
+		/* take the sensor data an write it to the fifo  */
 
 		sleep(SENSOR_UPDATE_TIME * interval);
 	}

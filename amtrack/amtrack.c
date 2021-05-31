@@ -27,7 +27,18 @@ static unsigned char lcd_type = 0;
 static unsigned char lcd_max_line = 0;
 static unsigned char lcd_max_col = 0;
 
+/* the fifo to read the sensor data from */
+static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
+static int sensor_fd = -1;
+
 extern char *__progname;
+
+#define LCD_WRITE() do {					\
+		if (write(lcd_fd, &req, len) != (int) len) {	\
+			perror("can`t write to lcd");		\
+			return -1;				\
+		}						\
+	} while(0)
 
 /* common functions */
 
@@ -52,6 +63,8 @@ static void cleanup(void)
 {
 	if (lcd_fd > 0)
 		close(lcd_fd);
+
+	unlink(sensor_client_fifo);
 
 	fprintf(stdout, "application is down -> bye\n");
 }
@@ -80,7 +93,50 @@ static int init_lcd(int type)
 		return -1;
 	}
 
+	struct lcd_request req;
+	size_t len = sizeof(struct lcd_request);
+	memset(&req, 0, len);
+
+        /* clear display */
+	req.line = -1 * LCD_CLEAR;
+	LCD_WRITE();
+
 	return 0;
+}
+
+static int init_sensor(void)
+{
+	struct sensor_fifo_req fifo_req;
+	size_t len = sizeof(struct sensor_fifo_req);
+	memset(&fifo_req, 0, len);
+
+	fifo_req.interval = 1;
+	fifo_req.pid = getpid();
+
+	/* open the sensor server fd to setup my client fifo */
+	int fd = open(SENSOR_FIFO, O_WRONLY);
+	if (fd < 0)
+		goto error;
+
+	if (write(fd, &fifo_req, len) != (int) len)
+		goto error;
+
+	snprintf(sensor_client_fifo, MAX_LEN_FIFO_NAME, SENSOR_CLIENT_FIFO, getpid());
+#ifdef __DEBUG__
+	fprintf(stdout, "sensor_client_fifo name: %s\n", sensor_client_fifo);
+#endif
+
+	sensor_fd = open(sensor_client_fifo, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	return 0;
+
+error:
+	perror("error in init_sensor()");
+
+	close(fd);
+	return -1;
 }
 
 
@@ -116,74 +172,15 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	puts("applications is up and running");
-
-	/*
-	 * for testing
-	 */
-	struct lcd_request req;
-	size_t len = sizeof(struct lcd_request);
-	memset(&req, 0, len);
-
-        /* dummy waiting after start */
-	usleep(500000);
-
-        /* clear display */
-	req.line = -1 * LCD_CLEAR;
-
-	printf("sizeof struct lcd_request %d\n", (int) len);
-	printf("value to send %s\n", req.str);
-	printf("to line: %d\n", req.line);
-	printf("to cursor position: %d\n", req.cur_pos);
-
-	err = write(lcd_fd, &req, len);
-	if (err != (int) len)
-		printf("error ... %d\n", err);
-
-        /* dummy waiting */
-	usleep(500000);
-
-	/* send dummy text */
-	memset(&req, 0, len);
-	req.line = 2;
-	req.cur_pos = 3;
-	strncpy(req.str, "This is a text, which is to large!", lcd_max_col);
-
-	printf("sizeof struct lcd_request %d\n", (int) len);
-	printf("value to send %s\n", req.str);
-	printf("to line: %d\n", req.line);
-	printf("to cursor position: %d\n", req.cur_pos);
-
-	err = write(lcd_fd, &req, len);
-	if (err != (int) len)
-		printf("error ... %d\n", err);
-
-
-	/*
-	 * get fifo for the sensor data
-	 */
-	struct sensor_fifo_req fifo_req;
-	len = sizeof(struct sensor_fifo_req);
-	memset(&fifo_req, 0, len);
-
-	fifo_req.interval = 1;
-	fifo_req.pid = getpid();
-
-	int sensor_fifo = open(SENSOR_FIFO, O_WRONLY);
-	if (sensor_fifo < 0) {
-		perror("open in main()");
-		return -1;;
+	err = init_sensor();
+	if (err < 0) {
+		eprintf("can't init sensor hub\n");
+		exit(EXIT_FAILURE);
 	}
 
-	err = write(sensor_fifo, &fifo_req, len);
-	if (err != (int) len)
-		printf("error ... %d\n", err);
+	puts("applications is up and running");
 
-
-
-
-
-	/* dummy waiting */
+        /* dummy waiting */
 	usleep(1000000);
 
 	return EXIT_SUCCESS;
