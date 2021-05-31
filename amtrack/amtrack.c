@@ -31,17 +31,21 @@ static unsigned char lcd_max_col = 0;
 static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
 static int sensor_fd = -1;
 
-/* store of the sensor module values */
-static int values[VAL_MAX_LEN];
 
 extern char *__progname;
 
-#define LCD_WRITE() do {					\
-		if (write(lcd_fd, &req, len) != (int) len) {	\
-			perror("can`t write to lcd");		\
-			return -1;				\
-		}						\
+#define LCD_WRITE() do {						\
+		if (write(lcd_fd, &req, len) != (int) len) {		\
+			perror("len of data request not valid -> ignore it"); \
+			return -1;					\
+		}							\
 	} while(0)
+
+#define LCD_WRITE_2() do {						\
+		if (write(lcd_fd, &req, len) != (int) len)		\
+			perror("len of data request not valid -> ignore it"); \
+	} while(0)
+
 
 /* common functions */
 
@@ -146,16 +150,51 @@ error:
 void * ambient_handling(void *arg)
 {
 	struct sensor_data data;
-	size_t len = sizeof(struct sensor_data);
-	memset(&data, 0, len);
+	size_t len_data = sizeof(struct sensor_data);
+	memset(&data, 0, len_data);
+
+	struct lcd_request req;
+	size_t len = sizeof(struct lcd_request);
+	memset(&req, 0, len);
 
 	for (;;) {
-		if (read(sensor_fd, &data, len) != (int) len) {
-			perror("len of request not valid -> ignore it");
+		if (read(sensor_fd, &data, len_data) != (int) len_data) {
+			perror("len of data request not valid -> ignore it");
 			continue;
  		}
 
+		req.line = 1;
+		snprintf(req.str, lcd_max_col, "Ext. Temp: %d", data.ext_temp);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 2;
+		snprintf(req.str, lcd_max_col, "Onboard Temp: %d", data.onboard_temp);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 3;
+		snprintf(req.str, lcd_max_col, "Baro Temp: %d", data.baro_temp);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 4;
+		snprintf(req.str, lcd_max_col, "Huminity: %d", data.huminity);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+#ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
+		printf("onboard temp: %d\n", data.onboard_temp);
+		printf("baro temp: %d\n", data.baro_temp);
+		printf("huminity: %d\n", data.huminity);
+		printf("brightness: %d\n", data.brightness);
+		printf("pressure: %d\n", data.pressure);
+		printf("body_detect: %d\n", data.body_detect);
+#endif
+
+		memset(&data, 0, len_data);
+		memset(&req, 0, len);
 	}
 
 	return NULL;
@@ -199,14 +238,14 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	puts("applications is up and running");
-
       	pthread_t tid;
 	err = pthread_create(&tid, NULL, ambient_handling, NULL);
 	if (err != 0) {
 		eprintf("can't create thread\n");
 		exit(EXIT_FAILURE);
 	}
+
+	puts("applications is up and running");
 
 	(void) pthread_join(tid, NULL);
 	return EXIT_SUCCESS;
