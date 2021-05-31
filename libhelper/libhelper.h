@@ -45,7 +45,6 @@
 #define MAX_LEN_FIFO_NAME 40
 #define SENSOR_CLIENT_FIFO "/var/run/sensor_client.%d"
 
-
 /* define bit/pin positions to be used */
 enum bit_pos_priv {
 	BIT0 = 1 << 0,
@@ -110,13 +109,13 @@ struct lcd_request {
 
 /* sensor-pi specific defines */
 struct sensor_data {
-	char ext_temp;
-	char onboard_temp;
-	char baro_temp;
-	char huminity;
-	char brightness;
-	char pressure;
-	char body_detect;
+	int ext_temp;
+	int onboard_temp;
+	int baro_temp;
+	int huminity;
+	int brightness;
+	int pressure;
+	int body_detect;
 };
 
 /* request to create server - client fifo  */

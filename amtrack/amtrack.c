@@ -31,6 +31,7 @@ static unsigned char lcd_max_col = 0;
 static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
 static int sensor_fd = -1;
 
+static int values[VAL_MAX_LEN];
 
 extern char *__progname;
 
@@ -146,21 +147,65 @@ error:
 	return -1;
 }
 
-/* the main thread */
-void * ambient_handling(void *arg)
+/* the lcd print thread */
+void * lcd_handling(void *arg)
 {
-	struct sensor_data data;
-	size_t len_data = sizeof(struct sensor_data);
-	memset(&data, 0, len_data);
-
 	struct lcd_request req;
 	size_t len = sizeof(struct lcd_request);
 	memset(&req, 0, len);
 
+	for (;;) {
+		req.line = 1;
+		snprintf(req.str, lcd_max_col, "Ext. Temp: %d", values[EXT_TEMP]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 2;
+		snprintf(req.str, lcd_max_col, "Pressure: %d", values[PRESSURE]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 3;
+		snprintf(req.str, lcd_max_col, "Brightness: %d", values[BRIGHTNESS]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		req.line = 4;
+		snprintf(req.str, lcd_max_col, "Huminity: %d", values[HUMINITY]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		sleep(10);
+
+		req.line = 1;
+		snprintf(req.str, lcd_max_col, "Onboard Temp: %d", values[ONBOARD_TEMP]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		sleep(10);
+
+		req.line = 1;
+		snprintf(req.str, lcd_max_col, "Baro Temp: %d", values[BARO_TEMP]);
+		LCD_WRITE_2();
+		memset(&req, 0, len);
+
+		sleep(10);
+	}
+
+	return NULL;
+}
+
+/* the main thread */
+void * ambient_handling(void *arg)
+{
+	struct sensor_data data;
+	size_t len = sizeof(struct sensor_data);
+	memset(&data, 0, len);
+
 	int err = -1;
 	for (;;) {
-		err = read(sensor_fd, &data, len_data);
-		if (err != (int) len_data) {
+		err = read(sensor_fd, &data, len);
+		if (err != (int) len) {
 			if (err == -1 && errno == EBADF) {
 				perror("can`t read from sensor fifo!");
 				exit(EXIT_FAILURE); /* the only useful action */
@@ -170,26 +215,13 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
-		req.line = 1;
-		snprintf(req.str, lcd_max_col, "Ext. Temp: %d", data.ext_temp);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		req.line = 2;
-		snprintf(req.str, lcd_max_col, "Pressure: %d", data.pressure);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		req.line = 3;
-		snprintf(req.str, lcd_max_col, "Brightness: %d", data.brightness);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		req.line = 4;
-		snprintf(req.str, lcd_max_col, "Huminity: %d", data.huminity);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
+		values[EXT_TEMP] = data.ext_temp;
+		values[ONBOARD_TEMP] = data.onboard_temp;
+		values[BARO_TEMP] = data.baro_temp;
+		values[HUMINITY] = data.huminity;
+		values[BRIGHTNESS] = data.brightness;
+		values[PRESSURE] = data.pressure;
+		values[BODY_DETECT] = data.body_detect;
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
 		printf("onboard temp: %d\n", data.onboard_temp);
@@ -199,9 +231,7 @@ void * ambient_handling(void *arg)
 		printf("pressure: %d\n", data.pressure);
 		printf("body_detect: %d\n", data.body_detect);
 #endif
-
-		memset(&data, 0, len_data);
-		memset(&req, 0, len);
+		memset(&data, 0, len);
 	}
 
 	return NULL;
@@ -245,7 +275,16 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-      	pthread_t tid;
+	pthread_t tid;
+	err = pthread_create(&tid, NULL, lcd_handling, NULL);
+	if (err != 0) {
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
+	err = pthread_detach(tid);
+	if (err != 0)
+		eprintf("can't detach thread -> ignore it\n");
+
 	err = pthread_create(&tid, NULL, ambient_handling, NULL);
 	if (err != 0) {
 		eprintf("can't create thread\n");
