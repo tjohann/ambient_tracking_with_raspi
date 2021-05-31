@@ -110,7 +110,13 @@ struct lcd_request {
 
 /* sensor-pi specific defines */
 struct sensor_data {
-	char dummy;               /* dummy value         */
+	char ext_temp;
+	char onboard_temp;
+	char baro_temp;
+	char huminity;
+	char brightness;
+	char pressure;
+	char body_detect;
 };
 
 /* request to create server - client fifo  */

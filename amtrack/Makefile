@@ -4,7 +4,7 @@
 
 CC = gcc
 CFLAGS = -std=gnu11 -Wall -Wextra -D__DEBUG__
-LDLIBS = -I../libhelper -L../libhelper -lhelper -li2c
+LDLIBS = -I../libhelper -L../libhelper -lhelper -li2c -lpthread
 
 PROG = amtrack
 OBJ = amtrack.o

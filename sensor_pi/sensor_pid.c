@@ -328,9 +328,23 @@ void * server_handling(void *arg)
 		exit(EXIT_FAILURE);
 	}
 
-	for (;;) {
-		/* take the sensor data an write it to the fifo  */
+	struct sensor_data data;
+	size_t len = sizeof(struct sensor_data);
+	memset(&data, 0, len);
 
+	for (;;) {
+		data.ext_temp = values[EXT_TEMP];
+		data.onboard_temp = values[ONBOARD_TEMP];
+		data.baro_temp = values[BARO_TEMP];
+		data.huminity = values[HUMINITY];
+		data.brightness = values[BRIGHTNESS];
+		data.pressure = values[PRESSURE];
+		data.body_detect = values[BODY_DETECT];
+
+		if (write(fd, &data, len) != (int) len)
+			syslog(LOG_ERR, "cant`t write to client fifo");
+
+		memset(&data, 0, len);
 		sleep(SENSOR_UPDATE_TIME * interval);
 	}
 

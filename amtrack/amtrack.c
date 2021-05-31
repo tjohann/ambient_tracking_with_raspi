@@ -27,9 +27,12 @@ static unsigned char lcd_type = 0;
 static unsigned char lcd_max_line = 0;
 static unsigned char lcd_max_col = 0;
 
-/* the fifo to read the sensor data from */
+/* the fifo, to read the sensor data from */
 static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
 static int sensor_fd = -1;
+
+/* store of the sensor module values */
+static int values[VAL_MAX_LEN];
 
 extern char *__progname;
 
@@ -139,6 +142,24 @@ error:
 	return -1;
 }
 
+/* the main thread */
+void * ambient_handling(void *arg)
+{
+	struct sensor_data data;
+	size_t len = sizeof(struct sensor_data);
+	memset(&data, 0, len);
+
+	for (;;) {
+		if (read(sensor_fd, &data, len) != (int) len) {
+			perror("len of request not valid -> ignore it");
+			continue;
+ 		}
+
+		printf("external temp: %d\n", data.ext_temp);
+	}
+
+	return NULL;
+}
 
 int main(int argc, char *argv[])
 {
@@ -180,8 +201,13 @@ int main(int argc, char *argv[])
 
 	puts("applications is up and running");
 
-        /* dummy waiting */
-	usleep(1000000);
+      	pthread_t tid;
+	err = pthread_create(&tid, NULL, ambient_handling, NULL);
+	if (err != 0) {
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
 
+	(void) pthread_join(tid, NULL);
 	return EXIT_SUCCESS;
 }
