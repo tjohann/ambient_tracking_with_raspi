@@ -429,6 +429,10 @@ int main(int argc, char *argv[])
 		}
 		actual_num_threads++;
 
+#ifdef __DEBUG__
+		syslog(LOG_INFO, "created client fifo thread");
+#endif
+
 		err = pthread_detach(tid);
 		if (err != 0)
 			syslog(LOG_ERR, "can't detach thread -> ignore it");

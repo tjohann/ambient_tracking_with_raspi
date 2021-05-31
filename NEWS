@@ -4,6 +4,9 @@
 
 
 
+2021-05-31 -> ## sensor_pi && amtrack stuff
+              add first parts for fifo handling
+
 2021-05-29 -> ## sensor_pi stuff
               add first parts for client fifo thread handling
 

@@ -162,6 +162,26 @@ int main(int argc, char *argv[])
 	/*
 	 * get fifo for the sensor data
 	 */
+	struct sensor_fifo_req fifo_req;
+	len = sizeof(struct sensor_fifo_req);
+	memset(&fifo_req, 0, len);
+
+	fifo_req.interval = 1;
+	fifo_req.pid = getpid();
+
+	int sensor_fifo = open(SENSOR_FIFO, O_WRONLY);
+	if (sensor_fifo < 0) {
+		perror("open in main()");
+		return -1;;
+	}
+
+	err = write(sensor_fifo, &fifo_req, len);
+	if (err != (int) len)
+		printf("error ... %d\n", err);
+
+
+
+
 
 	/* dummy waiting */
 	usleep(1000000);
