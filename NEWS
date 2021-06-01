@@ -3,6 +3,8 @@
 #
 
 
+2021-06-01 -> ## amtrack stuff
+              add next parts for display handling
 
 2021-05-31 -> ## sensor_pi && amtrack stuff
               add first parts for fifo handling
