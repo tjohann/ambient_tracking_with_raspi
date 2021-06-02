@@ -196,12 +196,12 @@ void * lcd_handling(void *arg)
 
 		memset(&req, 0, len);
 		req.line = 2;
-		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		strncpy(req.str, values[BARO_TEMP], lcd_max_col);
 		LCD_WRITE_2();
 
 		memset(&req, 0, len);
 		req.line = 3;
-		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		strncpy(req.str, values[EXT_TEMP], lcd_max_col);
 		LCD_WRITE_2();
 
 		memset(&req, 0, len);
