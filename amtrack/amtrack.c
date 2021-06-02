@@ -158,39 +158,56 @@ void * lcd_handling(void *arg)
 	memset(&req, 0, len);
 
 	for (;;) {
-		req.line = 1;
-		strncpy(req.str, values[EXT_TEMP], lcd_max_col);
-		LCD_WRITE_2();
+		/* first circle -> begin with clear display */
 		memset(&req, 0, len);
-
-		req.line = 2;
-		strncpy(req.str, values[PRESSURE], lcd_max_col);
+		req.line = -1 * LCD_CLEAR;
 		LCD_WRITE_2();
+
 		memset(&req, 0, len);
-
-		req.line = 3;
-		strncpy(req.str, values[BRIGHTNESS], lcd_max_col);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		req.line = 4;
-		strncpy(req.str, values[HUMINITY], lcd_max_col);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		sleep(10);
-
-		req.line = 1;
-		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
-		LCD_WRITE_2();
-		memset(&req, 0, len);
-
-		sleep(10);
-
 		req.line = 1;
 		strncpy(req.str, values[BARO_TEMP], lcd_max_col);
 		LCD_WRITE_2();
+
 		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[PRESSURE], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 3;
+		strncpy(req.str, values[BRIGHTNESS], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 4;
+		strncpy(req.str, values[HUMINITY], lcd_max_col);
+		LCD_WRITE_2();
+		sleep(10);
+
+                /* second circle */
+		memset(&req, 0, len);
+		req.line = -1 * LCD_CLEAR;
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 3;
+		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 4;
+		strncpy(req.str, values[BODY_DETECT], lcd_max_col);
+		LCD_WRITE_2();
 
 		sleep(10);
 	}
