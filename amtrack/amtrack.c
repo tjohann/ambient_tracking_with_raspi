@@ -88,6 +88,14 @@ static int init_lcd(int type)
 		return -1;;
 	}
 
+	struct lcd_request req;
+	size_t len = sizeof(struct lcd_request);
+	memset(&req, 0, len);
+
+	/* clear display */
+	req.line = -1 * LCD_CLEAR;
+	LCD_WRITE();
+
 	switch(type) {
 	case 1:
 		lcd_type = LCD1602;
@@ -95,6 +103,17 @@ static int init_lcd(int type)
 		lcd_max_col = LCD1602_MAX_COL;
 
 		lcd_handling = lcd1602_handling;
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, "MY AMBIENT -", lcd_max_col);
+		LCD_WRITE();
+
+		memset(&req, 0, len);
+		req.line = 3;
+		strncpy(req.str, "         - TRACKER", lcd_max_col);
+		LCD_WRITE();
+
 		break;
 	case 2:
 		lcd_type = LCD2004;
@@ -102,6 +121,16 @@ static int init_lcd(int type)
 		lcd_max_col = LCD2004_MAX_COL;
 
 		lcd_handling = lcd2004_handling;
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, "MY AMBIENT -", lcd_max_col);
+		LCD_WRITE();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, "      - TRACKER", lcd_max_col);
+		LCD_WRITE();
 		break;
 	default:
 		eprintf("LCD is not supported!\n");
@@ -110,14 +139,6 @@ static int init_lcd(int type)
 
 	for(int i = 0; i < VAL_MAX_LEN; i++)
 		values[i] = alloc_string_2(lcd_max_col);
-
-	struct lcd_request req;
-	size_t len = sizeof(struct lcd_request);
-	memset(&req, 0, len);
-
-        /* clear display */
-	req.line = -1 * LCD_CLEAR;
-	LCD_WRITE();
 
 	return 0;
 }
