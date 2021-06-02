@@ -26,6 +26,8 @@ static int lcd_fd = -1;
 static unsigned char lcd_type = 0;
 static unsigned char lcd_max_line = 0;
 static unsigned char lcd_max_col = 0;
+typedef void * (*func_lcd_handler_t) (void *);
+func_lcd_handler_t lcd_handling;
 
 /* the fifo, to read the sensor data from */
 static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
@@ -48,8 +50,9 @@ extern char *__progname;
 	} while(0)
 
 
-/* common functions */
-
+/* common functions/threads */
+void * lcd2004_handling(void *arg);
+void * lcd1602_handling(void *arg);
 
 static void
 __attribute__((noreturn)) usage(void)
@@ -90,11 +93,15 @@ static int init_lcd(int type)
 		lcd_type = LCD1602;
 		lcd_max_line = LCD1602_MAX_LINE;
 		lcd_max_col = LCD1602_MAX_COL;
+
+		lcd_handling = lcd1602_handling;
 		break;
 	case 2:
 		lcd_type = LCD2004;
 		lcd_max_line = LCD2004_MAX_LINE;
 		lcd_max_col = LCD2004_MAX_COL;
+
+		lcd_handling = lcd2004_handling;
 		break;
 	default:
 		eprintf("LCD is not supported!\n");
@@ -150,8 +157,8 @@ error:
 	return -1;
 }
 
-/* the lcd print thread */
-void * lcd_handling(void *arg)
+/* the lcd2004 print thread */
+void * lcd2004_handling(void *arg)
 {
 	struct lcd_request req;
 	size_t len = sizeof(struct lcd_request);
@@ -214,6 +221,84 @@ void * lcd_handling(void *arg)
 
 	return NULL;
 }
+
+/* the lcd1602 print thread */
+void * lcd1602_handling(void *arg)
+{
+	struct lcd_request req;
+	size_t len = sizeof(struct lcd_request);
+	memset(&req, 0, len);
+
+	for (;;) {
+		/* first circle -> begin with clear display */
+		memset(&req, 0, len);
+		req.line = -1 * LCD_CLEAR;
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, values[BARO_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[PRESSURE], lcd_max_col);
+		LCD_WRITE_2();
+		sleep(10);
+
+		 /* second circle */
+		memset(&req, 0, len);
+		req.line = -1 * LCD_CLEAR;
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, values[BRIGHTNESS], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[HUMINITY], lcd_max_col);
+		LCD_WRITE_2();
+		sleep(10);
+
+                /* third circle */
+		memset(&req, 0, len);
+		req.line = -1 * LCD_CLEAR;
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[BARO_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+		sleep(10);
+
+                /* fourth circle */
+		memset(&req, 0, len);
+		req.line = -1 * LCD_CLEAR;
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 1;
+		strncpy(req.str, values[EXT_TEMP], lcd_max_col);
+		LCD_WRITE_2();
+
+		memset(&req, 0, len);
+		req.line = 2;
+		strncpy(req.str, values[BODY_DETECT], lcd_max_col);
+		LCD_WRITE_2();
+
+		sleep(10);
+	}
+
+	return NULL;
+}
+
 
 /* the main thread */
 void * ambient_handling(void *arg)
