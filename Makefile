@@ -38,6 +38,14 @@ uninstall::
 deploy::
 	for dir in $(MODULES_BUILD); do (cd $$dir && $(MAKE) $@); done
 
+#
+# to make things easier
+#
+update: clean
+	(git pull)
+
+lazy: update build
+
 
 #
 # build code subfolders

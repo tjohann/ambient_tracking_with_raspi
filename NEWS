@@ -9,6 +9,9 @@
               ## libhelper stuff
               add new function to alloc a string
 
+	      ## repo stuff
+	      add 2 new Makefile tags to make thinks easier
+
 2021-06-01 -> ## amtrack stuff
               add next parts for display handling
 
