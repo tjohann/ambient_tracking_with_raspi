@@ -35,6 +35,7 @@ Functions
 ---------
 
 	char * alloc_string(const char *s);
+	char * alloc_string_2(size_t len);
 	int become_daemon(const char* name);
 	int set_cloexec(int fd);
 	int lock_file(int fd);

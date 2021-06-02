@@ -40,6 +40,24 @@ LIBHELPER_EXPORT char * alloc_string(const char *s)
 	return str;
 }
 
+LIBHELPER_EXPORT char * alloc_string_2(size_t len)
+{
+	char *str = NULL;
+
+	if (len == 0)
+		return NULL;
+
+	len += 1;
+
+	str = malloc(len);
+	if (str == NULL)
+		return NULL;
+
+	memset(str, 0, len);
+
+	return str;
+}
+
 LIBHELPER_EXPORT sigfunc * my_signal(int signo, sigfunc *func)
 {
         struct sigaction actual, old_actual;

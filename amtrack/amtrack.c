@@ -31,7 +31,7 @@ static unsigned char lcd_max_col = 0;
 static char sensor_client_fifo[MAX_LEN_FIFO_NAME];
 static int sensor_fd = -1;
 
-static char values[VAL_MAX_LEN];
+static char *values[VAL_MAX_LEN];
 
 extern char *__progname;
 
@@ -101,6 +101,9 @@ static int init_lcd(int type)
 		return -1;
 	}
 
+	for(int i = 0; i < VAL_MAX_LEN; i++)
+		values[i] = alloc_string_2(lcd_max_col);
+
 	struct lcd_request req;
 	size_t len = sizeof(struct lcd_request);
 	memset(&req, 0, len);
@@ -156,36 +159,36 @@ void * lcd_handling(void *arg)
 
 	for (;;) {
 		req.line = 1;
-		strncpy(req.str, &values[EXT_TEMP], lcd_max_col);
+		strncpy(req.str, values[EXT_TEMP], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		req.line = 2;
-		strncpy(req.str, &values[PRESSURE], lcd_max_col);
+		strncpy(req.str, values[PRESSURE], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		req.line = 3;
-		strncpy(req.str, &values[BRIGHTNESS], lcd_max_col);
+		strncpy(req.str, values[BRIGHTNESS], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		req.line = 4;
-		strncpy(req.str, &values[HUMINITY], lcd_max_col);
+		strncpy(req.str, values[HUMINITY], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		sleep(10);
 
 		req.line = 1;
-		strncpy(req.str, &values[ONBOARD_TEMP], lcd_max_col);
+		strncpy(req.str, values[ONBOARD_TEMP], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
 		sleep(10);
 
 		req.line = 1;
-		strncpy(req.str, &values[BARO_TEMP], lcd_max_col);
+		strncpy(req.str, values[BARO_TEMP], lcd_max_col);
 		LCD_WRITE_2();
 		memset(&req, 0, len);
 
@@ -215,31 +218,31 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
-		memset(&values[EXT_TEMP], 0, lcd_max_col);
-		snprintf(&values[EXT_TEMP], lcd_max_col, "Ext. Temp: %d",
+		memset(values[EXT_TEMP], 0, lcd_max_col);
+		snprintf(values[EXT_TEMP], lcd_max_col, "Ext. Temp: %d",
 			data.ext_temp);
 
-		memset(&values[BARO_TEMP], 0, lcd_max_col);
-		snprintf(&values[BARO_TEMP], lcd_max_col, "Baro Temp: %d",
+		memset(values[BARO_TEMP], 0, lcd_max_col);
+		snprintf(values[BARO_TEMP], lcd_max_col, "Baro Temp: %d",
 			data.baro_temp);
 
-		memset(&values[ONBOARD_TEMP], 0, lcd_max_col);
-		snprintf(&values[ONBOARD_TEMP], lcd_max_col, "Onboard Temp: %d",
+		memset(values[ONBOARD_TEMP], 0, lcd_max_col);
+		snprintf(values[ONBOARD_TEMP], lcd_max_col, "Onboard Temp: %d",
 			data.onboard_temp);
 
-		memset(&values[PRESSURE], 0, lcd_max_col);
-		snprintf(&values[PRESSURE], lcd_max_col, "Pressure: %d",
+		memset(values[PRESSURE], 0, lcd_max_col);
+		snprintf(values[PRESSURE], lcd_max_col, "Pressure: %d",
 			data.pressure);
 
-		memset(&values[BRIGHTNESS], 0, lcd_max_col);
-		snprintf(&values[BRIGHTNESS], lcd_max_col, "Brightness: %d",
+		memset(values[BRIGHTNESS], 0, lcd_max_col);
+		snprintf(values[BRIGHTNESS], lcd_max_col, "Brightness: %d",
 			data.brightness);
 
-		memset(&values[HUMINITY], 0, lcd_max_col);
-		snprintf(&values[HUMINITY], lcd_max_col, "Huminity: %d",
+		memset(values[HUMINITY], 0, lcd_max_col);
+		snprintf(values[HUMINITY], lcd_max_col, "Huminity: %d",
 			data.huminity);
 
-		memset(&values[BODY_DETECT], 0, lcd_max_col);
+		memset(values[BODY_DETECT], 0, lcd_max_col);
 		values[BODY_DETECT] = data.body_detect;
 
 #ifdef __DEBUG__
@@ -251,13 +254,13 @@ void * ambient_handling(void *arg)
 		printf("pressure: %d\n", data.pressure);
 		printf("body_detect: %d\n", data.body_detect);
 
-		printf("values[EXT_TEMP]: %d\n", values[EXT_TEMP]);
-		printf("values[BARO_TEMP]: %d\n", values[BARO_TEMP]);
-		printf("values[ONBOARD_TEMP]: %d\n", values[ONBOARD_TEMP]);
-		printf("values[PRESSURE]: %d\n", values[PRESSURE]);
-		printf("values[BRIGHTNESS]: %d\n", values[BRIGHTNESS]);
-		printf("values[HUMINITY]: %d\n", values[HUMINITY]);
-		printf("values[BODY_DETECT]: %d\n", values[BODY_DETECT]);
+		printf("%s\n", values[EXT_TEMP]);
+		printf("%s\n", values[BARO_TEMP]);
+		printf("%s\n", values[ONBOARD_TEMP]);
+		printf("%s\n", values[PRESSURE]);
+		printf("%s\n", values[BRIGHTNESS]);
+		printf("%s\n", values[HUMINITY]);
+		printf("%s\n", values[BODY_DETECT]);
 #endif
 		memset(&data, 0, len);
 	}

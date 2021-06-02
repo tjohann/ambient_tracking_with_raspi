@@ -6,6 +6,9 @@
 2021-06-02 -> ## amtrack stuff
               fix values[] handling
 
+              ## libhelper stuff
+              add new function to alloc a string
+
 2021-06-01 -> ## amtrack stuff
               add next parts for display handling
 
