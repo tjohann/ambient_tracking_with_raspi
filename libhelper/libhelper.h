@@ -88,13 +88,13 @@ struct lcd_request {
 
 /* position within the sensor pi value array */
 #define VAL_MAX_LEN  7
-#define EXT_TEMP     0x00
-#define ONBOARD_TEMP 0x01
-#define BARO_TEMP    0x02
-#define HUMINITY     0x03
-#define BRIGHTNESS   0x04
-#define PRESSURE     0x05
-#define BODY_DETECT  0x06
+#define EXT_TEMP     0
+#define ONBOARD_TEMP 1
+#define BARO_TEMP    2
+#define HUMINITY     3
+#define BRIGHTNESS   4
+#define PRESSURE     5
+#define BODY_DETECT  6
 
 /* status bits within the sensor pi state value */
 #define STATE_EXT_TEMP     BIT0

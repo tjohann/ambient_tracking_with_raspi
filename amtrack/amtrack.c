@@ -243,7 +243,8 @@ void * ambient_handling(void *arg)
 			data.huminity);
 
 		memset(values[BODY_DETECT], 0, lcd_max_col);
-		values[BODY_DETECT] = data.body_detect;
+		snprintf(values[BODY_DETECT], lcd_max_col, "Body detect?: %s",
+			data.body_detect ? "yes" : "no");
 
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
