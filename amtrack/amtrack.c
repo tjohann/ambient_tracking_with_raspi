@@ -215,20 +215,33 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
+		memset(&values[EXT_TEMP], 0, lcd_max_col);
 		snprintf(&values[EXT_TEMP], lcd_max_col, "Ext. Temp: %d",
 			data.ext_temp);
+
+		memset(&values[BARO_TEMP], 0, lcd_max_col);
 		snprintf(&values[BARO_TEMP], lcd_max_col, "Baro Temp: %d",
 			data.baro_temp);
+
+		memset(&values[ONBOARD_TEMP], 0, lcd_max_col);
 		snprintf(&values[ONBOARD_TEMP], lcd_max_col, "Onboard Temp: %d",
 			data.onboard_temp);
+
+		memset(&values[PRESSURE], 0, lcd_max_col);
 		snprintf(&values[PRESSURE], lcd_max_col, "Pressure: %d",
 			data.pressure);
+
+		memset(&values[BRIGHTNESS], 0, lcd_max_col);
 		snprintf(&values[BRIGHTNESS], lcd_max_col, "Brightness: %d",
 			data.brightness);
+
+		memset(&values[HUMINITY], 0, lcd_max_col);
 		snprintf(&values[HUMINITY], lcd_max_col, "Huminity: %d",
 			data.huminity);
 
+		memset(&values[BODY_DETECT], 0, lcd_max_col);
 		values[BODY_DETECT] = data.body_detect;
+
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
 		printf("onboard temp: %d\n", data.onboard_temp);
@@ -237,6 +250,14 @@ void * ambient_handling(void *arg)
 		printf("brightness: %d\n", data.brightness);
 		printf("pressure: %d\n", data.pressure);
 		printf("body_detect: %d\n", data.body_detect);
+
+		printf("values[EXT_TEMP]: %d\n", values[EXT_TEMP]);
+		printf("values[BARO_TEMP]: %d\n", values[BARO_TEMP]);
+		printf("values[ONBOARD_TEMP]: %d\n", values[ONBOARD_TEMP]);
+		printf("values[PRESSURE]: %d\n", values[PRESSURE]);
+		printf("values[BRIGHTNESS]: %d\n", values[BRIGHTNESS]);
+		printf("values[HUMINITY]: %d\n", values[HUMINITY]);
+		printf("values[BODY_DETECT]: %d\n", values[BODY_DETECT]);
 #endif
 		memset(&data, 0, len);
 	}
