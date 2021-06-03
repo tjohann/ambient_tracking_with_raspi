@@ -447,7 +447,7 @@ int lcd_write_string (unsigned char cur_pos, char *str)
 		for (i = 1; i < cur_pos; i++)
 			(void) lcd_cursor_shift_right();
 
-	for (i = 0; (i < len && i < (lcd_max_col - 2)); i++ )
+	for (i = 0; (i < len && i < (lcd_max_col)); i++ )
 		LCD_WRITE_DATA(str[i]);
 
 	return 0;

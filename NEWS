@@ -6,6 +6,9 @@
 2021-06-03 -> ## amtrack stuff
               add some debugging info
 
+              ## lcd2004_i2c stuff
+	      fix bug in lcd_write_string
+
 2021-06-02 -> ## amtrack stuff
               fix values[] handling
 
