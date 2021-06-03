@@ -298,32 +298,32 @@ void * ambient_handling(void *arg)
  		}
 
 		memset(values[EXT_TEMP], 0, lcd_max_col);
-		snprintf(values[EXT_TEMP], lcd_max_col, "Ext. Temp: %d",
-			data.ext_temp);
+		snprintf(values[EXT_TEMP], lcd_max_col + 1,
+			"Ext. Temp   : %d", data.ext_temp);
 
 		memset(values[BARO_TEMP], 0, lcd_max_col);
-		snprintf(values[BARO_TEMP], lcd_max_col, "Baro Temp: %d",
-			data.baro_temp);
+		snprintf(values[BARO_TEMP], lcd_max_col + 1,
+			"Baro Temp   : %d", data.baro_temp);
 
 		memset(values[ONBOARD_TEMP], 0, lcd_max_col);
-		snprintf(values[ONBOARD_TEMP], lcd_max_col, "Onboard Temp: %d",
-			data.onboard_temp);
+		snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
+			"Onboard Temp: %d", data.onboard_temp);
 
 		memset(values[PRESSURE], 0, lcd_max_col);
-		snprintf(values[PRESSURE], lcd_max_col, "Pressure: %d",
-			data.pressure);
+		snprintf(values[PRESSURE], lcd_max_col + 1,
+			"Pressure    : %d", data.pressure);
 
 		memset(values[BRIGHTNESS], 0, lcd_max_col);
-		snprintf(values[BRIGHTNESS], lcd_max_col, "Brightness: %d",
-			data.brightness);
+		snprintf(values[BRIGHTNESS], lcd_max_col + 1,
+			"Brightness  : %d", data.brightness);
 
 		memset(values[HUMINITY], 0, lcd_max_col);
-		snprintf(values[HUMINITY], lcd_max_col, "Huminity: %d",
-			data.huminity);
+		snprintf(values[HUMINITY], lcd_max_col + 1,
+			"Huminity    : %d", data.huminity);
 
 		memset(values[BODY_DETECT], 0, lcd_max_col);
-		snprintf(values[BODY_DETECT], lcd_max_col, "Body detect?: %s",
-			data.body_detect ? "yes" : "no");
+		snprintf(values[BODY_DETECT], lcd_max_col + 1,
+			"Body detect?: %s", data.body_detect ? "yes" : "no");
 
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
