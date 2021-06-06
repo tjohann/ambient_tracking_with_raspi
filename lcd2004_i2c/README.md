@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No direct additional libaries are needed, but to build libhelper you need i2c-tools and i2c-tools-devel.
+No direct additional libaries are needed, but to build pcf8574_lcdd you need i2c-tools, i2c-tools-devel and sqlite.
 
 
 Display

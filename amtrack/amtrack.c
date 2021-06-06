@@ -18,6 +18,7 @@
  */
 
 #include <libhelper.h>
+#include <sqlite3.h>
 
 /* the write to lcd_daemon fifo */
 static int lcd_fd = -1;
@@ -168,6 +169,12 @@ static int lcd_clear(void)
 	memset(&req, 0, len);
 	req.line = -1 * LCD_CLEAR;
 	LCD_WRITE();
+
+	return 0;
+}
+
+static int init_database()
+{
 
 	return 0;
 }
@@ -373,6 +380,12 @@ int main(int argc, char *argv[])
 	int err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
+
+	err = init_database();
+	if (err < 0) {
+		eprintf("can't init database\n");
+		exit(EXIT_FAILURE);
+	}
 
 	err = init_lcd(type);
 	if (err < 0) {

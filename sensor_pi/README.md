@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-The i2c-tools and i2c-tools-devel are needed.
+The i2c-tools and i2c-tools-devel are needed. As an indirect requirement you need sqlite to build.
 
 
 DockerPi-Shield

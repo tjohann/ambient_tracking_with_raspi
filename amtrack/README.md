@@ -28,7 +28,7 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-No direct additional libaries are needed, but to build libhelper you need i2c-tools and i2c-tools-devel.
+No direct additional libaries are needed, but to build libhelper you need i2c-tools, i2c-tools-devel and sqlite.
 
 
 Start and usage
@@ -42,6 +42,12 @@ Usage: ./amtrack -[h]
 Example: LCD size 20x4
         ./amtrack -t 2
 ```
+
+
+Database
+--------
+
+For further checks, a sqlite database is on the device (/var/run/ambient_data.db). It stores the values for future use.
 
 
 Configuraion

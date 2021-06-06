@@ -2,7 +2,7 @@
 # my simple makefile act as something like a user interface
 #
 
-MODULES = pics configs scripts bin Documentation raspi2 schematics etc
+MODULES = pics configs scripts bin Documentation raspi2 schematics etc database
 MODULES_BUILD = libhelper lcd2004_i2c sensor_pi amtrack
 MODULES_EXTRA = kernel external
 
@@ -45,7 +45,6 @@ update: clean
 	(git pull)
 
 lazy: update build
-
 
 #
 # build code subfolders

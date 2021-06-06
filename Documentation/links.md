@@ -39,3 +39,10 @@ Baalue
 
 https://github.com/tjohann/libbaalue.git
 https://github.com/tjohann/baalued.git
+
+
+SQLite
+------
+
+https://www.sqlite.org/index.html
+https://zetcode.com/db/sqlite/

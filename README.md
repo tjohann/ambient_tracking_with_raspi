@@ -29,7 +29,9 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-The only yet known software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir) and wget (to download the image tarballs from sourceforge).
+The only software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir) and wget (to download the image tarballs from sourceforge).
+To build the applications you also need i2c-tools, i2c-tools-devel and sqlite.
+
 
 To use the my scripts, you need to source the pi-env_env file, wich sets some shell values:
 
@@ -134,7 +136,6 @@ My development environment:
 ![Alt text](pics/development_environment_01.jpg?raw=true "With GPIO")
 ![Alt text](pics/development_environment_02.jpg?raw=true "With 2 LCD's")
 ![Alt text](pics/development_environment_03.jpg?raw=true "I2C connection")
-
 
 
 Schematics
@@ -248,4 +249,6 @@ The code
 
 Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the daemon code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
 
-The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md)
+The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md).
+
+For further checks, a sqlite database is on the device (/var/run/ambient_data.db). It stores the values for future use.
