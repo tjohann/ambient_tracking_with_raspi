@@ -36,6 +36,9 @@ static int sensor_fd = -1;
 
 static char *values[VAL_MAX_LEN];
 
+/* the database */
+sqlite3 *db;
+
 extern char *__progname;
 
 #define LCD_WRITE() do {						\
@@ -73,6 +76,8 @@ __attribute__((noreturn)) usage(void)
 
 static void cleanup(void)
 {
+	sqlite3_close(db);
+
 	if (lcd_fd > 0)
 		close(lcd_fd);
 
@@ -173,10 +178,33 @@ static int lcd_clear(void)
 	return 0;
 }
 
-static int init_database()
+static int init_database(void)
 {
+	sqlite3_stmt *res;
+
+	int rc = sqlite3_open(":rw:", &db);
+	if (rc != SQLITE_OK)
+		goto error;
+
+	rc = sqlite3_prepare_v2(db, "SELECT SQLITE_VERSION()", -1, &res, 0);
+	if (rc != SQLITE_OK)
+		goto error;
+
+	rc = sqlite3_step(res);
+	if (rc == SQLITE_ROW) {
+		printf("%s\n", sqlite3_column_text(res, 0));
+	}
+
+	sqlite3_finalize(res);
 
 	return 0;
+
+error:
+	fprintf(stderr, "error in database handling: %s\n",
+		sqlite3_errmsg(db));
+	sqlite3_close(db);
+
+	return 1;
 }
 
 static int init_sensor(void)

@@ -13,13 +13,4 @@ CREATE TABLE AmbientValues(
        BRIGHTNESS INTEGER,
        HUMINITY INTEGER);
 
-INSERT INTO AmbientValues VALUES(
-       1,
-       'So 6. Jun 12:00:00 CEST 2021',
-       20,
-       21,
-       22,
-       123456,
-       12,
-       34);
 COMMIT;
