@@ -117,6 +117,8 @@ gpm
 manpages-de
 man-pages-devel
 man-pages-posix
+sqlite-devel
+
 
 #
 # addtional installations via source

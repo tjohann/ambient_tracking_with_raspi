@@ -73,10 +73,11 @@ static void
 __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
-	fprintf(stdout, "Usage: ./%s -[hi:a:]                          \n",
+	fprintf(stdout, "Usage: ./%s -[hdi:a:]                         \n",
 		__progname);
 	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter           \n");
 	fprintf(stdout, "       -a 17         -> I2C address (in hex)  \n");
+	fprintf(stdout, "       -d            -> run as daemon         \n");
 	fprintf(stdout, "       -h            -> show this help        \n");
 	putchar('\n');
 	fprintf(stdout, "Example:                                      \n");
@@ -91,13 +92,9 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
-static void daemon_handling(void)
-{
-	if (become_daemon(__progname) < 0) {
-		eprintf("ERROR: can't become a daemon\n");
-		exit(EXIT_FAILURE);
-	}
 
+static void lock_file_handling(void)
+{
 	int err = already_running(LOCKFILE);
 	if (err == 1) {
 		syslog(LOG_ERR, "i'm already running");
@@ -106,6 +103,16 @@ static void daemon_handling(void)
 		syslog(LOG_ERR, "can't setup lockfile");
 		exit(EXIT_FAILURE);
 	}
+}
+
+static void daemon_handling(void)
+{
+	if (become_daemon(__progname) < 0) {
+		eprintf("ERROR: can't become a daemon\n");
+		exit(EXIT_FAILURE);
+	}
+
+	lock_file_handling();
 }
 
 static int init_server_fifo(void)
@@ -355,15 +362,19 @@ int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
+	bool run_as_daemon = false;
 
 	int c;
-	while ((c = getopt(argc, argv, "a:hi:")) != -1) {
+	while ((c = getopt(argc, argv, "a:dhi:")) != -1) {
 		switch (c) {
 		case 'i':
 			adapter = optarg;
 			break;
 		case 'a':
 			addr = (unsigned char) strtoul(optarg, NULL, 16);
+			break;
+		case 'd':
+			run_as_daemon = true;
 			break;
 		case 'h':
 			usage();
@@ -388,7 +399,10 @@ int main(int argc, char *argv[])
 	if (err != 0)
 		exit(EXIT_FAILURE);
 
-	daemon_handling();
+	if (run_as_daemon)
+		daemon_handling();
+	else
+		lock_file_handling();
 
 	err = init_sensor_hub(adapter, addr);
 	if (err < 0) {

@@ -107,11 +107,12 @@ static void
 __attribute__((noreturn)) usage(void)
 {
 	putchar('\n');
-	fprintf(stdout, "Usage: ./%s -[a:hi:t:]                            \n",
+	fprintf(stdout, "Usage: ./%s -[a:dhi:t:]                           \n",
 		__progname);
 	fprintf(stdout, "       -i /dev/i2c-X -> I2C adapter               \n");
 	fprintf(stdout, "       -a 22         -> LCD address (in hex)      \n");
 	fprintf(stdout, "       -t 2          -> LCD1602(:1)/LCD2004(:2)   \n");
+	fprintf(stdout, "       -d            -> run as daemon             \n");
 	fprintf(stdout, "       -h            -> show this help            \n");
 	putchar('\n');
 	fprintf(stdout, "Example(s): LCD at first adapter with address 0x22\n");
@@ -142,13 +143,8 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
-static void daemon_handling(void)
+static void lock_file_handling(void)
 {
-	if (become_daemon(__progname) < 0) {
-		eprintf("ERROR: can't become a daemon\n");
-		exit(EXIT_FAILURE);
-	}
-
 	int err = already_running(LOCKFILE);
 	if (err == 1) {
 		syslog(LOG_ERR, "i'm already running");
@@ -157,6 +153,16 @@ static void daemon_handling(void)
 		syslog(LOG_ERR, "can't setup lockfile");
 		exit(EXIT_FAILURE);
 	}
+}
+
+static void daemon_handling(void)
+{
+	if (become_daemon(__progname) < 0) {
+		eprintf("ERROR: can't become a daemon\n");
+		exit(EXIT_FAILURE);
+	}
+
+	lock_file_handling();
 }
 
 /*
@@ -645,15 +651,19 @@ int main(int argc, char *argv[])
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
 	int type = -1;
+	bool run_as_daemon = false;
 
 	int c;
-	while ((c = getopt(argc, argv, "a:hi:t:")) != -1) {
+	while ((c = getopt(argc, argv, "a:dhi:t:")) != -1) {
 		switch (c) {
 		case 'i':
 			adapter = optarg;
 			break;
 		case 'a':
 			addr = (unsigned char) strtoul(optarg, NULL, 16);
+			break;
+		case 'd':
+			run_as_daemon = true;
 			break;
 		case 't':
 			type = atoi(optarg);
@@ -681,7 +691,10 @@ int main(int argc, char *argv[])
 	if (err != 0)
 		exit(EXIT_FAILURE);
 
-	daemon_handling();
+	if (run_as_daemon)
+		daemon_handling();
+	else
+		lock_file_handling();
 
 	err = init_lcd(adapter, addr, type);
 	if (err < 0) {

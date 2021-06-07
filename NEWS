@@ -6,6 +6,9 @@
 2021-06-07 -> ## amtrack && repo stuff
               add some first code content for sqlite handling
 
+              ## lcd2004_i2c && sensor_pi stuff
+              add kdo argument to become a daemon
+
 2021-06-06 -> ## amtrack && repo stuff
               add first sqlite content
 
