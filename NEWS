@@ -9,6 +9,9 @@
               ## lcd2004_i2c && sensor_pi stuff
               add kdo argument to become a daemon
 
+              ## target stuff
+	      activate sensor_daemon and lcd_daemon via runit
+
 2021-06-06 -> ## amtrack && repo stuff
               add first sqlite content
 
