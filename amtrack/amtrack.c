@@ -184,24 +184,25 @@ static int init_database(void)
 	if (rc != SQLITE_OK)
 		goto error;
 
+#ifdef __DEBUG__
 	rc = sqlite3_prepare_v2(db, "SELECT SQLITE_VERSION()", -1, &res, 0);
 	if (rc != SQLITE_OK)
 		goto error;
 
 	rc = sqlite3_step(res);
-	if (rc == SQLITE_ROW) {
-		printf("%s\n", sqlite3_column_text(res, 0));
-	}
+	if (rc == SQLITE_ROW)
+		fprintf(stdout, "use SQLite version: %s\n",
+			sqlite3_column_text(res, 0));
 
 	sqlite3_finalize(res);
+#endif
 
 	return 0;
-
 error:
 	fprintf(stderr, "error in database handling: %s\n",
 		sqlite3_errmsg(db));
-	sqlite3_close(db);
 
+	sqlite3_close(db);
 	return 1;
 }
 
