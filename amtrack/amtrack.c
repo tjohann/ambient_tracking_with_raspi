@@ -112,13 +112,12 @@ static int init_lcd(int type)
 
 		memset(&req, 0, len);
 		req.line = 1;
-		strncpy(req.str, "12345678901234567", lcd_max_col);
-		//strncpy(req.str, "MY AMBIENT -", lcd_max_col);
+		strncpy(req.str, "MY AMBIENT", lcd_max_col);
 		LCD_WRITE();
 
 		memset(&req, 0, len);
 		req.line = 2;
-		strncpy(req.str, "      - TRACKER", lcd_max_col);
+		strncpy(req.str, "       - TRACKER", lcd_max_col);
 		LCD_WRITE();
 
 		break;
@@ -131,13 +130,12 @@ static int init_lcd(int type)
 
 		memset(&req, 0, len);
 		req.line = 2;
-		strncpy(req.str, "12345678901234567890", lcd_max_col);
-		//strncpy(req.str, "MY AMBIENT -", lcd_max_col);
+		strncpy(req.str, "MY AMBIENT", lcd_max_col);
 		LCD_WRITE();
 
 		memset(&req, 0, len);
 		req.line = 3;
-		strncpy(req.str, "         - TRACKER", lcd_max_col);
+		strncpy(req.str, "           - TRACKER", lcd_max_col);
 		LCD_WRITE();
 
 		break;
