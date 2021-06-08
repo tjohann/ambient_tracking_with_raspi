@@ -19,6 +19,7 @@
 
 #include <libhelper.h>
 #include <sqlite3.h>
+#include <time.h>
 
 /* the write to lcd_daemon fifo */
 static int lcd_fd = -1;
@@ -38,6 +39,9 @@ static char *values[VAL_MAX_LEN];
 
 /* the database */
 sqlite3 *db;
+
+#define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d);"
+#define SQL_INS_STR_LEN 100
 
 extern char *__progname;
 
@@ -318,6 +322,26 @@ void * ambient_handling(void *arg)
 	size_t len = sizeof(struct sensor_data);
 	memset(&data, 0, len);
 
+	time_t t;
+
+	/*
+	 * example string to put into the database:
+	 * "INSERT INTO AmbientValues VALUES(1623141708, 20, 21, 22, 123456, 12, 34);"
+	 *
+	 * format of database:
+	 * DATE INTEGER PRIMARY KEY
+	 * EXT_TEMP INTEGER
+	 * BARO_TEMP INTEGER
+	 * ONBOARD_TEMP INTEGER
+	 * PRESSURE INTEGER
+	 * BRIGHTNESS INTEGER
+	 * HUMINITY INTEGER
+	 *
+	 * the length of sql[] should be with 100 large enough
+	 */
+	char sql[SQL_INS_STR_LEN];
+	memset(&sql, 0, SQL_INS_STR_LEN);
+
 	int err = -1;
 	for (;;) {
 		err = read(sensor_fd, &data, len);
@@ -359,6 +383,19 @@ void * ambient_handling(void *arg)
 		snprintf(values[BODY_DETECT], lcd_max_col + 1,
 			"Body detect?: %s", data.body_detect ? "yes" : "no");
 
+		t = time(NULL);
+		snprintf(sql, SQL_INS_STR_LEN, SQL_INSERT_STRING,
+			t,
+			data.ext_temp,
+			data.baro_temp,
+			data.onboard_temp,
+			data.pressure,
+			data.brightness,
+			data.huminity);
+
+
+
+
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
 		printf("onboard temp: %d\n", data.onboard_temp);
@@ -375,8 +412,11 @@ void * ambient_handling(void *arg)
 		printf("%s\n", values[BRIGHTNESS]);
 		printf("%s\n", values[HUMINITY]);
 		printf("%s\n", values[BODY_DETECT]);
+
+		printf("%s\n", sql);
 #endif
 		memset(&data, 0, len);
+		memset(&sql, 0, SQL_INS_STR_LEN);
 	}
 
 	return NULL;

@@ -3,6 +3,12 @@
 #
 
 
+2021-06-08 -> ## database stuff
+              change format of database -> date is the PRIMARY KEY
+
+              ## amtrack
+              add first real measured data to the database
+
 2021-06-07 -> ## amtrack && repo stuff
               add some first code content for sqlite handling
               change init screen layout to default again
