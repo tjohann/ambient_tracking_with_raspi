@@ -322,6 +322,7 @@ void * ambient_handling(void *arg)
 	size_t len = sizeof(struct sensor_data);
 	memset(&data, 0, len);
 
+	char *err_msg = NULL;
 	time_t t;
 
 	/*
@@ -393,8 +394,13 @@ void * ambient_handling(void *arg)
 			data.brightness,
 			data.huminity);
 
+		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
+		if (err != SQLITE_OK ) {
+			fprintf(stderr, "SQL error: %s\n", err_msg);
+			sqlite3_free(err_msg);
 
-
+			continue;
+		}
 
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);

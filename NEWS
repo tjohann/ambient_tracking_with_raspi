@@ -3,6 +3,15 @@
 #
 
 
+2021-06-09 -> ## lcd2004_i2c && sensor_pi stuff
+              extend error reporting (see also TODO)
+
+              ## amtrack stuff
+	      add content to database
+
+	      ## target stuff
+	      regular void-linux updates
+
 2021-06-08 -> ## database stuff
               change format of database -> date is the PRIMARY KEY
 
