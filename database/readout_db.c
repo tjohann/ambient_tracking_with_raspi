@@ -57,7 +57,7 @@ static int init_database(void)
 {
 	sqlite3_stmt *res;
 
-	int rc = sqlite3_open(":rw:", &db);
+	int rc = sqlite3_open(AMBIENT_DATABASE, &db);
 	if (rc != SQLITE_OK)
 		goto error;
 
@@ -112,6 +112,6 @@ int main(int argc, char *argv[])
 	puts("applications is up and running");
 
 	sleep(60); 	/* dummy wait */
-	
+
 	return EXIT_SUCCESS;
 }

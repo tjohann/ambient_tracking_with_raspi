@@ -184,7 +184,7 @@ static int init_database(void)
 {
 	sqlite3_stmt *res;
 
-	int rc = sqlite3_open(":rw:", &db);
+	int rc = sqlite3_open(AMBIENT_DATABASE, &db);
 	if (rc != SQLITE_OK)
 		goto error;
 
