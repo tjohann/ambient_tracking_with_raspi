@@ -72,7 +72,7 @@
 #define INIT_LCD_DEVICE(adapter, addr) do {				\
 		lcd = init_i2c_device(adapter, addr);			\
 		if (lcd < 0) {						\
-			eprintf("ERROR: can't init LCD");		\
+			eprintf("ERROR: can't init LCD\n");		\
 			return -1; }					\
 	} while(0)
 
@@ -148,11 +148,11 @@ static void lock_file_handling(void)
 	int err = already_running(LOCKFILE);
 	if (err == 1) {
 		syslog(LOG_ERR, "i'm already running");
-		eprintf("i'm already running");
+		eprintf("i'm already running\n");
 		exit(EXIT_FAILURE);
 	} else if (err < 0) {
 		syslog(LOG_ERR, "can't setup lockfile");
-		eprintf("can't setup lockfile");
+		eprintf("can't setup lockfile\n");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -465,9 +465,9 @@ int lcd_write_line(struct lcd_request req)
 {
 
 #ifdef __DEBUG__
-	printf("value of req.line: %d", req.line);
-	printf("value of req.curs_pos: %d", req.cur_pos);
-	printf("value of req.str: %s", req.str);
+	printf("value of req.line: %d\n", req.line);
+	printf("value of req.curs_pos: %d\n", req.cur_pos);
+	printf("value of req.str: %s\n", req.str);
 	syslog(LOG_INFO, "value of req.line: %d", req.line);
 	syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
 	syslog(LOG_INFO, "value of req.str: %s", req.str);
@@ -509,9 +509,9 @@ int lcd_write_cmd(struct lcd_request req)
 	char cmd = -1 * req.line;
 
 #ifdef __DEBUG__
-	printf("value of req.line: %d", req.line);
-	printf("value of req.curs_pos: %d", req.cur_pos);
-	printf("value of req.str: %s", req.str);
+	printf("value of req.line: %d\n", req.line);
+	printf("value of req.curs_pos: %d\n", req.cur_pos);
+	printf("value of req.str: %s\n", req.str);
 	syslog(LOG_INFO, "value of req.line: %d", req.line);
 	syslog(LOG_INFO, "value of req.curs_pos: %d", req.cur_pos);
 	syslog(LOG_INFO, "value of req.str: %s", req.str);
@@ -529,7 +529,7 @@ int lcd_write_cmd(struct lcd_request req)
 	default:
 		syslog(LOG_ERR, "value of req.line is to large: %d",
 			req.line);
-		fprintf(stderr, "value of req.line is to large: %d",
+		fprintf(stderr, "value of req.line is to large: %d\n",
 			req.line);
 		return -1;
 	}
@@ -612,7 +612,7 @@ void * server_handling(void *arg)
 	read_fifo = create_read_fifo(DAEMON_FIFO);
 	if (read_fifo < 0) {
 		syslog(LOG_ERR, "can't setup read fifo");
-		eprintf("can't setup read fifo");
+		eprintf("can't setup read fifo\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -620,7 +620,7 @@ void * server_handling(void *arg)
 	int dummy_fd = open(DAEMON_FIFO, O_WRONLY);
 	if (dummy_fd < 0) {
 		syslog(LOG_ERR, "open in server_handling()");
-		eprintf("open in server_handling()");
+		eprintf("open in server_handling()\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -635,7 +635,7 @@ void * server_handling(void *arg)
 		if (read(read_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
-			eprintf("len of request not valid -> ignore it");
+			eprintf("len of request not valid -> ignore it\n");
 			continue;
  		}
 
@@ -643,14 +643,14 @@ void * server_handling(void *arg)
 			if (lcd_write_cmd(req) != 0) {
 				syslog(LOG_ERR,
 					"can't write line -> ignore it");
-				eprintf("can't write line -> ignore it");
+				eprintf("can't write line -> ignore it\n");
 				continue;
 			}
 		} else {
 			if (lcd_write_line(req) != 0) {
 				syslog(LOG_ERR,
 					"can't write cmd -> ignore it");
-				eprintf("can't write cmd -> ignore it");
+				eprintf("can't write cmd -> ignore it\n");
 				continue;
 			}
 		}
@@ -698,7 +698,7 @@ int main(int argc, char *argv[])
 	fprintf(stdout, "try to open %s@0x%x\n", adapter, (int) addr);
 
 	if (access(adapter, R_OK | W_OK) == -1 ) {
-		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
+		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER\n");
 		usage();
 	}
 
@@ -714,7 +714,7 @@ int main(int argc, char *argv[])
 	err = init_lcd(adapter, addr, type);
 	if (err < 0) {
 		syslog(LOG_ERR, "can't init LCD");
-		eprintf("can't init LCD");
+		eprintf("can't init LCD\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -722,11 +722,12 @@ int main(int argc, char *argv[])
 	err = pthread_create(&tid, NULL, server_handling, NULL);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
-		eprintf("can't create thread");
+		eprintf("can't create thread\n");
 		exit(EXIT_FAILURE);
 	}
 
 	syslog(LOG_INFO, "daemon is up and running");
+	printf("daemon is up and running\n");
 	(void) say_hello();
 
 	(void) pthread_join(tid, NULL);

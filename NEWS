@@ -3,6 +3,15 @@
 #
 
 
+2021-06-10 -> ## lcd2004_i2c && sensor_pi stuff
+              fix missing NEWLINES
+
+              ## database stuff
+              add skeleton for tool to readout the database content
+
+              ## readout_db
+              add skeleton
+
 2021-06-09 -> ## lcd2004_i2c && sensor_pi stuff
               extend error reporting (see also TODO)
 

@@ -25,3 +25,15 @@ Useful commands
 	.read ambient_data.sql
 	.tables
 	SELECT * FROM AmbientValues;  <- don`t forget the semicolon
+
+
+Readout database
+----------------
+
+Readout_db is a simple tool which prints the complete content of the database to stdout.
+
+	Usage: ./readout_db -[h]
+       -h            -> show this help
+
+	Example: readout all values of database
+        ./readout_db

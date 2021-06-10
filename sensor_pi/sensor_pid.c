@@ -98,11 +98,11 @@ static void lock_file_handling(void)
 	int err = already_running(LOCKFILE);
 	if (err == 1) {
 		syslog(LOG_ERR, "i'm already running");
-		eprintf("i'm already running");
+		eprintf("i'm already running\n");
 		exit(EXIT_FAILURE);
 	} else if (err < 0) {
 		syslog(LOG_ERR, "can't setup lockfile");
-		eprintf("can't setup lockfile");
+		eprintf("can't setup lockfile\n");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -123,7 +123,7 @@ static int init_server_fifo(void)
 	read_fifo = create_read_fifo(DAEMON_FIFO);
 	if (read_fifo < 0) {
 		syslog(LOG_ERR, "can't setup read fifo");
-		eprintf("can't setup read fifo");
+		eprintf("can't setup read fifo\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -131,7 +131,7 @@ static int init_server_fifo(void)
 	dummy_fd = open(DAEMON_FIFO, O_WRONLY);
 	if (dummy_fd < 0) {
 		syslog(LOG_ERR, "open in server_handling()");
-		eprintf("open in server_handling()");
+		eprintf("open in server_handling()\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -152,7 +152,7 @@ static int get_values(void)
 		buf[i] = i2c_smbus_read_byte_data(sensor, i);
 		if (buf[i] < 0) {
 			syslog(LOG_ERR, "can't read register value");
-			eprintf("can't read register value");
+			eprintf("can't read register value\n");
 			return -1;
 		}
 	}
@@ -160,12 +160,12 @@ static int get_values(void)
 	/* handle external temp sensor */
 	if (buf[STATUS_REG] & 0x01) {
 		syslog(LOG_ERR, "external temperature sensor overrange");
-		eprintf("external temperature sensor overrange");
+		eprintf("external temperature sensor overrange\n");
 		values[EXT_TEMP] = - 0xFF;
 		sensor_state |= STATE_EXT_TEMP;
 	} else if (buf[STATUS_REG] & 0x02) {
 		syslog(LOG_ERR, "no external temperature sensor");
-		eprintf("no external temperature sensor");
+		eprintf("no external temperature sensor\n");
 		values[EXT_TEMP] = - 0xFF;
 		sensor_state |= STATE_EXT_TEMP;
 	} else {
@@ -176,9 +176,9 @@ static int get_values(void)
 			buf[TEMP_REG]);
 		syslog(LOG_INFO, "current external sensor temperature: %d °C",
 			values[EXT_TEMP]);
-		printf("current external sensor temperature: %d °C",
+		printf("current external sensor temperature: %d °C\n",
 			buf[TEMP_REG]);
-		printf("current external sensor temperature: %d °C",
+		printf("current external sensor temperature: %d °C\n",
 			values[EXT_TEMP]);
 #endif
 	}
@@ -186,7 +186,7 @@ static int get_values(void)
 	/* handle onboard temp sensor */
 	if (buf[ON_BOARD_SENSOR_ERROR] != 0) {
 		syslog(LOG_ERR, "onboard temperature sensor out-of-date error");
-		eprintf("onboard temperature sensor out-of-date error");
+		eprintf("onboard temperature sensor out-of-date error\n");
 		values[ONBOARD_TEMP] = - 0xFF;
 		sensor_state |= STATE_ONBOARD_TEMP;
 	} else {
@@ -197,9 +197,9 @@ static int get_values(void)
 			buf[ON_BOARD_TEMP_REG]);
 		syslog(LOG_INFO, "current onboard sensor temperature: %d °C",
 			values[ONBOARD_TEMP]);
-		printf("current onboard sensor temperature: %d °C",
+		printf("current onboard sensor temperature: %d °C\n",
 			buf[ON_BOARD_TEMP_REG]);
-		printf("current onboard sensor temperature: %d °C",
+		printf("current onboard sensor temperature: %d °C\n",
 			values[ONBOARD_TEMP]);
 #endif
 	}
@@ -207,7 +207,7 @@ static int get_values(void)
 	/* handle onboard humidity sensor */
 	if (buf[ON_BOARD_SENSOR_ERROR] != 0) {
 		syslog(LOG_ERR, "onboard humidity sensor out-of-date error");
-		eprintf("onboard humidity sensor out-of-date error");
+		eprintf("onboard humidity sensor out-of-date error\n");
 		values[HUMINITY] = - 0xFF;
 		sensor_state |= STATE_HUMINITY;
 	} else {
@@ -218,9 +218,9 @@ static int get_values(void)
 			buf[ON_BOARD_HUMIDITY_REG]);
 		syslog(LOG_INFO, "current onboard sensor humidity: %d %%",
 			values[HUMINITY]);
-		printf("current onboard sensor humidity: %d %%",
+		printf("current onboard sensor humidity: %d %%\n",
 			buf[ON_BOARD_HUMIDITY_REG]);
-		printf("current onboard sensor humidity: %d %%",
+		printf("current onboard sensor humidity: %d %%\n",
 			values[HUMINITY]);
 #endif
 	}
@@ -228,12 +228,12 @@ static int get_values(void)
         /* handle brighness sensor */
 	if (buf[STATUS_REG] & 0x04) {
 		syslog(LOG_ERR, "onboard brightness sensor overrange");
-		eprintf("onboard brightness sensor overrange");
+		eprintf("onboard brightness sensor overrange\n");
 		values[BRIGHTNESS] = - 0xFF;
 		sensor_state |= STATE_BRIGHTNESS;
 	} else if (buf[STATUS_REG] & 0x08) {
 		syslog(LOG_ERR, "onboard brightness sensor failure");
-		eprintf("onboard brightness sensor failure");
+		eprintf("onboard brightness sensor failure\n");
 		values[BRIGHTNESS] = - 0xFF;
 		sensor_state |= STATE_BRIGHTNESS;
 	} else {
@@ -244,9 +244,9 @@ static int get_values(void)
 			((buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L]));
 		syslog(LOG_INFO, "current onboard sensor brightness: %d lux",
 			values[BRIGHTNESS]);
-		printf("current onboard sensor brightness: %d lux",
+		printf("current onboard sensor brightness: %d lux\n",
 			((buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L]));
-		printf("current onboard sensor brightness: %d lux",
+		printf("current onboard sensor brightness: %d lux\n",
 			values[BRIGHTNESS]);
 #endif
 
@@ -255,7 +255,7 @@ static int get_values(void)
 	/* handle barometer temp */
 	if (buf[BMP280_STATUS] != 0) {
 		syslog(LOG_ERR, "onboard barometer sensor error");
-		eprintf("onboard barometer sensor error");
+		eprintf("onboard barometer sensor error\n");
 		values[BARO_TEMP] = - 0xFF;
 		sensor_state |= STATE_BARO_TEMP;
 	} else {
@@ -266,9 +266,9 @@ static int get_values(void)
 			buf[BMP280_TEMP_REG]);
 		syslog(LOG_INFO, "current barometer sensor temperature: %d °C",
 			values[BARO_TEMP]);
-		printf("current barometer sensor temperature: %d °C",
+		printf("current barometer sensor temperature: %d °C\n",
 			buf[BMP280_TEMP_REG]);
-		printf("current barometer sensor temperature: %d °C",
+		printf("current barometer sensor temperature: %d °C\n",
 			values[BARO_TEMP]);
 #endif
 	}
@@ -276,7 +276,7 @@ static int get_values(void)
 	/* handle barometer pressure */
 	if (buf[BMP280_STATUS] != 0) {
 		syslog(LOG_ERR, "onboard barometer sensor error");
-		eprintf("onboard barometer sensor error");
+		eprintf("onboard barometer sensor error\n");
 		values[PRESSURE] = - 0xFF;
 		sensor_state |= STATE_PRESSURE;
 	} else {
@@ -291,11 +291,11 @@ static int get_values(void)
 				| buf[BMP280_PRESSURE_REG_H] << 16 ));
 		syslog(LOG_INFO, "current barometer sensor pressure: %d pascal",
 			values[PRESSURE]);
-		printf("current barometer sensor pressure: %d pascal",
+		printf("current barometer sensor pressure: %d pascal\n",
 			(buf[BMP280_PRESSURE_REG_L]
 				| buf[BMP280_PRESSURE_REG_M] << 8
 				| buf[BMP280_PRESSURE_REG_H] << 16 ));
-		printf("current barometer sensor pressure: %d pascal",
+		printf("current barometer sensor pressure: %d pascal\n",
 			values[PRESSURE]);
 #endif
 	}
@@ -327,7 +327,7 @@ int init_sensor_hub(char *adapter, unsigned char addr)
 {
 	sensor = init_i2c_device(adapter, addr);
 	if (sensor < 0) {
-		eprintf("ERROR: can't init Sensor-Hub");
+		eprintf("ERROR: can't init Sensor-Hub\n");
 		return -1;
 	}
 
@@ -341,7 +341,7 @@ void * read_sensor(void *arg)
 	int err = get_values();
 	if (err < 0) {
 		syslog(LOG_ERR, "can't read from sensor hub");
-		eprintf("can't read from sensor hub");
+		eprintf("can't read from sensor hub\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -349,7 +349,7 @@ void * read_sensor(void *arg)
 		err = get_values();
 		if (err < 0) {
 			syslog(LOG_ERR, "can't read from sensor hub");
-			eprintf("can't read from sensor hub");
+			eprintf("can't read from sensor hub\n");
 		}
 
 		sleep(60);
@@ -372,13 +372,13 @@ void * server_handling(void *arg)
 	snprintf(name_fifo, MAX_LEN_FIFO_NAME, SENSOR_CLIENT_FIFO, pid);
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "client fifo name %s", name_fifo);
-	printf("client fifo name %s", name_fifo);
+	printf("client fifo name %s\n", name_fifo);
 #endif
 
 	int fd = create_write_fifo(name_fifo);
 	if (fd < 0) {
 		syslog(LOG_ERR, "can't setup client fifo");
-		eprintf("can't setup client fifo");
+		eprintf("can't setup client fifo\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -454,14 +454,14 @@ int main(int argc, char *argv[])
 	err = init_sensor_hub(adapter, addr);
 	if (err < 0) {
 		syslog(LOG_ERR, "can't init sensor hub");
-		eprintf("can't init sensor hub");
+		eprintf("can't init sensor hub\n");
 		exit(EXIT_FAILURE);
 	}
 
 	err = init_server_fifo();
 	if (err < 0) {
 		syslog(LOG_ERR, "can't init server fifo");
-		eprintf("can't init server fifo");
+		eprintf("can't init server fifo\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -469,14 +469,14 @@ int main(int argc, char *argv[])
 	err = pthread_create(&tid, NULL, read_sensor, NULL);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
-		eprintf("can't create thread");
+		eprintf("can't create thread\n");
 		exit(EXIT_FAILURE);
 	}
 
 	err = pthread_detach(tid);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't detach thread -> ignore it");
-		eprintf("can't detach thread -> ignore it");
+		eprintf("can't detach thread -> ignore it\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -491,7 +491,7 @@ int main(int argc, char *argv[])
 		if (read(read_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
-			eprintf("len of request not valid -> ignore it");
+			eprintf("len of request not valid -> ignore it\n");
 			continue;
  		}
 
@@ -502,14 +502,14 @@ int main(int argc, char *argv[])
 		if (actual_num_threads > MAX_NUM_THREADS) {
 			syslog(LOG_ERR, "num threads > %d -> pls check",
 				actual_num_threads);
-			fprintf(stderr, "num threads > %d -> pls check",
+			fprintf(stderr, "num threads > %d -> pls check\n",
 				actual_num_threads);
 		}
 
 		err = pthread_create(&tid, NULL, server_handling, &req);
 		if (err != 0) {
 			syslog(LOG_ERR, "can't create thread");
-			eprintf("can't create thread");
+			eprintf("can't create thread\n");
 			continue;
 		}
 		actual_num_threads++;
@@ -522,7 +522,7 @@ int main(int argc, char *argv[])
 		err = pthread_detach(tid);
 		if (err != 0) {
 			syslog(LOG_ERR, "can't detach thread -> ignore it");
-			eprintf("can't detach thread -> ignore it");
+			eprintf("can't detach thread -> ignore it\n");
 		}
 
 		memset(&req, 0, len);
