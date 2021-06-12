@@ -358,27 +358,27 @@ void * ambient_handling(void *arg)
 
 		memset(values[EXT_TEMP], 0, lcd_max_col);
 		snprintf(values[EXT_TEMP], lcd_max_col + 1,
-			"Ext. Temp   : %d", data.ext_temp);
+			"Ext. Temp: %d°C", data.ext_temp);
 
 		memset(values[BARO_TEMP], 0, lcd_max_col);
 		snprintf(values[BARO_TEMP], lcd_max_col + 1,
-			"Baro Temp   : %d", data.baro_temp);
+			"Baro Temp: %d°C", data.baro_temp);
 
 		memset(values[ONBOARD_TEMP], 0, lcd_max_col);
 		snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-			"Onboard Temp: %d", data.onboard_temp);
+			"Onboard: %d°C", data.onboard_temp);
 
 		memset(values[PRESSURE], 0, lcd_max_col);
 		snprintf(values[PRESSURE], lcd_max_col + 1,
-			"Pressure    : %d", data.pressure);
+			"Pressure: %dPa", data.pressure);
 
 		memset(values[BRIGHTNESS], 0, lcd_max_col);
 		snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-			"Brightness  : %d", data.brightness);
+			"Brightness: %dLux", data.brightness);
 
 		memset(values[HUMINITY], 0, lcd_max_col);
 		snprintf(values[HUMINITY], lcd_max_col + 1,
-			"Huminity    : %d", data.huminity);
+			"Huminity: %d%%", data.huminity);
 
 		memset(values[BODY_DETECT], 0, lcd_max_col);
 		snprintf(values[BODY_DETECT], lcd_max_col + 1,
