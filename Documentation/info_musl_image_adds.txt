@@ -118,10 +118,11 @@ manpages-de
 man-pages-devel
 man-pages-posix
 sqlite-devel
+lxdm, xfce4, xorg and depencencies
 
 
 #
-# addtional installations via source
+# additional installations via source
 #
 libbaalue and baalued (see /usr/local/src)
 
