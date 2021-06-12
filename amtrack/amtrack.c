@@ -361,13 +361,13 @@ void * ambient_handling(void *arg)
 
 		if (lcd_type == LCD2004) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
-				"Ext. Temp: %d degC", data.ext_temp);
+				"Ext. Temp : %d degC", data.ext_temp);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
-				"Baro Temp: %d degC", data.baro_temp);
+				"Baro Temp : %d degC", data.baro_temp);
 
 			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-				"Onboard: %d degC", data.onboard_temp);
+				"Onboard T.: %d degC", data.onboard_temp);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
 				"Pressure: %d Pa", data.pressure);
