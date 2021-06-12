@@ -259,9 +259,9 @@ void * lcd2004_handling(void *arg)
 		/* first circle */
 		(void) lcd_clear();
 		(void) lcd_write_string(1, BARO_TEMP);
-		(void) lcd_write_string(2, PRESSURE);
 		(void) lcd_write_string(3, BRIGHTNESS);
 		(void) lcd_write_string(4, HUMINITY);
+		(void) lcd_write_string(2, PRESSURE);
 		sleep(10);
 
                 /* second circle */
@@ -370,13 +370,13 @@ void * ambient_handling(void *arg)
 				"Onboard T.: %d degC", data.onboard_temp);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
-				"Pressure:   %d Pa", data.pressure);
+				"Pressure : %d Pa", data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
 				"Brightness: %d Lux", data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
-				"Huminity:   %d%%", data.huminity);
+				"Huminity  : %d%%", data.huminity);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
 				"Body detect?: %s",
