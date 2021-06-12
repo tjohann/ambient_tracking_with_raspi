@@ -392,16 +392,16 @@ void * ambient_handling(void *arg)
 				"Onb. T.: %d degC", data.onboard_temp);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
-				"Press.: %d Pa", data.pressure);
+				"Pres.: %d Pa", data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-				"Bright.: %d Lux", data.brightness);
+				"Bright. : %d Lux", data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
 				"Huminity: %d%%", data.huminity);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
-				"Body det.?: %s",
+				"Body det. ? : %s",
 				data.body_detect ? "yes" : "no");
 		} else {
 			eprintf("LCD is not supported!\n");
