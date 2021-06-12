@@ -356,8 +356,6 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
-		memset(values[EXT_TEMP], 0, VAL_MAX_LEN * lcd_max_col);
-
 		if (lcd_type == LCD2004) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
 				"Ext. Temp: %d°C", data.ext_temp);
