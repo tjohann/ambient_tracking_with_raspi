@@ -356,33 +356,56 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
-		memset(values[EXT_TEMP], 0, lcd_max_col);
-		snprintf(values[EXT_TEMP], lcd_max_col + 1,
-			"Ext. Temp: %d°C", data.ext_temp);
+		memset(values[EXT_TEMP], 0, VAL_MAX_LEN * lcd_max_col);
 
-		memset(values[BARO_TEMP], 0, lcd_max_col);
-		snprintf(values[BARO_TEMP], lcd_max_col + 1,
-			"Baro Temp: %d°C", data.baro_temp);
+		if (lcd_type == LCD2004) {
+			snprintf(values[EXT_TEMP], lcd_max_col + 1,
+				"Ext. Temp: %d°C", data.ext_temp);
 
-		memset(values[ONBOARD_TEMP], 0, lcd_max_col);
-		snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-			"Onboard: %d°C", data.onboard_temp);
+			snprintf(values[BARO_TEMP], lcd_max_col + 1,
+				"Baro Temp: %d°C", data.baro_temp);
 
-		memset(values[PRESSURE], 0, lcd_max_col);
-		snprintf(values[PRESSURE], lcd_max_col + 1,
-			"Pressure: %dPa", data.pressure);
+			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
+				"Onboard: %d°C", data.onboard_temp);
 
-		memset(values[BRIGHTNESS], 0, lcd_max_col);
-		snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-			"Brightness: %dLux", data.brightness);
+			snprintf(values[PRESSURE], lcd_max_col + 1,
+				"Pressure: %dPa", data.pressure);
 
-		memset(values[HUMINITY], 0, lcd_max_col);
-		snprintf(values[HUMINITY], lcd_max_col + 1,
-			"Huminity: %d%%", data.huminity);
+			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
+				"Brightness: %dLux", data.brightness);
 
-		memset(values[BODY_DETECT], 0, lcd_max_col);
-		snprintf(values[BODY_DETECT], lcd_max_col + 1,
-			"Body detect?: %s", data.body_detect ? "yes" : "no");
+			snprintf(values[HUMINITY], lcd_max_col + 1,
+				"Huminity: %d%%", data.huminity);
+
+			snprintf(values[BODY_DETECT], lcd_max_col + 1,
+				"Body detect?: %s",
+				data.body_detect ? "yes" : "no");
+		} else if (lcd_type == LCD1602) {
+			snprintf(values[EXT_TEMP], lcd_max_col + 1,
+				"Ext. T.: %d degC", data.ext_temp);
+
+			snprintf(values[BARO_TEMP], lcd_max_col + 1,
+				"Baro T.: %d degC", data.baro_temp);
+
+			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
+				"Onb. T.: %d degC", data.onboard_temp);
+
+			snprintf(values[PRESSURE], lcd_max_col + 1,
+				"Press.: %d Pa", data.pressure);
+
+			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
+				"Bright.: %d Lux", data.brightness);
+
+			snprintf(values[HUMINITY], lcd_max_col + 1,
+				"Huminity: %d%%", data.huminity);
+
+			snprintf(values[BODY_DETECT], lcd_max_col + 1,
+				"Body det.?: %s",
+				data.body_detect ? "yes" : "no");
+		} else {
+			eprintf("LCD is not supported!\n");
+			continue;
+		}
 
 		t = time(NULL);
 		snprintf(sql, SQL_INS_STR_LEN, SQL_INSERT_STRING,
@@ -423,6 +446,9 @@ void * ambient_handling(void *arg)
 #endif
 		memset(&data, 0, len);
 		memset(&sql, 0, SQL_INS_STR_LEN);
+
+		for(int i = 0; i < VAL_MAX_LEN; i++)
+			memset(values[i], 0, lcd_max_col);
 	}
 
 	return NULL;
