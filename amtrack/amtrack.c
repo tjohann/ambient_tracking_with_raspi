@@ -361,19 +361,19 @@ void * ambient_handling(void *arg)
 
 		if (lcd_type == LCD2004) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
-				"Ext. Temp: %d°C", data.ext_temp);
+				"Ext. Temp: %d degC", data.ext_temp);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
-				"Baro Temp: %d°C", data.baro_temp);
+				"Baro Temp: %d degC", data.baro_temp);
 
 			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-				"Onboard: %d°C", data.onboard_temp);
+				"Onboard: %d degC", data.onboard_temp);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
-				"Pressure: %dPa", data.pressure);
+				"Pressure: %d Pa", data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-				"Brightness: %dLux", data.brightness);
+				"Brightness: %d Lux", data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
 				"Huminity: %d%%", data.huminity);
@@ -395,7 +395,7 @@ void * ambient_handling(void *arg)
 				"Pres.: %d Pa", data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-				"Bright. : %d Lux", data.brightness);
+				"Bright.: %d Lux", data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
 				"Huminity: %d%%", data.huminity);
