@@ -23,11 +23,10 @@ uninstall:
 
 deploy: $(PROG)
 	install $(PROG) /usr/bin/$(PROG)
-	(cp ambient_data.db /var/run/ambient_data.db)
 
 # database specific parts
 deploy_db:
-	(cp ambient_data.db /var/run/ambient_data.db)
+	(cp ambient_data.db /home/ambient/ambient_data.db)
 
 init_db:
 	(sqlite3 ambient_data.db < ambient_data.sql)

@@ -45,7 +45,7 @@
 #define MAX_LEN_FIFO_NAME 40
 #define SENSOR_CLIENT_FIFO "/var/run/sensor_client.%d"
 
-#define AMBIENT_DATABASE "/var/run/ambient_data.db"
+#define AMBIENT_DATABASE "/home/ambient/ambient_data.db"
 
 /* define bit/pin positions to be used */
 enum bit_pos_priv {

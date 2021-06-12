@@ -7,11 +7,17 @@
 2021-06-12 -> ## target stuff
 	      regular void-linux updates
 	      add xfce and xorg to the image (!)
-	      add midorit to image
+	      add midori to image
+	      add binfmt-support, dcron and activate via ruint
+	      add cronutils and gkt2-engines
+	      add user ambient for database location (and more)
 
 	      ## repo stuff
 	      some documentation adds
 	      start preparing PI-ENV_V0.0.2
+
+	      ## libhelper stuff
+	      change location of ambient_data.db
 
 2021-06-10 -> ## lcd2004_i2c && sensor_pi stuff
               fix missing NEWLINES

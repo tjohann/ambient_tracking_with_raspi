@@ -118,8 +118,10 @@ manpages-de
 man-pages-devel
 man-pages-posix
 sqlite-devel
-lxdm, midori, xfce4, xorg (and depencencies)
+binfmt-support
 
+lxdm, midori, gkt2-engines, xfce4, xorg (and depencencies)
+cronutils, dcron
 
 #
 # additional installations via source
@@ -179,3 +181,14 @@ LC_COLLATE=C
 # ---- visudo
 ## Uncomment to allow members of group wheel to execute any command
 %wheel ALL=(ALL) ALL
+
+#
+# ambient specific stuff
+#
+
+# ---- add user ambient
+useradd ambient --system
+
+# ---- ambient_tracking_with_raspi repo (see README.md's for details)
+clone, build and deploy sensor/lcd_daemon, ambient tracker
+install database to user ambient
