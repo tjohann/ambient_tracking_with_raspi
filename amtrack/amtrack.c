@@ -356,6 +356,9 @@ void * ambient_handling(void *arg)
 			continue;
  		}
 
+		for(int i = 0; i < VAL_MAX_LEN; i++)
+			memset(values[i], 0, lcd_max_col);
+
 		if (lcd_type == LCD2004) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
 				"Ext. Temp: %d°C", data.ext_temp);
@@ -444,9 +447,6 @@ void * ambient_handling(void *arg)
 #endif
 		memset(&data, 0, len);
 		memset(&sql, 0, SQL_INS_STR_LEN);
-
-		for(int i = 0; i < VAL_MAX_LEN; i++)
-			memset(values[i], 0, lcd_max_col);
 	}
 
 	return NULL;
