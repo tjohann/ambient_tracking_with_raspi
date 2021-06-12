@@ -4,8 +4,8 @@ The skeleton database
 This modul contains a skeleton database for installation on the device.
 
 
-Init database
--------------
+Init/install database
+----------------------
 
 To do a init of the database, use
 
@@ -14,6 +14,10 @@ To do a init of the database, use
 Note: this creates a new database with on init value for testing. If you don't want that, use
 
 	make init_clean_db
+
+To copy the datebase, use
+
+	make deploy_db
 
 
 Useful commands

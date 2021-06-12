@@ -55,3 +55,29 @@ Build a raspi kernel
 --------------------
 
 https://www.raspberrypi.org/documentation/linux/kernel/building.md
+
+
+SQLite usage
+------------
+
+https://zetcode.com/db/sqlitec/
+
+
+Poweroff button
+---------------
+
+To shutdown the device via a button (pinout connector 1 and 40), add
+
+	dtoverlay=gpio-shutdown,gpio-pin=21
+
+to config.txt. I use the "other" end of the PIN header.
+
+Connect a 10k pullup and a 1k resistor in line to the port:
+
+![Alt text](pics/connect_poweroff_button.png?raw=true "schematic poweroff button")
+
+![Alt text](pics/GPIO-Pinout-Diagram.png?raw=true "GPIO pinout")
+
+Sources of pics above: https://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/ and https://www.raspberrypi.org/documentation/usage/gpio/
+
+For more info see also: https://www.raspberrypi.org/forums/viewtopic.php?t=217442#p1565264 and https://www.embeddedpi.com/documentation/gpio/mypi-industrial-raspberry-pi-psu-shutdown-gpio-line

@@ -251,4 +251,16 @@ Common parts like become_damon() are located in a static library, see [Helper li
 
 The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md).
 
-For further checks, a sqlite database is on the device (/var/run/ambient_data.db). It stores the values for future use.
+For further checks, a sqlite database is on the device (/home/ambient/ambient_data.db). It stores the values for future use.
+
+
+The database
+------------
+
+See [the database](database/README.md).
+
+
+The http server
+---------------
+
+The local webserver provides a simple webpage which shows the content of the database with an update rate of ~10 minutes.
