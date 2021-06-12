@@ -118,7 +118,7 @@ manpages-de
 man-pages-devel
 man-pages-posix
 sqlite-devel
-lxdm, xfce4, xorg and depencencies
+lxdm, midori, xfce4, xorg (and depencencies)
 
 
 #
