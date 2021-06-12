@@ -11,6 +11,7 @@
 	      add binfmt-support, dcron and activate via ruint
 	      add cronutils and gkt2-engines
 	      add user ambient for database location (and more)
+	      add lighttp and php-cgi stuff
 
 	      ## repo stuff
 	      some documentation adds

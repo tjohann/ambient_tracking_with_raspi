@@ -119,9 +119,11 @@ man-pages-devel
 man-pages-posix
 sqlite-devel
 binfmt-support
-
+# X11 related
 lxdm, midori, gkt2-engines, xfce4, xorg (and depencencies)
 cronutils, dcron
+# webserver for ambient data to show
+php-cgi, php-sqlite, lighttpd
 
 #
 # additional installations via source
@@ -192,3 +194,6 @@ useradd ambient --system
 # ---- ambient_tracking_with_raspi repo (see README.md's for details)
 clone, build and deploy sensor/lcd_daemon, ambient tracker
 install database to user ambient
+
+# ---- activate lighttp
+ln -s /etc/sv/lighttp /var/service/
