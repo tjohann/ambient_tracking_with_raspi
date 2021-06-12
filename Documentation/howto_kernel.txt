@@ -5,7 +5,7 @@
 
 Author: Thorsten Johannvorderbrueggen
 Email:  thorsten.johannvorderbrueggen@t-online.de
-Date:   28.05.2021/23.04.2021
+Date:   12.06.2021/23.04.2021
 
 Content:
 
@@ -103,7 +103,7 @@ Install modules
 ---------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.10.39 modules_install
+KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.10.42 modules_install
 
 
 Deploy SD-Card
@@ -132,15 +132,17 @@ Copy modules
 
 # Note: maybe your need to remove the old one
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: sudo rsync -avz ../modules_5.10.39/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
+KDO: sudo rsync -avz ../modules_5.10.42/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
 
 
 Copy cleaned source to sd card
 ------------------------------
 
 # Note: dont forget to make ARCH=arm clean
+# Note: the linux source for /lib/modules/KERNEL_VER is now locate in /home/linux and not
+#       in /usr/src/linux
 DIR: $AMBIENT_REPO/kernel
-KDO: sudo rsync -avz --delete linux /mnt/raspi/raspi_rootfs/usr/src/.
+KDO: sudo rsync -avz --delete linux /mnt/raspi/raspi_home/linux/.
 
 
 Finalize
@@ -165,7 +167,7 @@ KDO: make scripts
 Prepare modules to link
 -----------------------
 
-DIR: /lib/modules/5.10.39
+DIR: /lib/modules/5.10.42
 KDO: rm build
 KDO: rm source
 KDO: ln -s /usr/src/linux source

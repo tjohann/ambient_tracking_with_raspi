@@ -35,11 +35,13 @@ My configuration (Raspi2):
 	devnode -> /dev/i2c-1
 	address -> 0x17
 
-The different registers:
 
-	t.b.d.
+ambient tracker
+---------------
 
-The status register:
+The ambient tracker tool -> amtrack.
 
-	t.b.d.
+My configuration (Raspi2):
+
+	lcd -> LCD2004
 

@@ -12,6 +12,9 @@
 	      add cronutils and gkt2-engines
 	      add user ambient for database location (and more)
 	      add lighttp and php-cgi stuff
+	      update kernel to 5.10.42
+	      let all runit log use group ambient instead of users
+	      add user baalue to group ambient
 
 	      ## repo stuff
 	      some documentation adds

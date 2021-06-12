@@ -5,7 +5,7 @@
 
 Author: Thorsten Johannvorderbrueggen
 Email:  thorsten.johannvorderbrueggen@t-online.de
-Date:   28.05.2021/23.04.2021
+Date:   12.06.2021/23.04.2021
 
 Content:
 
@@ -23,6 +23,7 @@ Configure/build/install kernel
 ==============================
 
 This is a summary needed to build and install a kernel nativ with the help of my baalue cluster (the raspi act as baalue_master node).
+Note: the linux source for /lib/modules/KERNEL_VER is now locate in /home/linux
 Note: the cluster node images must be the musl version!
 
 

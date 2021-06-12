@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/amtrack -t 2 2>&1

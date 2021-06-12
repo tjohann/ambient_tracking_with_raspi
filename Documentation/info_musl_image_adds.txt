@@ -191,6 +191,9 @@ LC_COLLATE=C
 # ---- add user ambient
 useradd ambient --system
 
+# --- add baalue to group ambient
+usermod -aG ambient baalue
+
 # ---- ambient_tracking_with_raspi repo (see README.md's for details)
 clone, build and deploy sensor/lcd_daemon, ambient tracker
 install database to user ambient
