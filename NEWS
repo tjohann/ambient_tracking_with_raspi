@@ -9,6 +9,9 @@
               ## libhelper && amtrack stuff
 	      add correction values for the measured temperatures
 
+	      ## sensor_pi stuff
+	      add missing NEWLINE
+
 2021-06-12 -> ## target stuff
 	      regular void-linux updates
 	      add xfce and xorg to the image (!)

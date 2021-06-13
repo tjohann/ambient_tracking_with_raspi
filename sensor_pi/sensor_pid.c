@@ -317,7 +317,7 @@ static int get_values(void)
 
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "the actual sensor state: 0x%x ", sensor_state);
-	printf("the actual sensor state: 0x%x ", sensor_state);
+	printf("the actual sensor state: 0x%x \n", sensor_state);
 #endif
 
 	return 0;
