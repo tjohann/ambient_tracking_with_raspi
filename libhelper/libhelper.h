@@ -109,6 +109,11 @@ struct lcd_request {
 /* the minum update time for sensor pi values */
 #define SENSOR_UPDATE_TIME 60
 
+/* temperature correction values */
+#define CORRECT_EXT -1
+#define CORRECT_BARO -7
+#define CORRECT_ONBOARD -6
+
 /* sensor-pi specific defines */
 struct sensor_data {
 	int ext_temp;

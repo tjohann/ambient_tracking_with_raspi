@@ -6,6 +6,9 @@
 2021-06-13 -> ## repo stuff
               a lot of documentation adds
 
+              ## libhelper && amtrack stuff
+	      add correction values for the measured temperatures
+
 2021-06-12 -> ## target stuff
 	      regular void-linux updates
 	      add xfce and xorg to the image (!)

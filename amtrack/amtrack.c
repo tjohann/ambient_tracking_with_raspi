@@ -37,6 +37,12 @@ static int sensor_fd = -1;
 
 static char *values[VAL_MAX_LEN];
 
+/* temperature correction values */
+static int correct_ext = CORRECT_EXT;
+static int correct_baro = CORRECT_BARO;
+static int correct_onboard = CORRECT_ONBOARD;
+
+
 /* the database */
 sqlite3 *db;
 
@@ -361,44 +367,56 @@ void * ambient_handling(void *arg)
 
 		if (lcd_type == LCD2004) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
-				"Ext. Temp : %d degC", data.ext_temp);
+				"Ext. Temp : %d degC",
+				data.ext_temp + correct_ext);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
-				"Baro Temp : %d degC", data.baro_temp);
+				"Baro Temp : %d degC",
+				data.baro_temp + correct_baro);
 
 			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-				"Onboard T.: %d degC", data.onboard_temp);
+				"Onboard T.: %d degC",
+				data.onboard_temp + correct_onboard);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
-				"Pressure : %d Pa", data.pressure);
+				"Pressure : %d Pa",
+				data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-				"Brightness: %d Lux", data.brightness);
+				"Brightness: %d Lux",
+				data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
-				"Huminity  : %d%%", data.huminity);
+				"Huminity  : %d%%",
+				data.huminity);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
 				"Body detect?: %s",
 				data.body_detect ? "yes" : "no");
 		} else if (lcd_type == LCD1602) {
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
-				"Ext. T.: %d degC", data.ext_temp);
+				"Ext. T.: %d degC",
+				data.ext_temp + correct_ext);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
-				"Baro T.: %d degC", data.baro_temp);
+				"Baro T.: %d degC",
+				data.baro_temp + correct_baro);
 
 			snprintf(values[ONBOARD_TEMP], lcd_max_col + 1,
-				"Onb. T.: %d degC", data.onboard_temp);
+				"Onb. T.: %d degC",
+				data.onboard_temp + correct_onboard);
 
 			snprintf(values[PRESSURE], lcd_max_col + 1,
-				"Pres.: %d Pa", data.pressure);
+				"Pres.: %d Pa",
+				data.pressure);
 
 			snprintf(values[BRIGHTNESS], lcd_max_col + 1,
-				"Bright.: %d Lux", data.brightness);
+				"Bright.: %d Lux",
+				data.brightness);
 
 			snprintf(values[HUMINITY], lcd_max_col + 1,
-				"Huminity: %d%%", data.huminity);
+				"Huminity: %d%%",
+				data.huminity);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
 				"Body det. ? : %s",
