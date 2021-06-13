@@ -5,6 +5,7 @@
 
 2021-06-13 -> ## repo stuff
               a lot of documentation adds
+	      add gnumeric sheet of measured temp values
 
               ## libhelper && amtrack stuff
 	      add correction values for the measured temperatures
