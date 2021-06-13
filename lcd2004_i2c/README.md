@@ -36,7 +36,7 @@ Display
 
 I use one of the very common LCD2004 displays, connected to the raspi via I2C modul (see http://wiki.sunfounder.cc/index.php?title=I2C_LCD2004 as an example).
 
-![Alt text](../pics/development_environment_02.jpg?raw=true "LCD2004 and LCD1602 connected")
+![Alt text](../pics/development_environment.jpg?raw=true "LCD2004 and LCD1602 connected")
 
 
 Start and usage
@@ -59,9 +59,3 @@ or
 ```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)
-
-
-Configuraion
-------------
-
-t.b.d.

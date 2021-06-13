@@ -17,6 +17,9 @@ Display
 
 https://tutorials-raspberrypi.de/hd44780-lcd-display-per-i2c-mit-dem-raspberry-pi-ansteuern
 https://github.com/tjohann/mydriver/tree/master/userspace_examples/pcf8574_lcd1602
+https://cdn-shop.adafruit.com/datasheets/HD44780.pdf
+https://de.wikipedia.org/wiki/HD44780
+
 
 
 DockerPi Sensor Hub
@@ -74,10 +77,8 @@ to config.txt. I use the "other" end of the PIN header.
 
 Connect a 10k pullup and a 1k resistor in line to the port:
 
-![Alt text](pics/connect_poweroff_button.png?raw=true "schematic poweroff button")
+![Alt text](../pics/connect_poweroff_button.png?raw=true "schematic poweroff button")
 
-![Alt text](pics/GPIO-Pinout-Diagram.png?raw=true "GPIO pinout")
+![Alt text](../pics/GPIO-Pinout-Diagram.png?raw=true "GPIO pinout")
 
-Sources of pics above: https://www.cl.cam.ac.uk/projects/raspberrypi/tutorials/robot/buttons_and_switches/ and https://www.raspberrypi.org/documentation/usage/gpio/
-
-For more info see also: https://www.raspberrypi.org/forums/viewtopic.php?t=217442#p1565264 and https://www.embeddedpi.com/documentation/gpio/mypi-industrial-raspberry-pi-psu-shutdown-gpio-line
+Sources of the Rasp-GPIO-Pinout-Diagram: https://www.raspberrypi.org/documentation/usage/gpio/

@@ -51,9 +51,3 @@ Example:
 ```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)
-
-
-Configuraion
-------------
-
-t.b.d.

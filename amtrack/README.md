@@ -47,10 +47,4 @@ Example: LCD size 20x4
 Database
 --------
 
-For further checks, a sqlite database is on the device (/var/run/ambient_data.db). It stores the values for future use.
-
-
-Configuraion
-------------
-
-t.b.d.
+For further checks, a sqlite database is on the device (/home/ambiet/ambient_data.db). It stores the values for future use.

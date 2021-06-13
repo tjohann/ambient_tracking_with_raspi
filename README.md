@@ -133,9 +133,10 @@ Some technial data:
 
 My development environment:
 
-![Alt text](pics/development_environment_01.jpg?raw=true "With GPIO")
-![Alt text](pics/development_environment_02.jpg?raw=true "With 2 LCD's")
-![Alt text](pics/development_environment_03.jpg?raw=true "I2C connection")
+![Alt text](pics/development_environment.jpg?raw=true "Development environment with both supported LCD's")
+![Alt text](pics/detailed_view_baseboard.jpg?raw=true "Detailed view of the baseboard")
+![Alt text](pics/ambient_tracker_final.jpg?raw=true "Final version of the Ambient-Tracker")
+![Alt text](pics/ambient_tracker_final_side_view.jpg?raw=true "Side view of the final version of the Ambient-Tracker")
 
 
 Schematics
@@ -251,16 +252,18 @@ Common parts like become_damon() are located in a static library, see [Helper li
 
 The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md).
 
-For further checks, a sqlite database is on the device (/home/ambient/ambient_data.db). It stores the values for future use.
+For further usage, a sqlite database is on the device (/home/ambient/ambient_data.db). It stores the values with the UNIX timestamp as primary key.
 
 
 The database
 ------------
 
-See [the database](database/README.md).
+For more details see [the database](database/README.md).
 
 
 The http server
 ---------------
+
+Note: not really working yet
 
 The local webserver provides a simple webpage which shows the content of the database with an update rate of ~10 minutes.
