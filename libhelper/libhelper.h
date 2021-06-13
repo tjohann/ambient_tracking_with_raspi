@@ -111,8 +111,8 @@ struct lcd_request {
 
 /* temperature correction values */
 #define CORRECT_EXT -2
-#define CORRECT_BARO -8
-#define CORRECT_ONBOARD -7
+#define CORRECT_BARO -9
+#define CORRECT_ONBOARD -8
 
 /* sensor-pi specific defines */
 struct sensor_data {
