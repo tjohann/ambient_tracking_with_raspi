@@ -3,6 +3,14 @@
 #
 
 
+2021-06-14 -> ## repo stuff
+              add some more documentation stuff
+
+              ## target stuff
+	      add BMP180 HW module and activate it
+	      add bmp280, bmp280_i2c kernel modules to modprobe.d (i2c.conf)
+
+
 2021-06-13 -> ## repo stuff
               a lot of documentation adds
 	      add gnumeric sheet of measured temp values

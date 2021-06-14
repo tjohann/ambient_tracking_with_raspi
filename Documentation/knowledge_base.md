@@ -69,11 +69,6 @@ https://zetcode.com/db/sqlitec/
 Poweroff button
 ---------------
 
-To shutdown the device via a button (pinout connector 1 and 40), add
-
-	dtoverlay=gpio-shutdown,gpio-pin=21
-
-to config.txt. I use the "other" end of the PIN header.
 
 Connect a 10k pullup and a 1k resistor in line to the port:
 
@@ -82,3 +77,61 @@ Connect a 10k pullup and a 1k resistor in line to the port:
 ![Alt text](../pics/GPIO-Pinout-Diagram.png?raw=true "GPIO pinout")
 
 Sources of the Rasp-GPIO-Pinout-Diagram: https://www.raspberrypi.org/documentation/usage/gpio/
+
+
+CPU temperature
+---------------
+
+Relevant folder:
+
+	/sys/class/thermal/thermal_zone0
+
+Results@Raspi2:
+
+	baalue@pi-env:/sys/class/thermal/thermal_zone0$ cat type
+	cpu-thermal
+
+	baalue@pi-env:/sys/class/thermal/thermal_zone0$ cat temp
+	33090
+
+Possible script:
+
+	paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/'
+
+Results@Raspi2:
+
+	baalue@pi-env:/sys/class/thermal/thermal_zone0$ paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/'
+	cpu-thermal  33.6°C
+
+
+For more informations see https://www.cyberciti.biz/faq/linux-find-out-raspberry-pi-gpu-and-arm-cpu-temperature-command/
+
+	cpu=$(</sys/class/thermal/thermal_zone0/temp)
+	echo "$((cpu/1000))°C"
+
+
+BMP180 module
+-------------
+
+For valid temperature i add a BMP180 module (for example: )
+
+	root@pi-env:iio:device0# pwd
+	/sys/bus/iio/devices/iio:device0
+	root@pi-env:iio:device0# tree .
+	.
+	├── dev
+	├── in_pressure_input
+	├── in_pressure_oversampling_ratio
+	├── in_temp_input
+	├── in_temp_oversampling_ratio
+	├── name
+	├── power
+	│   ├── autosuspend_delay_ms
+	│   ├── control
+	│   ├── runtime_active_time
+	│   ├── runtime_status
+	│   └── runtime_suspended_time
+	├── subsystem -> ../../../../../../../bus/iio
+	└── uevent
+
+	2 directories, 12 files

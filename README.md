@@ -236,7 +236,9 @@ In folder ./etc you find the runit service definition. Note, that you (normaly) 
 DockerPi Sensor Hub
 -------------------
 
-I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU could have an effect on the measured temperatur. One way around is to make shure, that the ecu consumes as less power as possible.
+I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU has an effect on the measured temperatur. One way around is to make shure, that the ecu consumes as less power as possible. Actual measurements show, that all temperature values on the board are not usable (see ./Documentation/temperature_correction.pdf). Another efect with the external temperature module is, that the surface is reflecting. So when it is located outside and the sun shines on it, the measured results are not the air temperature.
+
+Result: I have some correction values used in amtrack (and in the database). Also i use the external temperature sensor as the only temperature sensor and ignore the others. In addition i add the CPU temperature to the database, so an correction is possible.
 
 
 Display
