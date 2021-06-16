@@ -3,6 +3,10 @@
 #
 
 
+2021-06-16 -> ## repo stuff
+              add kernel howto for raspi3/4 (64Bit)
+	      add default kernel configs for raspi3/4
+
 2021-06-14 -> ## repo stuff
               add some more documentation stuff
 
