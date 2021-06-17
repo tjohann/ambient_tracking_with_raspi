@@ -1,7 +1,7 @@
-Sensor handler (Sensor-Pi and BMP180)
-=====================================
+Poweroff handler
+================
 
-This is all content around the sensor handler.
+This is all content around the poweroff handling via switch and LED control indication.
 
 [Background infos](../Documentation/knowledge_base.md).
 
@@ -28,26 +28,30 @@ If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with
 Requirement
 -----------
 
-The i2c-tools and i2c-tools-devel are needed. As an indirect requirement you need sqlite to build.
+t.b.d.
 
 
-DockerPi-Shield
----------------
+schematic
+---------
 
-I use one of this DockerPi Shield: https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106
+The switch and the LED are connected to:
+
+	switch -> GPIO26 (P1-37)
+	led -> GPIO19 (P1-35)
+
+See:
+![Alt text](../schematics/shutdown.jpg?raw=true "Schematic for shutdown and LED control indication")
 
 
 Start and usage
 ---------------
 
 ```
-Usage: ./sensor_pid -[hi:a:]
-       -i /dev/i2c-X -> I2C adapter
-       -a 17         -> I2C address (in hex)
+Usage: ./poweroff_d -[h]
        -h            -> show this help
 
 Example:
-        ./sensor_pid -i /dev/i2c-1 -a 17
+        ./poweroff_d
 ```
 
 see also ./run_daemon.sh and [runit service descriptions](../etc/README.md)

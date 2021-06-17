@@ -3,7 +3,7 @@
 #
 
 MODULES = pics configs scripts bin Documentation raspi2 schematics etc database
-MODULES_BUILD = libhelper lcd2004_i2c sensor_pi amtrack database
+MODULES_BUILD = libhelper lcd2004_i2c sensor_pi amtrack database poweroff_handler
 MODULES_EXTRA = kernel external
 
 all::

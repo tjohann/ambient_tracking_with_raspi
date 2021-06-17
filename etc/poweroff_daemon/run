@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/bin/poweroff_daemon 2>&1

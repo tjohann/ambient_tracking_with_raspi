@@ -45,3 +45,13 @@ My configuration (Raspi2):
 
 	lcd -> LCD2004
 
+
+poweroff daemon
+---------------
+
+The poweroff daemon to make shutdown easy.
+
+My configuration (Raspi2):
+
+	switch -> GPIO26 (P1-37)
+	led -> GPIO19 (P1-35)
