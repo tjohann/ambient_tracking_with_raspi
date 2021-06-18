@@ -48,7 +48,7 @@
 #define AMBIENT_DATABASE "/home/ambient/ambient_data.db"
 
 /* define bit/pin positions to be used */
-enum bit_pos_priv {
+ enum bit_pos_priv {
 	BIT0 = 1 << 0,
 	BIT1 = 1 << 1,
 	BIT2 = 1 << 2,
@@ -131,6 +131,12 @@ struct sensor_fifo_req {
 	unsigned char interval; /* multiple of SENSOR_UPDATE_TIME */
 };
 
+/* the gpio pins for poweroff_handler */
+#define POWEROFF_BUTTON  26  /* pin 37 */
+#define POWER_LED        19  /* pin 35 */
+#define GPIO_OUT          1
+#define GPIO_IN           0
+
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
 
@@ -149,5 +155,8 @@ int init_i2c_device(char *adapter, unsigned char addr);
 int create_read_fifo(char *name);
 int create_write_fifo(char *name);
 void clr_flag(int fd, int flags);
+int gpio_export(int pin);
+int gpio_unexport(int pin);
+int gpio_set_direction(int pin, unsigned char dir);
 
 #endif

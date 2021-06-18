@@ -21,7 +21,6 @@
 
 extern char *__progname;
 
-
 static void
 __attribute__((noreturn)) usage(void)
 {
@@ -39,7 +38,28 @@ __attribute__((noreturn)) usage(void)
 
 static void cleanup(void)
 {
-	syslog(LOG_INFO, "daemon is down -> bye");
+	(void) gpio_unexport(POWEROFF_BUTTON);
+	(void) gpio_unexport(POWER_LED);
+
+	puts("daemon is down -> bye");
+}
+
+
+static void init_pins(void)
+{
+	if (gpio_export(POWEROFF_BUTTON ) < 0) {
+		eprintf("can't export PIN %d\n", POWEROFF_BUTTON);
+		exit(EXIT_FAILURE);
+	}
+
+	if (gpio_export(POWER_LED ) < 0) {
+		eprintf("can't export PIN %d\n", POWER_LED);
+		exit(EXIT_FAILURE);
+	}
+
+
+
+
 }
 
 
@@ -60,6 +80,8 @@ int main(int argc, char *argv[])
 	int err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
+
+	init_pins();
 
 	/*
 	  pthread_t tid;

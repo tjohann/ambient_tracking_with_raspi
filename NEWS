@@ -3,9 +3,20 @@
 #
 
 
+2021-06-18 -> ## code stuff
+              remove wrong NEWLINE to all perror calls in all files
+
+	      ## libhelper stuff
+	      add functions to handle GPIO via sysfs
+
+	      ## poweroff_handler stuff
+	      add first content to handle the poweroff button
+
+              ## repo stuff
+              update raspi4 kernel to 5.10.44
+
 2021-06-17 -> ## repo stuff
               add motd files for different combinations
-
 
 2021-06-16 -> ## repo stuff
               add kernel howto for raspi3/4 (64Bit)
@@ -17,7 +28,6 @@
               ## target stuff
 	      add BMP180 HW module and activate it
 	      add bmp280, bmp280_i2c kernel modules to modprobe.d (i2c.conf)
-
 
 2021-06-13 -> ## repo stuff
               a lot of documentation adds

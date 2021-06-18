@@ -23,5 +23,10 @@
 #define LIBHELPER_EXPORT __attribute__ ((visibility ("default")))
 #define LIBHELPER_LOCAL __attribute__ ((visibility ("hidden")))
 
+#define DIR_EXPORT true
+#define DIR_UNEXPORT false
+
+#define GPIO_EXPORT "/sys/class/gpio/export"
+#define GPIO_UNEXPORT "/sys/class/gpio/unexport"
 
 #endif

@@ -273,3 +273,46 @@ LIBHELPER_EXPORT void clr_flag(int fd, int flags)
 	if (fcntl(fd, F_SETFL, val) < 0)
 		perror("fcntl in clr_flag() -> ignore error!");
 }
+
+LIBHELPER_LOCAL int _gpio_export(int pin, bool dir)
+{
+#define MAX_LEN 3
+	char str[MAX_LEN];
+	int fd = -1;
+
+	if (dir)
+		fd = open(GPIO_EXPORT, O_WRONLY);
+	else
+		fd = open(GPIO_UNEXPORT, O_WRONLY);
+	if (fd < 0)
+		goto error;
+
+	ssize_t n = snprintf(str, MAX_LEN, "%d", pin);
+	if (write(fd, str, n) != n)
+		goto error;
+
+	close(fd);
+
+	return 0;
+error:
+	perror("an error occured in gpio_un/export()");
+	close(fd);
+
+	return -1;
+}
+
+LIBHELPER_EXPORT int gpio_export(int pin)
+{
+	return _gpio_export(pin, DIR_EXPORT);
+}
+
+LIBHELPER_EXPORT int gpio_unexport(int pin)
+{
+	return _gpio_export(pin, DIR_UNEXPORT);
+}
+
+LIBHELPER_EXPORT int gpio_set_direction(int pin, unsigned char dir)
+{
+
+	return 0;
+}

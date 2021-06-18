@@ -698,7 +698,7 @@ int main(int argc, char *argv[])
 	fprintf(stdout, "try to open %s@0x%x\n", adapter, (int) addr);
 
 	if (access(adapter, R_OK | W_OK) == -1 ) {
-		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER\n");
+		perror("ERROR: can't access /dev/YOUR_PROVIDED_I2C_ADAPTER");
 		usage();
 	}
 
