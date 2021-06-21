@@ -84,6 +84,21 @@ error:
 }
 
 
+int print_db(void *dummy, int argc, char **argv, char **azColName)
+{
+    dummy = 0;
+
+    for (int i = 0; i < argc; i++) {
+
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+
+    printf("\n");
+
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
 
@@ -109,9 +124,13 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	puts("applications is up and running");
-
-	sleep(60); 	/* dummy wait */
+	char *err_msg = NULL;
+	err = sqlite3_exec(db, SQL_SELECT_STRING, print_db, 0, &err_msg);
+	if (err != SQLITE_OK ) {
+		fprintf(stderr, "SQL error: %s\n", err_msg);
+		sqlite3_free(err_msg);
+		exit(EXIT_FAILURE);
+	}
 
 	return EXIT_SUCCESS;
 }
