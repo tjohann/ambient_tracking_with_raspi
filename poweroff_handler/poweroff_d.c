@@ -44,7 +44,6 @@ static void cleanup(void)
 	puts("daemon is down -> bye");
 }
 
-
 static void init_pins(void)
 {
 	if (gpio_export(POWEROFF_BUTTON ) < 0) {
@@ -57,9 +56,39 @@ static void init_pins(void)
 		exit(EXIT_FAILURE);
 	}
 
+	if (gpio_set_direction(POWEROFF_BUTTON, GPIO_IN ) < 0) {
+		eprintf("can't set direction for PIN %d\n", POWEROFF_BUTTON);
+		exit(EXIT_FAILURE);
+	}
+
+	if (gpio_set_direction(POWER_LED, GPIO_OUT ) < 0) {
+		eprintf("can't set direction for PIN %d\n", POWER_LED);
+		exit(EXIT_FAILURE);
+	}
+}
 
 
+/* the main thread */
+void * poweroff_handler(void *arg)
+{
+	int powerswt_val = -1;
+	int powerled_val = -1;
+	int ret = -1;
 
+	for (;;) {
+		powerled_val = ~powerled_val;
+
+		powerswt_val = gpio_read(POWEROFF_BUTTON);
+		printf("value of POWER-SWT %d\n", powerswt_val);
+
+		ret = gpio_write(POWER_LED, powerled_val);
+		printf("value of POWER-LED %d ... error val %d\n",
+			powerled_val, ret);
+
+		sleep(1);
+	}
+
+	return NULL;
 }
 
 
@@ -83,17 +112,15 @@ int main(int argc, char *argv[])
 
 	init_pins();
 
-	/*
-	  pthread_t tid;
-	  err = pthread_create(&tid, NULL, read_sensor, NULL);
-	  if (err != 0) {
-	  eprintf("can't create thread\n");
-	  exit(EXIT_FAILURE);
-	  }
-	*/
+	pthread_t tid;
+	err = pthread_create(&tid, NULL, poweroff_handler, NULL);
+	if (err != 0) {
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
 
 	puts("daemon is up and running");
 
-	sleep(60);
+	(void) pthread_join(tid, NULL);
 	return EXIT_SUCCESS;
 }

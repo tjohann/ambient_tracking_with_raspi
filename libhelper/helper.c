@@ -278,8 +278,9 @@ LIBHELPER_LOCAL int _gpio_export(int pin, bool dir)
 {
 #define MAX_LEN 3
 	char str[MAX_LEN];
-	int fd = -1;
+	memset(&str, 0, MAX_LEN);
 
+	int fd = -1;
 	if (dir)
 		fd = open(GPIO_EXPORT, O_WRONLY);
 	else
@@ -292,7 +293,6 @@ LIBHELPER_LOCAL int _gpio_export(int pin, bool dir)
 		goto error;
 
 	close(fd);
-
 	return 0;
 error:
 	perror("an error occured in gpio_un/export()");
@@ -313,6 +313,78 @@ LIBHELPER_EXPORT int gpio_unexport(int pin)
 
 LIBHELPER_EXPORT int gpio_set_direction(int pin, unsigned char dir)
 {
+	if ((dir != GPIO_OUT) || (dir != GPIO_IN)) {
+		puts("direction not valid");
+		return -1;
+	}
 
+#define DIR_MAX_LEN 35
+	char str[DIR_MAX_LEN];
+	memset(&str, 0, DIR_MAX_LEN);
+
+	snprintf(str, DIR_MAX_LEN, GPIO_DIRECTION, pin);
+	int fd = open(str, O_WRONLY);
+	if (fd < 0)
+		goto error;
+
+	if (write(fd, dir ? "OUT" : "IN", dir ? 3 : 2) < 0)
+		goto error;
+
+	close(fd);
 	return 0;
+error:
+	perror("an error occured in gpio_set_direction()");
+	close(fd);
+
+	return -1;
+}
+
+
+LIBHELPER_EXPORT int gpio_read(int pin)
+{
+#define READ_MAX_LEN 30
+	char str[READ_MAX_LEN];
+	memset(&str, 0, READ_MAX_LEN);
+
+	snprintf(str, READ_MAX_LEN, GPIO_VALUE, pin);
+	int fd = open(str, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	char value[3];
+	memset(&value, 0, 3);
+
+	if (write(fd, value, 3) < 0)
+		goto error;
+
+	close(fd);
+	return atoi(value);
+error:
+	perror("an error occured in gpio_read()");
+	close(fd);
+
+	return -1;
+}
+
+LIBHELPER_EXPORT int gpio_write(int pin, int value)
+{
+#define WRITE_MAX_LEN 30
+	char str[WRITE_MAX_LEN];
+	memset(&str, 0, WRITE_MAX_LEN);
+
+	snprintf(str, WRITE_MAX_LEN, GPIO_VALUE, pin);
+	int fd = open(str, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	if (write(fd, value ? "1" : "0", 1) < 0)
+		goto error;
+
+	close(fd);
+	return 0;
+error:
+	perror("an error occured in gpio_write()");
+	close(fd);
+
+	return -1;
 }

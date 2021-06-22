@@ -158,5 +158,7 @@ void clr_flag(int fd, int flags);
 int gpio_export(int pin);
 int gpio_unexport(int pin);
 int gpio_set_direction(int pin, unsigned char dir);
+int gpio_read(int pin);
+int gpio_write(int pin, int value);
 
 #endif
