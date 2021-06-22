@@ -47,7 +47,7 @@
 #define BMP280_PRESSURE_REG_M 0x0A /* pressure mid 8 bit [unit:pascal]        */
 #define BMP280_PRESSURE_REG_H 0x0B /* pressure high 8 bit [unit:pascal]       */
 #define BMP280_STATUS 	      0x0C /* 0 -> ok -- 1 -> error                   */
-#define HUMAN_DETECT          0x0D /* 0 -> no nctive body -- 1 -> active body */
+#define HUMAN_DETECT          0x0D /* 0 -> no active body -- 1 -> active body */
 
 /* store of the sensor module values */
 static int values[VAL_MAX_LEN];

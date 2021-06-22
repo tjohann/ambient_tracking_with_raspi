@@ -5,6 +5,7 @@
 
 2021-06-22 -> ## poweroff_handler and libhelper stuff
               add more gpio code parts
+	      add first inotify code parts
 
 2021-06-21 -> ## readout_db stuff
               add rest code to readout the database

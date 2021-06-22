@@ -137,6 +137,8 @@ struct sensor_fifo_req {
 #define GPIO_OUT          1
 #define GPIO_IN           0
 
+#define GPIO_VALUE_PATH "/sys/class/gpio/gpio%d/value"
+
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
 

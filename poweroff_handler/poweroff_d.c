@@ -18,6 +18,7 @@
  */
 
 #include <libhelper.h>
+#include <sys/inotify.h>
 
 extern char *__progname;
 
@@ -74,8 +75,56 @@ void * poweroff_handler(void *arg)
 	int powerswt_val = -1;
 	int powerled_val = -1;
 	int ret = -1;
+	int num_read = -1;
+	struct inotify_event *event;
+
+	int fd = inotify_init();
+	if (fd < 0) {
+		perror("cant init inotify");
+		exit(EXIT_FAILURE);
+	}
+
+#define PATH_MAX_LEN 30
+	char path[PATH_MAX_LEN];
+	memset(&path, 0, PATH_MAX_LEN);
+
+	snprintf(path, PATH_MAX_LEN, GPIO_VALUE_PATH, POWEROFF_BUTTON);
+#ifdef __DEBUG__
+	printf("inotify path: %s\n", path);
+#endif
+	int wd = inotify_add_watch(fd, path, IN_MODIFY);
+	if (wd < 0) {
+		perror("cant add watch");
+		exit(EXIT_FAILURE);
+	}
+#define BUF_LEN (sizeof(struct inotify_event) + PATH_MAX_LEN)
+	char buf[BUF_LEN];
+	memset(&buf, 0, BUF_LEN);
 
 	for (;;) {
+		num_read = read(fd, buf, BUF_LEN);
+		if (num_read == 0) {
+			eprintf("inotify'd read return 0 -> ignore it\n");
+			continue;
+		}
+
+		if (num_read < 0) {
+			perror("cant read inotify watch");
+			exit(EXIT_FAILURE);
+		}
+
+		event = (struct inotify_event *) &buf;
+		if (event->mask & IN_MODIFY) {
+#ifdef __DEBUG__
+			printf("file event IN_MODIFY\n");
+#endif
+		} else {
+#ifdef __DEBUG__
+			printf("other file event -> ignore it\n");
+#endif
+			continue;
+		}
+
 		powerled_val = ~powerled_val;
 
 		powerswt_val = gpio_read(POWEROFF_BUTTON);
@@ -84,8 +133,6 @@ void * poweroff_handler(void *arg)
 		ret = gpio_write(POWER_LED, powerled_val);
 		printf("value of POWER-LED %d ... error val %d\n",
 			powerled_val, ret);
-
-		sleep(1);
 	}
 
 	return NULL;
