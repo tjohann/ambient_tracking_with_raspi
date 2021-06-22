@@ -313,7 +313,7 @@ LIBHELPER_EXPORT int gpio_unexport(int pin)
 
 LIBHELPER_EXPORT int gpio_set_direction(int pin, unsigned char dir)
 {
-	if ((dir != GPIO_OUT) || (dir != GPIO_IN)) {
+	if ((dir != GPIO_OUT) && (dir != GPIO_IN)) {
 		puts("direction not valid");
 		return -1;
 	}
@@ -327,7 +327,7 @@ LIBHELPER_EXPORT int gpio_set_direction(int pin, unsigned char dir)
 	if (fd < 0)
 		goto error;
 
-	if (write(fd, dir ? "OUT" : "IN", dir ? 3 : 2) < 0)
+	if (write(fd, dir ? "out" : "in", dir ? 3 : 2) < 0)
 		goto error;
 
 	close(fd);
@@ -354,7 +354,7 @@ LIBHELPER_EXPORT int gpio_read(int pin)
 	char value[3];
 	memset(&value, 0, 3);
 
-	if (write(fd, value, 3) < 0)
+	if (read(fd, value, 3) < 0)
 		goto error;
 
 	close(fd);
@@ -373,7 +373,7 @@ LIBHELPER_EXPORT int gpio_write(int pin, int value)
 	memset(&str, 0, WRITE_MAX_LEN);
 
 	snprintf(str, WRITE_MAX_LEN, GPIO_VALUE, pin);
-	int fd = open(str, O_RDONLY);
+	int fd = open(str, O_WRONLY);
 	if (fd < 0)
 		goto error;
 
