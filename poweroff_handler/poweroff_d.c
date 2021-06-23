@@ -97,7 +97,7 @@ void * poweroff_handler(void *arg)
 		perror("cant add watch");
 		exit(EXIT_FAILURE);
 	}
-#define BUF_LEN (sizeof(struct inotify_event) + PATH_MAX_LEN)
+#define BUF_LEN (sizeof(struct inotify_event))
 	char buf[BUF_LEN];
 	memset(&buf, 0, BUF_LEN);
 
