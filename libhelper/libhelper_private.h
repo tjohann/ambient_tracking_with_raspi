@@ -23,13 +23,15 @@
 #define LIBHELPER_EXPORT __attribute__ ((visibility ("default")))
 #define LIBHELPER_LOCAL __attribute__ ((visibility ("hidden")))
 
+#define GPIO_PATH_MAX_LEN 40
+
 #define DIR_EXPORT true
 #define DIR_UNEXPORT false
 
-#define GPIO_EXPORT "/sys/class/gpio/export"
-#define GPIO_UNEXPORT "/sys/class/gpio/unexport"
+#define GPIO_EXPORT_PATH "/sys/class/gpio/export"
+#define GPIO_UNEXPORT_PATH "/sys/class/gpio/unexport"
 
-#define GPIO_DIRECTION "/sys/class/gpio/gpio%d/direction"
-#define GPIO_VALUE "/sys/class/gpio/gpio%d/value"
+#define GPIO_DIRECTION_PATH "/sys/class/gpio/gpio%d/direction"
+#define GPIO_EDGE_PATH "/sys/class/gpio/gpio%d/edge"
 
 #endif

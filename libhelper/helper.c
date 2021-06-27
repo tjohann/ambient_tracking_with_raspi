@@ -282,9 +282,9 @@ LIBHELPER_LOCAL int _gpio_export(int pin, bool dir)
 
 	int fd = -1;
 	if (dir)
-		fd = open(GPIO_EXPORT, O_WRONLY);
+		fd = open(GPIO_EXPORT_PATH, O_WRONLY);
 	else
-		fd = open(GPIO_UNEXPORT, O_WRONLY);
+		fd = open(GPIO_UNEXPORT_PATH, O_WRONLY);
 	if (fd < 0)
 		goto error;
 
@@ -318,11 +318,10 @@ LIBHELPER_EXPORT int gpio_set_direction(int pin, unsigned char dir)
 		return -1;
 	}
 
-#define DIR_MAX_LEN 35
-	char str[DIR_MAX_LEN];
-	memset(&str, 0, DIR_MAX_LEN);
+	char str[GPIO_PATH_MAX_LEN];
+	memset(&str, 0, GPIO_PATH_MAX_LEN);
 
-	snprintf(str, DIR_MAX_LEN, GPIO_DIRECTION, pin);
+	snprintf(str, GPIO_PATH_MAX_LEN, GPIO_DIRECTION_PATH, pin);
 	int fd = open(str, O_WRONLY);
 	if (fd < 0)
 		goto error;
@@ -339,14 +338,34 @@ error:
 	return -1;
 }
 
+LIBHELPER_EXPORT int gpio_set_edge_falling(int pin)
+{
+	char str[GPIO_PATH_MAX_LEN];
+	memset(&str, 0, GPIO_PATH_MAX_LEN);
+
+	snprintf(str, GPIO_PATH_MAX_LEN, GPIO_EDGE_PATH, pin);
+	int fd = open(str, O_WRONLY);
+	if (fd < 0)
+		goto error;
+
+	if (write(fd, "falling", 8) < 0)
+		goto error;
+
+	close(fd);
+	return 0;
+error:
+	perror("an error occured in gpio_set_edge()");
+	close(fd);
+
+	return -1;
+}
 
 LIBHELPER_EXPORT int gpio_read(int pin)
 {
-#define READ_MAX_LEN 30
-	char str[READ_MAX_LEN];
-	memset(&str, 0, READ_MAX_LEN);
+	char str[GPIO_PATH_MAX_LEN];
+	memset(&str, 0, GPIO_PATH_MAX_LEN);
 
-	snprintf(str, READ_MAX_LEN, GPIO_VALUE, pin);
+	snprintf(str, GPIO_PATH_MAX_LEN, GPIO_VALUE_PATH, pin);
 	int fd = open(str, O_RDONLY);
 	if (fd < 0)
 		goto error;
@@ -368,11 +387,10 @@ error:
 
 LIBHELPER_EXPORT int gpio_write(int pin, int value)
 {
-#define WRITE_MAX_LEN 30
-	char str[WRITE_MAX_LEN];
-	memset(&str, 0, WRITE_MAX_LEN);
+	char str[GPIO_PATH_MAX_LEN];
+	memset(&str, 0, GPIO_PATH_MAX_LEN);
 
-	snprintf(str, WRITE_MAX_LEN, GPIO_VALUE, pin);
+	snprintf(str, GPIO_PATH_MAX_LEN, GPIO_VALUE_PATH, pin);
 	int fd = open(str, O_WRONLY);
 	if (fd < 0)
 		goto error;

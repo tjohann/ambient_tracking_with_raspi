@@ -66,6 +66,11 @@ static void init_pins(void)
 		eprintf("can't set direction for PIN %d\n", POWER_LED);
 		exit(EXIT_FAILURE);
 	}
+
+	if (gpio_set_edge_falling(POWEROFF_BUTTON) < 0) {
+		eprintf("can't set falling edge for PIN %d\n", POWEROFF_BUTTON);
+		exit(EXIT_FAILURE);
+	}
 }
 
 
@@ -126,9 +131,6 @@ void * poweroff_handler(void *arg)
 		}
 
 		powerled_val = ~powerled_val;
-
-		powerswt_val = gpio_read(POWEROFF_BUTTON);
-		printf("value of POWER-SWT %d\n", powerswt_val);
 
 		ret = gpio_write(POWER_LED, powerled_val);
 		printf("value of POWER-LED %d ... error val %d\n",
