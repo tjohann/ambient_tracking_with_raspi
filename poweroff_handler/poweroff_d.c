@@ -77,7 +77,6 @@ static void init_pins(void)
 /* the main thread */
 void * poweroff_handler(void *arg)
 {
-	int powerswt_val = -1;
 	int powerled_val = -1;
 	int ret = -1;
 	int num_read = -1;
