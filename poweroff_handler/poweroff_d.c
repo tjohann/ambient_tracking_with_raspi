@@ -97,7 +97,7 @@ void * poweroff_handler(void *arg)
 #ifdef __DEBUG__
 	printf("inotify path: %s\n", path);
 #endif
-	int wd = inotify_add_watch(fd, path, IN_MODIFY);
+	int wd = inotify_add_watch(fd, path, IN_ALL_EVENTS);
 	if (wd < 0) {
 		perror("cant add watch");
 		exit(EXIT_FAILURE);
