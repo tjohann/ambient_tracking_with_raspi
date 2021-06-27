@@ -129,8 +129,10 @@ void * poweroff_handler(void *arg)
 #endif
 			continue;
 		}
+
+		printf("shut down the system in 5 seconds\n");
 		ret = gpio_write(POWER_LED, 1); /* only an indication */
-		sleep(2);
+		sleep(5);
 
 		/* use runit to halt device */
 		system("init 0");
