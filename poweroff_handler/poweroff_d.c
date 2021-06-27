@@ -77,7 +77,6 @@ static void init_pins(void)
 /* the main thread */
 void * poweroff_handler(void *arg)
 {
-	int powerled_val = -1;
 	int ret = -1;
 	int num_read = -1;
 	struct inotify_event *event;
@@ -106,6 +105,8 @@ void * poweroff_handler(void *arg)
 	memset(&buf, 0, BUF_LEN);
 
 	for (;;) {
+		gpio_write(POWER_LED, 0);  /* clear the LED */
+
 		num_read = read(fd, buf, BUF_LEN);
 		if (num_read == 0) {
 			eprintf("inotify'd read return 0 -> ignore it\n");
@@ -128,12 +129,11 @@ void * poweroff_handler(void *arg)
 #endif
 			continue;
 		}
+		ret = gpio_write(POWER_LED, 1); /* only an indication */
+		sleep(2);
 
-		powerled_val = ~powerled_val;
-
-		ret = gpio_write(POWER_LED, powerled_val);
-		printf("value of POWER-LED %d ... error val %d\n",
-			powerled_val, ret);
+		/* use runit to halt device */
+		system("init 0");
 	}
 
 	return NULL;
