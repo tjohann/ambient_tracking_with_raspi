@@ -336,7 +336,7 @@ int init_sensor_hub(char *adapter, unsigned char addr)
 }
 
 /* the sensor read thread */
-void * read_sensor(void *arg)
+void * read_sensor(__attribute__((__unused__)) void *arg)
 {
 	int err = get_values();
 	if (err < 0) {

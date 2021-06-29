@@ -75,9 +75,8 @@ static void init_pins(void)
 
 
 /* the main thread */
-void * poweroff_handler(void *arg)
+void * poweroff_handler(__attribute__((__unused__)) void *arg)
 {
-	int ret = -1;
 	int num_read = -1;
 	struct inotify_event *event;
 
@@ -131,7 +130,7 @@ void * poweroff_handler(void *arg)
 		}
 
 		printf("shut down the system in 5 seconds\n");
-		ret = gpio_write(POWER_LED, 1); /* only an indication */
+		(void) gpio_write(POWER_LED, 1); /* only an indication */
 		sleep(5);
 
 		/* use runit to halt device */

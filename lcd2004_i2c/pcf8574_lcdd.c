@@ -606,7 +606,7 @@ int init_lcd(char *adapter, unsigned char addr, int type)
 }
 
 /* the main thread */
-void * server_handling(void *arg)
+void * server_handling(__attribute__((__unused__)) void *arg)
 {
 	/* this call won't block -> clear of flag is below */
 	read_fifo = create_read_fifo(DAEMON_FIFO);

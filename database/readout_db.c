@@ -84,7 +84,9 @@ error:
 }
 
 
-int print_db(void *dummy, int argc, char **argv, char **azColName)
+int print_db(__attribute__((__unused__)) void *dummy,
+	int argc, char **argv,
+	char **azColName)
 {
     dummy = 0;
 

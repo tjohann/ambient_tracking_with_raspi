@@ -253,7 +253,7 @@ error:
 }
 
 /* the lcd2004 print thread */
-void * lcd2004_handling(void *arg)
+void * lcd2004_handling(__attribute__((__unused__)) void *arg)
 {
 	struct lcd_request req;
 	size_t len = sizeof(struct lcd_request);
@@ -283,7 +283,7 @@ void * lcd2004_handling(void *arg)
 }
 
 /* the lcd1602 print thread */
-void * lcd1602_handling(void *arg)
+void * lcd1602_handling(__attribute__((__unused__)) void *arg)
 {
 	struct lcd_request req;
 	size_t len = sizeof(struct lcd_request);
@@ -322,7 +322,7 @@ void * lcd1602_handling(void *arg)
 
 
 /* the main thread */
-void * ambient_handling(void *arg)
+void * ambient_handling(__attribute__((__unused__)) void *arg)
 {
 	struct sensor_data data;
 	size_t len = sizeof(struct sensor_data);
