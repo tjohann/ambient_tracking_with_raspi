@@ -1,7 +1,7 @@
-runit service definition
+Runit service definition
 ========================
 
-Note: you have to change the I2C config!
+The service definition folders for all parts.
 
 lcd_daemon
 ----------
@@ -22,7 +22,7 @@ My second configuration:
 
 See ![Alt text](pics/development_environment_02.jpg?raw=true "Both LCD's")
 
-To use one of the configuration, copy the one you want to /etc/sv and change, what is different in your environment. After that create a link from /etc/sv/lcd_daemon to /var/service . After some seconds you should see a hello-screen on the display. If not, check the output at /var/log/messages .
+To use one of the configuration, copy the one you want to /etc/sv and change, what is different in your environment. After that create a link from /etc/sv/lcd_daemon to /var/service . After some seconds you should see a hello-screen on the display. If not, check the output at /var/log/messages and/or /var/log/THE_DAEMON/current
 
 
 sensor_daemon
@@ -40,10 +40,6 @@ ambient tracker
 ---------------
 
 The ambient tracker tool -> amtrack.
-
-My configuration (Raspi2):
-
-	lcd -> LCD2004
 
 
 poweroff daemon

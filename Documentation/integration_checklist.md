@@ -25,17 +25,46 @@ build/config updates on device:
 	- update, build and install libhelper (if needed)
 	- update, build and install lcd2004_i2c (if needed)
 	- update, build and install sensor_pi (if needed)
+	- update, build and install readout_db (if needed)
+	- update, build and install poweroff_handler (if needed)
 	- mupdatedb
 
 tool checks on device:
 
-	- is network (ip) config correct
-	- is baalued working
+	- is network (ip) config correct?
+	- is baalued working?
+	- does the hello-world screen come up?
+	- are the shown values plausible?
+	- does the poweroff button works?
 
 sdk checks:
 
 	- update checksum.sha256
 
+
+PI-ENV_V0.0.2 (XX.07.2021)
+--------------------------
+
+	Common checks                                           [2021-07-XX -> done]
+
+	Config updates (on the target):
+		- ...
+
+	Build updates:
+		- libbaalue
+		  - ...
+		- baalued
+		  - ...
+		- lcd2004_i2c
+		  - ...
+	    - sensor_pi
+		  - ...
+
+	Script updates:
+		- ...
+
+	Others:
+		- ...
 
 
 PI-ENV_V0.0.1 (25.04.2021)

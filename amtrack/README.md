@@ -20,8 +20,6 @@ The basic interface are make targets:
     | make uninstall          -> remove bin from $(HOME)/bin    |
     +-----------------------------------------------------------+
 
-WARNING: This is work in progress! Don't expect things to be complete in any dimension.
-
 If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an ticket.
 
 
@@ -47,4 +45,4 @@ Example: LCD size 20x4
 Database
 --------
 
-For further checks, a sqlite database is on the device (/home/ambiet/ambient_data.db). It stores the values for future use.
+For further working, a sqlite database is on the device (/home/ambient/ambient_data.db). It stores the values for future use like a webserver with the a dataplot.

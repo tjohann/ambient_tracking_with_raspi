@@ -5,7 +5,7 @@ This is all content around my ambient tracking modul with a Raspi2. It collects 
 
 [Related links](Documentation/links.md).
 
-The basic user interface are make targets, which then start the corresponding scripts or directly actvivate something:
+The basic user interface are make targets, which then start the corresponding scripts or directly activate something:
 
 	+-----------------------------------------------------------+
 	|                                                           |
@@ -21,19 +21,33 @@ The basic user interface are make targets, which then start the corresponding sc
 	| make deploy             -> install bin's to /usr/bin      |
 	+-----------------------------------------------------------+
 
+If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an ticket.
+
+
+State
+-----
+
 WARNING: This is work in progress! Don't expect things to be complete in any dimension.
 
-If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an ticket.
+	sensor-daemon -> works
+	lcd-daemon -> works
+	ambient-tracker -> works
+	poweroff-handler -> works
+
+	http stuff -> open
+	bmp180 extention -> open
+	cpu temperature -> open
 
 
 Requirement
 -----------
 
 The only software requirements are git (to clone/update runtimedir), rsync (to sync content below workdir and srcdir) and wget (to download the image tarballs from sourceforge).
+
 To build the applications you also need i2c-tools, i2c-tools-devel and sqlite.
 
 
-To use the my scripts, you need to source the pi-env_env file, wich sets some shell values:
+To use my scripts, you need to source the pi-env_env file, wich sets some shell values:
 
 	. ./pi-env_env
 
@@ -48,7 +62,7 @@ The scripts expect some mountpoints:
 	LABEL=ROOTFS_RPI /mnt/raspi/raspi_rootfs  auto     noauto,user,rw     0       0
 	LABEL=HOME_RPI   /mnt/raspi/raspi_home    auto     noauto,user,rw     0       0
 
-If you create the images with my scripts, then the partitions will get an label, used to mount everthing.
+If you create the images with my scripts, then the partitions will get an label, used to mount everything.
 
 
 Images
@@ -62,11 +76,13 @@ The sd-card needs 3 different partitions which are reflected by the images tarba
 	2). rootfs (ext4/8 gig) -> rasp2_rootfs.tgz
 	3). home (ext4/the rest) -> raspi2_home.tgz
 
+Note: you have to untar the files and not use dd!
+
 
 User
 ----
 
-The user baalue is available on all images, you can use it to login via ssh and then use sudo or su -l for root tasks.
+The user baalue is available on the image, you can use it to login via ssh and then use sudo or su -l for root tasks.
 
     root (password: root)
     baalue (password: baalue)
@@ -98,7 +114,7 @@ My cluster:
 	192.168.178.96            baalue-96.my.domain             baalue-16
 
 
-You can use the build cluster based with this device (to build a kernel or ...). Additional check https://github.com/tjohann/baalue_distcc . Here you should find all information and hints you need.
+You can use the build cluster based with this device (to build a kernel or ...). Additionaly check https://github.com/tjohann/baalue_distcc . Here you should find all information and hints you need.
 
 Note: The base configuration is already included in my image.
 
@@ -122,11 +138,13 @@ So a simple version update of the kernel will not increase the minor number, ins
 	- update kernel version
 	- all smaller changes
 
+[Integration-Checklist](Documentation/integration_checklist.md).
+
 
 Raspi 2
 -------
 
-Some technial data:
+Some technial data (see https://www.raspberrypi.org/products/raspberry-pi-2-model-b/):
 
 	900MHz quad-core ARM Cortex-A7 CPU
 	1GB RAM
@@ -143,6 +161,8 @@ Schematics
 ----------
 
 See folder schematics for more info.
+
+[Schematics](schematics/README.md).
 
 
 Build kernel
@@ -236,9 +256,15 @@ In folder ./etc you find the runit service definition. Note, that you (normaly) 
 DockerPi Sensor Hub
 -------------------
 
-I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU has an effect on the measured temperatur. One way around is to make shure, that the ecu consumes as less power as possible. Actual measurements show, that all temperature values on the board are not usable (see ./Documentation/temperature_correction.pdf). Another efect with the external temperature module is, that the surface is reflecting. So when it is located outside and the sun shines on it, the measured results are not the air temperature.
+I use the DockerPi Sensor shield (https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106), direct connected to the raspi. The resulting problem is, that the ECU has an effect on the measured temperatur. One way around is to make shure, that the ecu consumes as less power as possible. Actual measurements show, that all temperature values on the board are not usable (see ./Documentation/temperature_correction.pdf). Another effect with the external temperature module is, that the surface is reflecting. So when it is located outside and the sun shines on it, the measured results are not the air temperature.
 
-Result: I have some correction values used in amtrack (and in the database). Also i use the external temperature sensor as the only temperature sensor and ignore the others. In addition i add the CPU temperature to the database, so an correction is possible.
+Result: I have some correction values used in amtrack (and in the database). In addition i add the CPU temperature to the database, so an correction afterwards is possible.
+
+
+The BMP180 module
+-----------------
+
+Because the sensor shield makes so much problems with the temperature, i decided to use another sensor to get a more realistic temperature. You can use every device like https://www.adafruit.com/product/1603 for it. It is also connected via I2C and therefore it`s an addition to the sensor-daemon.
 
 
 Display
@@ -265,7 +291,5 @@ For more details see [the database](database/README.md).
 
 The http server
 ---------------
-
-Note: not really working yet
 
 The local webserver provides a simple webpage which shows the content of the database with an update rate of ~10 minutes.
