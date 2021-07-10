@@ -18,6 +18,7 @@ The basic interface are make targets:
     | make distclean          -> clean and uninstall            |
     | make install            -> install bin to $(HOME)/bin     |
     | make uninstall          -> remove bin from $(HOME)/bin    |
+    | make deploy             -> install bin from /usr/bin      |
     +-----------------------------------------------------------+
 
 If you face a bug, then pls use https://github.com/tjohann/ambient_tracking_with_raspi/issues to create an ticket.

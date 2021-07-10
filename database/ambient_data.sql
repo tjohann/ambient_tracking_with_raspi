@@ -10,6 +10,9 @@ CREATE TABLE AmbientValues(
        ONBOARD_TEMP INTEGER,
        PRESSURE INTEGER,
        BRIGHTNESS INTEGER,
+       CPU_TEMP INTEGER,
+       BMP180_TEMP INTEGER,
+       BMP180_PRES INTEGER,
        HUMINITY INTEGER);
 
 INSERT INTO AmbientValues VALUES(
@@ -19,5 +22,8 @@ INSERT INTO AmbientValues VALUES(
        22,
        123456,
        12,
+       0,
+       0,
+       0,
        34);
 COMMIT;

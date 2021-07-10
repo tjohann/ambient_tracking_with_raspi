@@ -89,7 +89,7 @@ struct lcd_request {
 };
 
 /* position within the sensor pi value array */
-#define VAL_MAX_LEN  7
+#define VAL_MAX_LEN  10
 #define EXT_TEMP     0
 #define ONBOARD_TEMP 1
 #define BARO_TEMP    2
@@ -97,6 +97,9 @@ struct lcd_request {
 #define BRIGHTNESS   4
 #define PRESSURE     5
 #define BODY_DETECT  6
+#define CPU_TEMP     7
+#define BMP180_TEMP  8
+#define BMP180_PRES  9
 
 /* status bits within the sensor pi state value */
 #define STATE_EXT_TEMP     BIT0
@@ -105,6 +108,8 @@ struct lcd_request {
 #define STATE_HUMINITY     BIT3
 #define STATE_BARO_TEMP    BIT4
 #define STATE_PRESSURE     BIT5
+#define STATE_CPU_TEMP     BIT6
+#define STATE_BMP180       BIT7
 
 /* the minum update time for sensor pi values */
 #define SENSOR_UPDATE_TIME 60
@@ -123,6 +128,9 @@ struct sensor_data {
 	int brightness;
 	int pressure;
 	int body_detect;
+	int cpu_temp;
+	int bmp180_temp;
+	int bmp180_pres;
 };
 
 /* request to create server - client fifo  */

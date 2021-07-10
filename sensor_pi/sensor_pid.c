@@ -92,7 +92,6 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
-
 static void lock_file_handling(void)
 {
 	int err = already_running(LOCKFILE);
@@ -141,8 +140,7 @@ static int init_server_fifo(void)
 	return 0;
 }
 
-
-static int get_values(void)
+static int get_values_sensor_pi(void)
 {
 	__s32 buf[LAST_REG + 1];  /* ignore buf[0] */
 	memset(buf, 0, (LAST_REG + 1) * sizeof(__s32));
@@ -323,6 +321,29 @@ static int get_values(void)
 	return 0;
 }
 
+static int get_cpu_temp(void)
+{
+	/*
+	 * get the cpu temp from sysfs
+	 */
+	values[CPU_TEMP] = 0;
+	sensor_state &= ~STATE_CPU_TEMP;
+
+	return 0;
+}
+
+static int get_values_bmp180(void)
+{
+	/*
+	 * get the values from the bmp180 via sysfs
+	 */
+	values[BMP180_TEMP] = 0;
+	values[BMP180_PRES] = 0;
+	sensor_state &= ~STATE_BMP180;
+
+	return 0;
+}
+
 int init_sensor_hub(char *adapter, unsigned char addr)
 {
 	sensor = init_i2c_device(adapter, addr);
@@ -338,21 +359,47 @@ int init_sensor_hub(char *adapter, unsigned char addr)
 /* the sensor read thread */
 void * read_sensor(__attribute__((__unused__)) void *arg)
 {
-	int err = get_values();
+	int err = get_values_sensor_pi();
 	if (err < 0) {
 		syslog(LOG_ERR, "can't read from sensor hub");
 		eprintf("can't read from sensor hub\n");
 		exit(EXIT_FAILURE);
 	}
 
+	err = get_cpu_temp();
+	if (err < 0) {
+		syslog(LOG_ERR, "can't read the cpu temp");
+		eprintf("can't read the cpu temp\n");
+		exit(EXIT_FAILURE);
+	}
+
+	err = get_values_bmp180();
+	if (err < 0) {
+		syslog(LOG_ERR, "can't read from BMP180");
+		eprintf("can't read from BMP180\n");
+		exit(EXIT_FAILURE);
+	}
+
 	for (;;) {
-		err = get_values();
+		err = get_values_sensor_pi();
 		if (err < 0) {
 			syslog(LOG_ERR, "can't read from sensor hub");
 			eprintf("can't read from sensor hub\n");
 		}
 
-		sleep(60);
+		err = get_values_bmp180();
+		if (err < 0) {
+			syslog(LOG_ERR, "can't read from BMP180");
+			eprintf("can't read from BMP180\n");
+		}
+
+		err = get_cpu_temp();
+		if (err < 0) {
+			syslog(LOG_ERR, "can't read the cpu temp");
+			eprintf("can't read the cpu temp\n");
+		}
+
+		sleep(SENSOR_UPDATE_TIME);
 	}
 
 	return NULL;
@@ -387,13 +434,16 @@ void * server_handling(void *arg)
 	memset(&data, 0, len);
 
 	for (;;) {
-		data.ext_temp = values[EXT_TEMP];
+		data.ext_temp     = values[EXT_TEMP];
 		data.onboard_temp = values[ONBOARD_TEMP];
-		data.baro_temp = values[BARO_TEMP];
-		data.huminity = values[HUMINITY];
-		data.brightness = values[BRIGHTNESS];
-		data.pressure = values[PRESSURE];
-		data.body_detect = values[BODY_DETECT];
+		data.baro_temp    = values[BARO_TEMP];
+		data.huminity     = values[HUMINITY];
+		data.brightness   = values[BRIGHTNESS];
+		data.pressure     = values[PRESSURE];
+		data.body_detect  = values[BODY_DETECT];
+		data.cpu_temp     = values[CPU_TEMP];
+		data.bmp180_pres  = values[BMP180_PRES];
+		data.bmp180_temp  = values[BMP180_TEMP];
 
 		if (write(fd, &data, len) != (int) len)
 			syslog(LOG_ERR, "cant`t write to client fifo");

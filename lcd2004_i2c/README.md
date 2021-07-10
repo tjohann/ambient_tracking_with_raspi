@@ -18,6 +18,7 @@ The basic interface are make targets:
     | make distclean          -> clean and uninstall            |
     | make install            -> install bin to $(HOME)/bin     |
     | make uninstall          -> remove bin from $(HOME)/bin    |
+    | make deploy             -> install bin from /usr/bin      |
     +-----------------------------------------------------------+
 
 WARNING: This is work in progress! Don't expect things to be complete in any dimension.

@@ -276,7 +276,7 @@ I use one of the very common LCD2004 displays, connected to the raspi via I2C mo
 The code
 --------
 
-Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the daemon code, see [Display handler](lcd2004_i2c/README.md) and [Sensor shield](sensor_pi/README.md).
+Common parts like become_damon() are located in a static library, see [Helper library](libhelper/README.md). For more details on the daemon code, see [Display handler](lcd2004_i2c/README.md) and [Sensor handler](sensor_pi/README.md).
 
 The application amtrack connect both daemon to a useful system, wich shows the relevant informations like temperature on the display, see [ambient tracker](amtrack/README.md).
 

@@ -3,6 +3,16 @@
 #
 
 
+2021-07-10 -> ## repo stuff
+              documentation updates
+	      correct log parts from runit service descriptions
+
+	      ## sensor_pi && libhelper stuff
+	      add first parts to add the cpu temp
+
+              ## database stuff
+	      add additional values to database
+
 2021-07-03 -> ## repo stuff
               documentation updates
 
