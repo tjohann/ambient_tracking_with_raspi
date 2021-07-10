@@ -46,8 +46,8 @@ static int correct_onboard = CORRECT_ONBOARD;
 /* the database */
 sqlite3 *db;
 
-#define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d);"
-#define SQL_INS_STR_LEN 100
+#define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d %d %d %d);"
+#define SQL_INS_STR_LEN 150
 
 extern char *__progname;
 
@@ -273,7 +273,7 @@ void * lcd2004_handling(__attribute__((__unused__)) void *arg)
                 /* second circle */
 		(void) lcd_clear();
 		(void) lcd_write_string(1, ONBOARD_TEMP);
-		(void) lcd_write_string(2, BARO_TEMP);
+		(void) lcd_write_string(2, CPU_TEMP);
 		(void) lcd_write_string(3, EXT_TEMP);
 		(void) lcd_write_string(4, BODY_DETECT);
 		sleep(10);
@@ -307,7 +307,7 @@ void * lcd1602_handling(__attribute__((__unused__)) void *arg)
                 /* third circle */
 		(void) lcd_clear();
 		(void) lcd_write_string(1, ONBOARD_TEMP);
-		(void) lcd_write_string(2, BARO_TEMP);
+		(void) lcd_write_string(2, CPU_TEMP);
 		sleep(10);
 
                 /* fourth circle */
@@ -370,6 +370,10 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				"Ext. Temp : %d degC",
 				data.ext_temp + correct_ext);
 
+			snprintf(values[CPU_TEMP], lcd_max_col + 1,
+				"CPU Temp : %d degC",
+				data.cpu_temp + correct_ext);
+
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
 				"Baro Temp : %d degC",
 				data.baro_temp + correct_baro);
@@ -397,6 +401,10 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			snprintf(values[EXT_TEMP], lcd_max_col + 1,
 				"Ext. T.: %d degC",
 				data.ext_temp + correct_ext);
+
+			snprintf(values[CPU_TEMP], lcd_max_col + 1,
+				"CPU T. : %d degC",
+				data.cpu_temp + correct_ext);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
 				"Baro T.: %d degC",
@@ -434,6 +442,9 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			data.onboard_temp,
 			data.pressure,
 			data.brightness,
+			data.cpu_temp,
+			data.bmp180_temp,
+			data.bmp180_pres,
 			data.huminity);
 
 		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
@@ -451,6 +462,9 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 		printf("huminity: %d\n", data.huminity);
 		printf("brightness: %d\n", data.brightness);
 		printf("pressure: %d\n", data.pressure);
+		printf("cpu temp: %d\n", data.cpu_temp);
+		printf("bmp180 temp: %d\n", data.bmp180_temp);
+		printf("bmp180 pressure: %d\n", data.bmp180_pres);
 		printf("body_detect: %d\n", data.body_detect);
 
 		printf("%s\n", values[EXT_TEMP]);
@@ -459,6 +473,9 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 		printf("%s\n", values[PRESSURE]);
 		printf("%s\n", values[BRIGHTNESS]);
 		printf("%s\n", values[HUMINITY]);
+		printf("%s\n", values[CPU_TEMP]);
+		printf("%s\n", values[BMP180_TEMP]);
+		printf("%s\n", values[BMP180_PRES]);
 		printf("%s\n", values[BODY_DETECT]);
 
 		printf("%s\n", sql);

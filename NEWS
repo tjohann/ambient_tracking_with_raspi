@@ -8,10 +8,17 @@
 	      correct log parts from runit service descriptions
 
 	      ## sensor_pi && libhelper stuff
-	      add first parts to add the cpu temp
+	      add first parts to add the cpu temp amd BMP180 data
 
               ## database stuff
 	      add additional values to database
+
+	      ## target stuff
+	      activate new runit service scripts
+	      regular image updates
+
+	      ## amtrack stuff
+	      add first parts to add the cpu temp amd BMP180 data
 
 2021-07-03 -> ## repo stuff
               documentation updates
