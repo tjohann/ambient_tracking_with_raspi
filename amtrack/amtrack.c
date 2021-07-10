@@ -46,7 +46,7 @@ static int correct_onboard = CORRECT_ONBOARD;
 /* the database */
 sqlite3 *db;
 
-#define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d %d %d %d);"
+#define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d, %d, %d, %d);"
 #define SQL_INS_STR_LEN 150
 
 extern char *__progname;
@@ -488,7 +488,9 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			data.bmp180_pres,
 			data.huminity);
 
-		printf("\n%s\n\n", sql);
+#ifdef __DEBUG__
+		printf("%s\n", sql);
+#endif
 
 		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
 		if (err != SQLITE_OK ) {
@@ -498,9 +500,6 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			continue;
 		}
 
-#ifdef __DEBUG__
-		printf("%s\n", sql);
-#endif
 		memset(&data, 0, len);
 		memset(&sql, 0, SQL_INS_STR_LEN);
 	}
