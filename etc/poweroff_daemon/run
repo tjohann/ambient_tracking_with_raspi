@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/bin/poweroff_daemon 2>&1
+exec /usr/bin/poweroff_d 2>&1
