@@ -333,7 +333,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 
 	/*
 	 * example string to put into the database:
-	 * "INSERT INTO AmbientValues VALUES(1623141708, 20, 21, 22, 123456, 12, 34);"
+	 * "INSERT INTO AmbientValues VALUES(1623141708, 20, 21, 22, 123456, 12, 40, 20, 123456, 34);"
 	 *
 	 * format of database:
 	 * DATE INTEGER PRIMARY KEY
@@ -342,6 +342,9 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 	 * ONBOARD_TEMP INTEGER
 	 * PRESSURE INTEGER
 	 * BRIGHTNESS INTEGER
+	 * CPU_TEMP INTEGER
+	 * BMP180_TEMP INTEGER
+	 * BMP180_PRES INTEGER
 	 * HUMINITY INTEGER
 	 *
 	 * the length of sql[] should be with 100 large enough
@@ -372,7 +375,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 
 			snprintf(values[CPU_TEMP], lcd_max_col + 1,
 				"CPU Temp : %d degC",
-				data.cpu_temp + correct_ext);
+				data.cpu_temp);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
 				"Baro Temp : %d degC",
@@ -394,6 +397,14 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				"Huminity  : %d%%",
 				data.huminity);
 
+			snprintf(values[BMP180_TEMP], lcd_max_col + 1,
+				"BMP180 T. : %d degC",
+				data.bmp180_temp);
+
+			snprintf(values[BMP180_PRES], lcd_max_col + 1,
+				"BMP180 P. : %d Pa",
+				data.bmp180_pres);
+
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
 				"Body detect?: %s",
 				data.body_detect ? "yes" : "no");
@@ -404,7 +415,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 
 			snprintf(values[CPU_TEMP], lcd_max_col + 1,
 				"CPU T. : %d degC",
-				data.cpu_temp + correct_ext);
+				data.cpu_temp);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
 				"Baro T.: %d degC",
@@ -426,6 +437,14 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				"Huminity: %d%%",
 				data.huminity);
 
+			snprintf(values[BMP180_TEMP], lcd_max_col + 1,
+				"BMP T. : %d degC",
+				data.bmp180_temp);
+
+			snprintf(values[BMP180_PRES], lcd_max_col + 1,
+				"BMP P. : %d Pa",
+				data.bmp180_pres);
+
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
 				"Body det. ? : %s",
 				data.body_detect ? "yes" : "no");
@@ -433,28 +452,6 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			eprintf("LCD is not supported!\n");
 			continue;
 		}
-
-		t = time(NULL);
-		snprintf(sql, SQL_INS_STR_LEN, SQL_INSERT_STRING,
-			t,
-			data.ext_temp,
-			data.baro_temp,
-			data.onboard_temp,
-			data.pressure,
-			data.brightness,
-			data.cpu_temp,
-			data.bmp180_temp,
-			data.bmp180_pres,
-			data.huminity);
-
-		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
-		if (err != SQLITE_OK ) {
-			fprintf(stderr, "SQL error: %s\n", err_msg);
-			sqlite3_free(err_msg);
-
-			continue;
-		}
-
 #ifdef __DEBUG__
 		printf("external temp: %d\n", data.ext_temp);
 		printf("onboard temp: %d\n", data.onboard_temp);
@@ -477,7 +474,29 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 		printf("%s\n", values[BMP180_TEMP]);
 		printf("%s\n", values[BMP180_PRES]);
 		printf("%s\n", values[BODY_DETECT]);
+#endif
+		t = time(NULL);
+		snprintf(sql, SQL_INS_STR_LEN, SQL_INSERT_STRING,
+			t,
+			data.ext_temp,
+			data.baro_temp,
+			data.onboard_temp,
+			data.pressure,
+			data.brightness,
+			data.cpu_temp,
+			data.bmp180_temp,
+			data.bmp180_pres,
+			data.huminity);
 
+		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
+		if (err != SQLITE_OK ) {
+			fprintf(stderr, "SQL error: %s\n", err_msg);
+			sqlite3_free(err_msg);
+
+			continue;
+		}
+
+#ifdef __DEBUG__
 		printf("%s\n", sql);
 #endif
 		memset(&data, 0, len);
