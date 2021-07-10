@@ -488,6 +488,8 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 			data.bmp180_pres,
 			data.huminity);
 
+		printf("\n%s\n\n", sql);
+
 		err = sqlite3_exec(db, sql, 0, 0, &err_msg);
 		if (err != SQLITE_OK ) {
 			fprintf(stderr, "SQL error: %s\n", err_msg);
