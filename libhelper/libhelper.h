@@ -147,6 +147,8 @@ struct sensor_fifo_req {
 
 #define GPIO_VALUE_PATH "/sys/class/gpio/gpio%d/value"
 
+#define SYSFS_CPU_TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
+
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
 
@@ -171,5 +173,6 @@ int gpio_set_direction(int pin, unsigned char dir);
 int gpio_set_edge_falling(int pin);
 int gpio_read(int pin);
 int gpio_write(int pin, int value);
+int cpu_temp_read(void);
 
 #endif

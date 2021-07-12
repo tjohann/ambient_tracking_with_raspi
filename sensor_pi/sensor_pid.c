@@ -323,11 +323,15 @@ static int get_values_sensor_pi(void)
 
 static int get_cpu_temp(void)
 {
-	/*
-	 * get the cpu temp from sysfs
-	 */
-	values[CPU_TEMP] = 0;
-	sensor_state &= ~STATE_CPU_TEMP;
+	int value = cpu_temp_read();
+
+	if (value != -1) {
+		values[CPU_TEMP] = value;
+		sensor_state &= ~STATE_CPU_TEMP;
+	} else {
+		values[CPU_TEMP] = - 0xFF;
+		sensor_state |= STATE_CPU_TEMP;
+	}
 
 	return 0;
 }

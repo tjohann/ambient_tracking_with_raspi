@@ -406,3 +406,24 @@ error:
 
 	return -1;
 }
+
+LIBHELPER_EXPORT int cpu_temp_read(void)
+{
+	int fd = open(SYSFS_CPU_TEMP_PATH, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	char value[6];
+	memset(&value, 0, 6);
+
+	if (read(fd, value, 6) < 0)
+		goto error;
+
+	close(fd);
+	return atoi(value);
+error:
+	perror("an error occured in cpu_temp_read()");
+	close(fd);
+
+	return -1;
+}

@@ -3,6 +3,9 @@
 #
 
 
+2021-07-12 -> ## sensor_pi && libhelper stuff
+	      add get_cpu_temp() function
+
 2021-07-10 -> ## repo stuff
               documentation updates
 	      correct log parts from runit service descriptions
