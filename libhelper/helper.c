@@ -420,7 +420,7 @@ LIBHELPER_EXPORT int cpu_temp_read(void)
 		goto error;
 
 	close(fd);
-	return atoi(value);
+	return atoi(value)/1000;
 error:
 	perror("an error occured in cpu_temp_read()");
 	close(fd);
