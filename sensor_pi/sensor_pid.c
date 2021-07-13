@@ -338,12 +338,25 @@ static int get_cpu_temp(void)
 
 static int get_values_bmp180(void)
 {
-	/*
-	 * get the values from the bmp180 via sysfs
-	 */
-	values[BMP180_TEMP] = 0;
-	values[BMP180_PRES] = 0;
-	sensor_state &= ~STATE_BMP180;
+	int value = bmp180_temp_read();
+
+	if (value != -1) {
+		values[BMP180_TEMP] = value;
+		sensor_state &= ~STATE_BMP180;
+	} else {
+		values[BMP180_TEMP] = - 0xFF;
+		sensor_state |= STATE_BMP180;
+	}
+
+	value = bmp180_pres_read();
+
+	if (value != -1) {
+		values[BMP180_PRES] = value;
+		sensor_state &= ~STATE_BMP180;
+	} else {
+		values[BMP180_PRES] = - 0xFF;
+		sensor_state |= STATE_BMP180;
+	}
 
 	return 0;
 }

@@ -427,3 +427,45 @@ error:
 
 	return -1;
 }
+
+LIBHELPER_EXPORT int bmp180_temp_read(void)
+{
+	int fd = open(SYSFS_BMP180_TEMP_PATH, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	char value[6];
+	memset(&value, 0, 6);
+
+	if (read(fd, value, 6) < 0)
+		goto error;
+
+	close(fd);
+	return atoi(value)/1000;
+error:
+	perror("an error occured in cpu_temp_read()");
+	close(fd);
+
+	return -1;
+}
+
+LIBHELPER_EXPORT int bmp180_pres_read(void)
+{
+	int fd = open(SYSFS_BMP180_PRES_PATH, O_RDONLY);
+	if (fd < 0)
+		goto error;
+
+	char value[14];
+	memset(&value, 0, 14);
+
+	if (read(fd, value, 14) < 0)
+		goto error;
+
+	close(fd);
+	return atoi(value);
+error:
+	perror("an error occured in cpu_temp_read()");
+	close(fd);
+
+	return -1;
+}

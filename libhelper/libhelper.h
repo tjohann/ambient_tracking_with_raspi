@@ -148,6 +148,8 @@ struct sensor_fifo_req {
 #define GPIO_VALUE_PATH "/sys/class/gpio/gpio%d/value"
 
 #define SYSFS_CPU_TEMP_PATH "/sys/class/thermal/thermal_zone0/temp"
+#define SYSFS_BMP180_TEMP_PATH "/sys/bus/i2c/devices/1-0077/iio:device0/in_temp_input"
+#define SYSFS_BMP180_PRES_PATH "/sys/bus/i2c/devices/1-0077/iio:device0/in_pressure_input"
 
 /* shortcut for old signal api (my_signal()) */
 typedef	void sigfunc(int);
@@ -174,5 +176,7 @@ int gpio_set_edge_falling(int pin);
 int gpio_read(int pin);
 int gpio_write(int pin, int value);
 int cpu_temp_read(void);
+int bmp180_temp_read(void);
+int bmp180_pres_read(void);
 
 #endif

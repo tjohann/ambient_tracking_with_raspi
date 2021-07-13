@@ -9,6 +9,9 @@
 	      ## device stuff
 	      activate bmp180 via iio/sysfs
 
+	      ## sensor_pi && libhelper stuff
+	      add get_bmp180_*() function
+
 2021-07-12 -> ## sensor_pi && libhelper stuff
 	      add get_cpu_temp() function
 
