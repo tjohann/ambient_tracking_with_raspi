@@ -110,14 +110,23 @@ For more informations see https://www.cyberciti.biz/faq/linux-find-out-raspberry
 	echo "$((cpu/1000))°C"
 
 
-BMP180 module
--------------
+BMP180 modul
+------------
 
-For valid temperature i add a BMP180 module (for example: )
+For valid temperature i add a BMP180 module. There're different versions outside. Choose the one you like. To activate it i added
 
-	root@pi-env:iio:device0# pwd
+
+Path via i2c or iio:
+
+	/sys/bus/i2c/devices/1-0077/iio:device0
+	or
 	/sys/bus/iio/devices/iio:device0
-	root@pi-env:iio:device0# tree .
+
+Output:
+
+	baalue@pi-env:/sys/bus/i2c/devices/1-0077/iio:device0$ pwd
+	/sys/bus/i2c/devices/1-0077/iio:device0
+	baalue@pi-env:/sys/bus/i2c/devices/1-0077/iio:device0$ tree .
 	.
 	├── dev
 	├── in_pressure_input
@@ -126,12 +135,19 @@ For valid temperature i add a BMP180 module (for example: )
 	├── in_temp_oversampling_ratio
 	├── name
 	├── power
-	│   ├── autosuspend_delay_ms
-	│   ├── control
-	│   ├── runtime_active_time
-	│   ├── runtime_status
-	│   └── runtime_suspended_time
+	│   ├── autosuspend_delay_ms
+	│   ├── control
+	│   ├── runtime_active_time
+	│   ├── runtime_status
+	│   └── runtime_suspended_time
 	├── subsystem -> ../../../../../../../bus/iio
 	└── uevent
 
 	2 directories, 12 files
+
+	baalue@pi-env:/sys/bus/i2c/devices/1-0077/iio:device0$ cat in_temp_input
+	27700
+
+	baalue@pi-env:/sys/bus/i2c/devices/1-0077/iio:device0$ cat in_pressure_input
+	100.040000000
+
