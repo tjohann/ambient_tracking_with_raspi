@@ -374,7 +374,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				data.ext_temp + correct_ext);
 
 			snprintf(values[CPU_TEMP], lcd_max_col + 1,
-				"CPU Temp : %d degC",
+				"CPU Temp  : %d degC",
 				data.cpu_temp);
 
 			snprintf(values[BARO_TEMP], lcd_max_col + 1,
