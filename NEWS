@@ -6,6 +6,9 @@
 2021-07-13 -> ## amtrack stuff
 	      "optical" changes
 
+	      ## device stuff
+	      activate bmp180 via iio/sysfs
+
 2021-07-12 -> ## sensor_pi && libhelper stuff
 	      add get_cpu_temp() function
 
