@@ -21,11 +21,12 @@ https://cdn-shop.adafruit.com/datasheets/HD44780.pdf
 https://de.wikipedia.org/wiki/HD44780
 
 
-
 DockerPi Sensor Hub
 -------------------
 
-https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106
+Link:
+
+	https://wiki.52pi.com/index.php/DockerPi_Sensor_Hub_Development_Board_SKU:%20_EP-0106
 
 
 I2C topics and linux
@@ -54,16 +55,28 @@ Links:
 	https://www.kernel.org/doc/Documentation/i2c/fault-codes
 
 
+GPIO and raspi
+--------------
+
+Link:
+
+	https://elinux.org/RPi_GPIO_Code_Samples
+
+
 Build a raspi kernel
 --------------------
 
-https://www.raspberrypi.org/documentation/linux/kernel/building.md
+Link:
+
+	https://www.raspberrypi.org/documentation/linux/kernel/building.md
 
 
 SQLite usage
 ------------
 
-https://zetcode.com/db/sqlitec/
+Link:
+
+	https://zetcode.com/db/sqlitec/
 
 
 Poweroff button
@@ -151,3 +164,19 @@ Output:
 	baalue@pi-env:/sys/bus/i2c/devices/1-0077/iio:device0$ cat in_pressure_input
 	100.040000000
 
+To get the real values you should correct them depending on you location, see https://www.raspberry-pi-geek.com/Archive/2017/23/Using-the-BMP180-to-record-air-pressure-and-temperature for more informations about it.
+
+
+RTC (real time clock) module
+----------------------------
+
+The Raspi does not have a RTC on the board. So we need a static network connection. In my images, the ntp client is already activated, but direct after a reboot it takes some time to get the actual time. During this period all date values are wrong (stand on UNIX time, see https://de.wikipedia.org/wiki/Unixzeit).
+
+I add the module like https://www.elecrow.com/wiki/index.php?title=Tiny_RTC to the board. To use it with an raspberry you have to manually to some changes. There`re a lot of descriptions in the www, here`s an really good example: http://www.netzmafia.de/skripten/hardware/RasPi/Projekt-RTC/index.html .
+
+A least there`re 2 changes needed:
+
+	remove the pullups from SCL/SDA
+	remove the load circuit if you want to use a CR2032 batterie
+
+TODO: pic from before changes and after the changes.

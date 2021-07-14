@@ -46,3 +46,17 @@ SQLite
 
 https://www.sqlite.org/index.html
 https://zetcode.com/db/sqlite/
+
+
+RTC
+---
+
+https://www.elecrow.com/wiki/index.php?title=Tiny_RTC
+http://www.elecrow.com/download/I2CRTC%20Module.zip
+
+
+BMP180
+------
+
+https://components101.com/sensors/bmp180-atmospheric-pressure-sensor
+https://www.raspberry-pi-geek.de/ausgaben/rpg/2015/05/mit-dem-bmp180-luftdruck-und-temperatur-erfassen/
