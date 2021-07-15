@@ -1,0 +1,11 @@
+Used I2C addresses
+==================
+
+
+RTC -> 0x68
+EEPROM -> 0x50
+LCD -> 0x22
+SENSOR-PI -> 0x17
+BMP180 -> 0x77
+
+
