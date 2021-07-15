@@ -3,6 +3,14 @@
 #
 
 
+
+2021-07-15 -> ## repo stuff
+              add description for the rtc pcb changes
+              documentation updates
+
+              ## sensor_pi && libhelper stuff
+              change resolution and output
+
 2021-07-14 -> ## target && repo stuff
 	      start to add rtc module
 

@@ -264,7 +264,7 @@ void * lcd2004_handling(__attribute__((__unused__)) void *arg)
 	for (;;) {
 		/* first circle */
 		(void) lcd_clear();
-		(void) lcd_write_string(1, BARO_TEMP);
+		(void) lcd_write_string(1, BMP180_TEMP);
 		(void) lcd_write_string(3, BRIGHTNESS);
 		(void) lcd_write_string(4, HUMINITY);
 		(void) lcd_write_string(2, PRESSURE);

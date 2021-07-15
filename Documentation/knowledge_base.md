@@ -176,7 +176,8 @@ I add the module like https://www.elecrow.com/wiki/index.php?title=Tiny_RTC to t
 
 A least there`re 2 changes needed:
 
-	remove the pullups from SCL/SDA
-	remove the load circuit if you want to use a CR2032 batterie
+	remove the pullups from SCL/SDA (remove R2/R3)
+	remove the load circuit if you want to use a CR2032 batterie (remove D1/R4/R6 -> shortcut R6 pads)
 
-TODO: pic from before changes and after the changes.
+![Alt text](../pics/RTC_before.jpg?raw=true "The original PCB")
+![Alt text](../pics/RTC_after_2.jpg?raw=true "What changed?")

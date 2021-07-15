@@ -170,13 +170,13 @@ static int get_values_sensor_pi(void)
 		values[EXT_TEMP] = buf[TEMP_REG];
 		sensor_state &= ~STATE_EXT_TEMP;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current external sensor temperature: %d °C",
+		syslog(LOG_INFO, "external sensor temperature: %d °C",
 			buf[TEMP_REG]);
-		syslog(LOG_INFO, "current external sensor temperature: %d °C",
+		syslog(LOG_INFO, "external sensor temperature: %d °C",
 			values[EXT_TEMP]);
-		printf("current external sensor temperature: %d °C\n",
+		printf("external sensor temperature: %d °C\n",
 			buf[TEMP_REG]);
-		printf("current external sensor temperature: %d °C\n",
+		printf("external sensor temperature: %d °C\n",
 			values[EXT_TEMP]);
 #endif
 	}
@@ -191,13 +191,13 @@ static int get_values_sensor_pi(void)
 		values[ONBOARD_TEMP] = buf[ON_BOARD_TEMP_REG];
 		sensor_state &= ~STATE_ONBOARD_TEMP;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current onboard sensor temperature: %d °C",
+		syslog(LOG_INFO, "onboard sensor temperature: %d °C",
 			buf[ON_BOARD_TEMP_REG]);
-		syslog(LOG_INFO, "current onboard sensor temperature: %d °C",
+		syslog(LOG_INFO, "onboard sensor temperature: %d °C",
 			values[ONBOARD_TEMP]);
-		printf("current onboard sensor temperature: %d °C\n",
+		printf("onboard sensor temperature: %d °C\n",
 			buf[ON_BOARD_TEMP_REG]);
-		printf("current onboard sensor temperature: %d °C\n",
+		printf("onboard sensor temperature: %d °C\n",
 			values[ONBOARD_TEMP]);
 #endif
 	}
@@ -212,13 +212,13 @@ static int get_values_sensor_pi(void)
 		values[HUMINITY] = buf[ON_BOARD_HUMIDITY_REG];
 		sensor_state &= ~STATE_HUMINITY;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current onboard sensor humidity: %d %%",
+		syslog(LOG_INFO, "onboard sensor humidity: %d %%",
 			buf[ON_BOARD_HUMIDITY_REG]);
-		syslog(LOG_INFO, "current onboard sensor humidity: %d %%",
+		syslog(LOG_INFO, "onboard sensor humidity: %d %%",
 			values[HUMINITY]);
-		printf("current onboard sensor humidity: %d %%\n",
+		printf("onboard sensor humidity: %d %%\n",
 			buf[ON_BOARD_HUMIDITY_REG]);
-		printf("current onboard sensor humidity: %d %%\n",
+		printf("onboard sensor humidity: %d %%\n",
 			values[HUMINITY]);
 #endif
 	}
@@ -238,13 +238,13 @@ static int get_values_sensor_pi(void)
 		values[BRIGHTNESS] = (buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L];
 		sensor_state &= ~STATE_BRIGHTNESS;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current onboard sensor brightness: %d lux",
+		syslog(LOG_INFO, "onboard sensor brightness: %d lux",
 			((buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L]));
-		syslog(LOG_INFO, "current onboard sensor brightness: %d lux",
+		syslog(LOG_INFO, "onboard sensor brightness: %d lux",
 			values[BRIGHTNESS]);
-		printf("current onboard sensor brightness: %d lux\n",
+		printf("onboard sensor brightness: %d lux\n",
 			((buf[LIGHT_REG_H] << 8) | buf[LIGHT_REG_L]));
-		printf("current onboard sensor brightness: %d lux\n",
+		printf("onboard sensor brightness: %d lux\n",
 			values[BRIGHTNESS]);
 #endif
 
@@ -260,13 +260,13 @@ static int get_values_sensor_pi(void)
 		values[BARO_TEMP] = buf[BMP280_TEMP_REG];
 		sensor_state &= ~STATE_BARO_TEMP;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current barometer sensor temperature: %d °C",
+		syslog(LOG_INFO, "barometer sensor temperature: %d °C",
 			buf[BMP280_TEMP_REG]);
-		syslog(LOG_INFO, "current barometer sensor temperature: %d °C",
+		syslog(LOG_INFO, "barometer sensor temperature: %d °C",
 			values[BARO_TEMP]);
-		printf("current barometer sensor temperature: %d °C\n",
+		printf("barometer sensor temperature: %d °C\n",
 			buf[BMP280_TEMP_REG]);
-		printf("current barometer sensor temperature: %d °C\n",
+		printf("barometer sensor temperature: %d °C\n",
 			values[BARO_TEMP]);
 #endif
 	}
@@ -283,17 +283,17 @@ static int get_values_sensor_pi(void)
 				| buf[BMP280_PRESSURE_REG_H] << 16);
 		sensor_state &= ~STATE_PRESSURE;
 #ifdef __DEBUG__
-		syslog(LOG_INFO, "current barometer sensor pressure: %d pascal",
+		syslog(LOG_INFO, "barometer sensor pressure: %d pascal",
 			(buf[BMP280_PRESSURE_REG_L]
 				| buf[BMP280_PRESSURE_REG_M] << 8
 				| buf[BMP280_PRESSURE_REG_H] << 16 ));
-		syslog(LOG_INFO, "current barometer sensor pressure: %d pascal",
+		syslog(LOG_INFO, "barometer sensor pressure: %d pascal",
 			values[PRESSURE]);
-		printf("current barometer sensor pressure: %d pascal\n",
+		printf("barometer sensor pressure: %d pascal\n",
 			(buf[BMP280_PRESSURE_REG_L]
 				| buf[BMP280_PRESSURE_REG_M] << 8
 				| buf[BMP280_PRESSURE_REG_H] << 16 ));
-		printf("current barometer sensor pressure: %d pascal\n",
+		printf("barometer sensor pressure: %d pascal\n",
 			values[PRESSURE]);
 #endif
 	}
@@ -333,6 +333,11 @@ static int get_cpu_temp(void)
 		sensor_state |= STATE_CPU_TEMP;
 	}
 
+#ifdef __DEBUG__
+	syslog(LOG_INFO, "cpu temp: %d degC", values[CPU_TEMP]);
+	printf("cpu temp: %d degC", values[CPU_TEMP]);
+#endif
+
 	return 0;
 }
 
@@ -351,12 +356,22 @@ static int get_values_bmp180(void)
 	value = bmp180_pres_read();
 
 	if (value != -1) {
-		values[BMP180_PRES] = value;
+		values[BMP180_PRES] = value/100;
 		sensor_state &= ~STATE_BMP180;
 	} else {
 		values[BMP180_PRES] = - 0xFF;
 		sensor_state |= STATE_BMP180;
 	}
+
+#ifdef __DEBUG__
+	syslog(LOG_INFO, "bmp180 pressure: %d pascal",
+		values[BMP180_PRES]);
+	printf("bmp180 pressure: %d pascal", values[BMP180_PRES]);
+
+	syslog(LOG_INFO, "bmp180 temp: %d deg C",
+		values[BMP180_TEMP]);
+	printf("bmp180 temp: %d deg C",	values[BMP180_TEMP]);
+#endif
 
 	return 0;
 }
