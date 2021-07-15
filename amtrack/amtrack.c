@@ -402,7 +402,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				data.bmp180_temp);
 
 			snprintf(values[BMP180_PRES], lcd_max_col + 1,
-				"BMP180 P. : %d Pa",
+				"BMP180 P. : %d hPa",
 				data.bmp180_pres);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,
@@ -442,7 +442,7 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 				data.bmp180_temp);
 
 			snprintf(values[BMP180_PRES], lcd_max_col + 1,
-				"BMP P. : %d Pa",
+				"BMP P. : %d hPa",
 				data.bmp180_pres);
 
 			snprintf(values[BODY_DETECT], lcd_max_col + 1,

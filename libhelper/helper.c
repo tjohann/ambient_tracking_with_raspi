@@ -462,7 +462,7 @@ LIBHELPER_EXPORT int bmp180_pres_read(void)
 		goto error;
 
 	close(fd);
-	return atoi(value);
+	return (atoi(value) * 10);
 error:
 	perror("an error occured in cpu_temp_read()");
 	close(fd);

@@ -356,7 +356,7 @@ static int get_values_bmp180(void)
 	value = bmp180_pres_read();
 
 	if (value != -1) {
-		values[BMP180_PRES] = value/100;
+		values[BMP180_PRES] = value;
 		sensor_state &= ~STATE_BMP180;
 	} else {
 		values[BMP180_PRES] = - 0xFF;
@@ -366,7 +366,7 @@ static int get_values_bmp180(void)
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "bmp180 pressure: %d pascal",
 		values[BMP180_PRES]);
-	printf("bmp180 pressure: %d pascal", values[BMP180_PRES]);
+	printf("bmp180 pressure: %d hPa", values[BMP180_PRES]);
 
 	syslog(LOG_INFO, "bmp180 temp: %d deg C",
 		values[BMP180_TEMP]);
