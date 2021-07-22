@@ -605,8 +605,8 @@ int init_lcd(char *adapter, unsigned char addr, int type)
 	return 0;
 }
 
-/* the main thread */
-void * server_handling(__attribute__((__unused__)) void *arg)
+/* the lcd & fifo thread */
+void * lcd_handler(__attribute__((__unused__)) void *arg)
 {
 	/* this call won't block -> clear of flag is below */
 	read_fifo = create_read_fifo(DAEMON_FIFO);
@@ -656,6 +656,25 @@ void * server_handling(__attribute__((__unused__)) void *arg)
 		}
 
 		memset(&req, 0, len);
+	}
+
+	return NULL;
+}
+
+/* the ctrl thread -> for example clear display */
+void * state_handler(void *arg)
+{
+	pthread_t tid_lcd = *((pthread_t*) arg);
+
+	/*
+	 * - setup ctrl fifo
+	 * - define cmd to clear display
+	 * - define cmd to halt
+	 * - kill lcd_handler thread
+	 */
+
+	for (;;) {
+		sleep(60);
 	}
 
 	return NULL;
@@ -719,7 +738,15 @@ int main(int argc, char *argv[])
 	}
 
 	pthread_t tid;
-	err = pthread_create(&tid, NULL, server_handling, NULL);
+	err = pthread_create(&tid, NULL, lcd_handler, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't create thread");
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
+
+	pthread_t tid_ctrl;
+	err = pthread_create(&tid_ctrl, NULL, state_handler, NULL);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
 		eprintf("can't create thread\n");
@@ -731,5 +758,6 @@ int main(int argc, char *argv[])
 	(void) say_hello();
 
 	(void) pthread_join(tid, NULL);
+	(void) pthread_join(tid_ctrl, NULL);
 	return EXIT_SUCCESS;
 }
