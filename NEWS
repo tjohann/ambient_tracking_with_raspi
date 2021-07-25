@@ -4,6 +4,9 @@
 
 
 
+2021-07-25 -> ## target stuff
+	      regular image updates
+
 2021-07-22 -> ## lcd2004_i2c stuff
 	      add first part to setup a ctrl thread which handles correct
 	      shutdown of the lcd (clear lcd ...)
