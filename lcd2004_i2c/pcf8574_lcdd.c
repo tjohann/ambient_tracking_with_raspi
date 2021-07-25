@@ -664,7 +664,7 @@ void * lcd_handler(__attribute__((__unused__)) void *arg)
 /* the ctrl thread -> for example clear display */
 void * state_handler(void *arg)
 {
-	pthread_t tid_lcd = *((pthread_t*) arg);
+	pthread_t tid_lcd = *((pthread_t *) arg);
 
 	/*
 	 * - setup ctrl fifo
@@ -746,7 +746,7 @@ int main(int argc, char *argv[])
 	}
 
 	pthread_t tid_ctrl;
-	err = pthread_create(&tid_ctrl, NULL, state_handler, NULL);
+	err = pthread_create(&tid_ctrl, NULL, state_handler, tid);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
 		eprintf("can't create thread\n");
