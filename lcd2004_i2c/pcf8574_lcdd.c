@@ -746,7 +746,7 @@ int main(int argc, char *argv[])
 	}
 
 	pthread_t tid_ctrl;
-	err = pthread_create(&tid_ctrl, NULL, state_handler, tid);
+	err = pthread_create(&tid_ctrl, NULL, state_handler, &tid);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
 		eprintf("can't create thread\n");
