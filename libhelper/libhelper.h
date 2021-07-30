@@ -40,6 +40,7 @@
 #define FIFOMODE (S_IRUSR | S_IWUSR | S_IWGRP)
 
 #define LCD_FIFO "/var/run/lcd_daemon.fifo"
+#define LCD_CTRL_FIFO "/var/run/lcd_ctrl.fifo"
 #define SENSOR_FIFO "/var/run/sensor_daemon.fifo"
 
 #define MAX_LEN_FIFO_NAME 40
@@ -86,6 +87,10 @@ struct lcd_request {
 	signed char line;
 	char cur_pos;
 	char str[LCD2004_MAX_COL + 1];
+};
+
+struct lcd_ctrl_request {
+	unsigned char cmd;
 };
 
 /* position within the sensor pi value array */

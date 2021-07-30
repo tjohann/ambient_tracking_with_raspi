@@ -3,6 +3,8 @@
 #
 
 
+2021-07-30 -> ## lcd2004_i2c stuff
+	      add first parts for ctrl fifo handling
 
 2021-07-25 -> ## target stuff
 	      regular image updates

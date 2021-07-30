@@ -56,6 +56,7 @@
 
 #define LOCKFILE "/var/run/lcd_daemon.pid"
 #define DAEMON_FIFO LCD_FIFO
+#define CTRL_FIFO LCD_CTRL_FIFO
 
 #define LCD_WRITE_NIBBLE(data) do {					\
 		if (lcd_write_nibble(data) < 0) {			\
@@ -619,8 +620,8 @@ void * lcd_handler(__attribute__((__unused__)) void *arg)
 	/* now no EOF possible */
 	int dummy_fd = open(DAEMON_FIFO, O_WRONLY);
 	if (dummy_fd < 0) {
-		syslog(LOG_ERR, "open in server_handling()");
-		eprintf("open in server_handling()\n");
+		syslog(LOG_ERR, "open in lcd_handler()");
+		eprintf("open in lcd_handler()\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -658,6 +659,8 @@ void * lcd_handler(__attribute__((__unused__)) void *arg)
 		memset(&req, 0, len);
 	}
 
+	close(dummy_fd);
+	close(read_fifo);
 	return NULL;
 }
 
@@ -666,15 +669,49 @@ void * state_handler(void *arg)
 {
 	pthread_t tid_lcd = *((pthread_t *) arg);
 
-	/*
-	 * - setup ctrl fifo
-	 * - define cmd to clear display
-	 * - define cmd to halt
-	 * - kill lcd_handler thread
-	 */
+	/* this call won't block -> clear of flag is below */
+	read_fifo = create_read_fifo(CTRL_FIFO);
+	if (read_fifo < 0) {
+		syslog(LOG_ERR, "can't setup read fifo");
+		eprintf("can't setup read fifo\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* now no EOF possible */
+	int dummy_fd = open(CTRL_FIFO, O_WRONLY);
+	if (dummy_fd < 0) {
+		syslog(LOG_ERR, "open in state_handler()");
+		eprintf("open in state_handler()\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* clear O_NONBLOCK -> the read will now block */
+	clr_flag(read_fifo, O_NONBLOCK);
+
+	struct lcd_ctrl_request req;
+	size_t len = sizeof(struct lcd_ctrl_request);
+	memset(&req, 0, len);
 
 	for (;;) {
-		sleep(60);
+		if (read(read_fifo, &req, len) != (int) len) {
+			syslog(LOG_ERR,
+				"len of request not valid -> ignore it");
+			eprintf("len of request not valid -> ignore it\n");
+			continue;
+ 		}
+
+#ifdef __DEBUG__
+		syslog(LOG_INFO, "read cmd: %d", req.cmd);
+		eprintf("read cmd: %d\n", req.cmd);
+#endif
+
+		/*
+		 * - define cmd to clear display
+		 * - define cmd to halt
+		 * - kill lcd_handler thread
+		 */
+
+		memset(&req, 0, len);
 	}
 
 	return NULL;
