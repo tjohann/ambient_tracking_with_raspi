@@ -90,7 +90,7 @@ struct lcd_request {
 };
 
 struct lcd_ctrl_request {
-	unsigned char cmd;
+	signed char cmd;
 };
 
 /* position within the sensor pi value array */

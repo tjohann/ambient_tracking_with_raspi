@@ -700,14 +700,13 @@ void * state_handler(void *arg)
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
 			eprintf("len of request not valid -> ignore it\n");
-			continue;
+			//continue;
  		}
 
 #ifdef __DEBUG__
 		syslog(LOG_INFO, "read cmd: %d", req.cmd);
 		eprintf("read cmd: %d\n", req.cmd);
 #endif
-
 		lcd_clear();
 
 		memset(&req, 0, len);

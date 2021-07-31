@@ -162,7 +162,7 @@ void * poweroff_handler(__attribute__((__unused__)) void *arg)
 		sleep(5);
 
 		/* use runit to halt device */
-		//system("init 0");
+		system("init 0");
 	}
 
 	return NULL;
