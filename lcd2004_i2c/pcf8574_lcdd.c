@@ -85,8 +85,9 @@ static unsigned char lcd_type = 0;
 static unsigned char lcd_max_line = 0;
 static unsigned char lcd_max_col = 0;
 
-/* the daemon read fifo */
+/* the daemon read fifo's */
 static int read_fifo = -1;
+static int ctrl_fifo = -1;
 
 extern char *__progname;
 
@@ -139,6 +140,7 @@ static void cleanup(void)
 		close(lcd);
 
 	unlink(DAEMON_FIFO);
+	unlink(CTRL_FIFO);
 	unlink(LOCKFILE);
 
 	syslog(LOG_INFO, "daemon is down -> bye");
@@ -661,6 +663,7 @@ void * lcd_handler(__attribute__((__unused__)) void *arg)
 
 	close(dummy_fd);
 	close(read_fifo);
+
 	return NULL;
 }
 
@@ -670,8 +673,8 @@ void * state_handler(void *arg)
 	pthread_t tid_lcd = *((pthread_t *) arg);
 
 	/* this call won't block -> clear of flag is below */
-	read_fifo = create_read_fifo(CTRL_FIFO);
-	if (read_fifo < 0) {
+	ctrl_fifo = create_read_fifo(CTRL_FIFO);
+	if (ctrl_fifo < 0) {
 		syslog(LOG_ERR, "can't setup read fifo");
 		eprintf("can't setup read fifo\n");
 		exit(EXIT_FAILURE);
@@ -686,14 +689,14 @@ void * state_handler(void *arg)
 	}
 
 	/* clear O_NONBLOCK -> the read will now block */
-	clr_flag(read_fifo, O_NONBLOCK);
+	clr_flag(ctrl_fifo, O_NONBLOCK);
 
 	struct lcd_ctrl_request req;
 	size_t len = sizeof(struct lcd_ctrl_request);
 	memset(&req, 0, len);
 
 	for (;;) {
-		if (read(read_fifo, &req, len) != (int) len) {
+		if (read(ctrl_fifo, &req, len) != (int) len) {
 			syslog(LOG_ERR,
 				"len of request not valid -> ignore it");
 			eprintf("len of request not valid -> ignore it\n");
@@ -713,6 +716,9 @@ void * state_handler(void *arg)
 
 		memset(&req, 0, len);
 	}
+
+	close(dummy_fd);
+	close(ctrl_fifo);
 
 	return NULL;
 }
