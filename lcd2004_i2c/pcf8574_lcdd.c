@@ -146,6 +146,48 @@ static void cleanup(void)
 	syslog(LOG_INFO, "daemon is down -> bye");
 }
 
+/* for global signal handler */
+sigset_t mask;
+
+void *
+signal_handler(void *args)
+{
+	(void) args;
+
+	int sig = EINVAL;
+	int err = -1;
+	for (;;) {
+		err = sigwait(&mask, &sig);
+		if (err != 0) {
+			syslog(LOG_ERR, "sigwait() != 0");
+			eprintf("sigwait() != 0 \n");
+		}
+
+		switch(sig) {
+		case SIGTERM:
+			syslog(LOG_INFO, "catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			printf("catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			exit(EXIT_SUCCESS);
+			break;
+		case SIGHUP:
+			syslog(LOG_INFO,"signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			printf("signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			break;
+		default:
+			syslog(LOG_INFO,"unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+			printf("unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+		}
+	}
+
+	return NULL;
+}
+
 static void lock_file_handling(void)
 {
 	int err = already_running(LOCKFILE);
@@ -768,6 +810,23 @@ int main(int argc, char *argv[])
 	else
 		lock_file_handling();
 
+	sigfillset(&mask);
+	err = pthread_sigmask(SIG_BLOCK, &mask, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't set sigmask");
+		eprintf("can't set sigmask\n");
+		exit(EXIT_FAILURE);
+	}
+
+	static pthread_t tid_sig;
+	err = pthread_create(&tid_sig, NULL,
+			     signal_handler, (void *) run_as_daemon);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't create thread");
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
+
 	err = init_lcd(adapter, addr, type);
 	if (err < 0) {
 		syslog(LOG_ERR, "can't init LCD");
@@ -797,5 +856,6 @@ int main(int argc, char *argv[])
 
 	(void) pthread_join(tid, NULL);
 	(void) pthread_join(tid_ctrl, NULL);
+	(void) pthread_join(tid_sig, NULL);
 	return EXIT_SUCCESS;
 }
