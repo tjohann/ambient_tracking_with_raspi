@@ -708,11 +708,7 @@ void * state_handler(void *arg)
 		eprintf("read cmd: %d\n", req.cmd);
 #endif
 
-		/*
-		 * - define cmd to clear display
-		 * - define cmd to halt
-		 * - kill lcd_handler thread
-		 */
+		lcd_clear();
 
 		memset(&req, 0, len);
 	}

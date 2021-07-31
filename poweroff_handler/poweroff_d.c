@@ -20,6 +20,9 @@
 #include <libhelper.h>
 #include <sys/inotify.h>
 
+/* the lcd ctrl fifo */
+static int lcd_ctrl_fd = -1;
+
 extern char *__progname;
 
 static void
@@ -41,6 +44,9 @@ static void cleanup(void)
 {
 	(void) gpio_unexport(POWEROFF_BUTTON);
 	(void) gpio_unexport(POWER_LED);
+
+	if (lcd_ctrl_fd > 0)
+		close(lcd_ctrl_fd);
 
 	puts("daemon is down -> bye");
 }
@@ -73,6 +79,26 @@ static void init_pins(void)
 	}
 }
 
+static int init_lcd(void)
+{
+	lcd_ctrl_fd = open(LCD_FIFO, O_WRONLY);
+	if (lcd_ctrl_fd < 0) {
+		perror("open in main()");
+		return -1;;
+	}
+
+	return 0;
+}
+
+static void clear_lcd(void)
+{
+	struct lcd_ctrl_request req;
+	size_t len = sizeof(struct lcd_ctrl_request);
+	memset(&req, 0, len);
+
+	req.cmd = LCD_CLEAR;
+	(void) write(lcd_ctrl_fd, &req, len); /* ignore error */
+}
 
 /* the main thread */
 void * poweroff_handler(__attribute__((__unused__)) void *arg)
@@ -131,10 +157,12 @@ void * poweroff_handler(__attribute__((__unused__)) void *arg)
 
 		printf("shut down the system in 5 seconds\n");
 		(void) gpio_write(POWER_LED, 1); /* only an indication */
+
+		clear_lcd();
 		sleep(5);
 
 		/* use runit to halt device */
-		system("init 0");
+		//system("init 0");
 	}
 
 	return NULL;
@@ -160,6 +188,12 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 
 	init_pins();
+
+	err = init_lcd();
+	if (err < 0) {
+		eprintf("can't init LCD\n");
+		exit(EXIT_FAILURE);
+	}
 
 	pthread_t tid;
 	err = pthread_create(&tid, NULL, poweroff_handler, NULL);

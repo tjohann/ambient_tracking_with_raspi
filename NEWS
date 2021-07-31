@@ -3,8 +3,9 @@
 #
 
 
-2021-07-31 -> ## lcd2004_i2c stuff
+2021-07-31 -> ## lcd2004_i2c & poweroff stuff
 	      fix ctrl fifo handling
+	      add first content for lcd ctrl handling
 
 2021-07-30 -> ## lcd2004_i2c stuff
 	      add first parts for ctrl fifo handling
