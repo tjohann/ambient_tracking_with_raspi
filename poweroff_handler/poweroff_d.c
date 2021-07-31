@@ -96,7 +96,7 @@ static void clear_lcd(void)
 	size_t len = sizeof(struct lcd_ctrl_request);
 	memset(&req, 0, len);
 
-	req.cmd = LCD_CLEAR;
+	req.cmd = ~(LCD_CLEAR);
 	(void) write(lcd_ctrl_fd, &req, len); /* ignore error */
 }
 
