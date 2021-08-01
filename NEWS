@@ -10,6 +10,10 @@
 	      ## sensor_pi stuff
               fix debug output of bmp180 infos and cpu temp
 
+	      ## target stuff
+	      regular image updates
+	      update baalued and libbaalue
+
 2021-07-31 -> ## lcd2004_i2c & poweroff stuff
 	      fix ctrl fifo handling
 	      add first content for lcd ctrl handling
