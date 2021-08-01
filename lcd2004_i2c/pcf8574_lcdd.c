@@ -56,7 +56,6 @@
 
 #define LOCKFILE "/var/run/lcd_daemon.pid"
 #define DAEMON_FIFO LCD_FIFO
-#define CTRL_FIFO LCD_CTRL_FIFO
 
 #define LCD_WRITE_NIBBLE(data) do {					\
 		if (lcd_write_nibble(data) < 0) {			\
@@ -87,7 +86,6 @@ static unsigned char lcd_max_col = 0;
 
 /* the daemon read fifo's */
 static int read_fifo = -1;
-static int ctrl_fifo = -1;
 
 /* for global signal handler */
 sigset_t mask;
@@ -143,7 +141,6 @@ static void cleanup(void)
 		close(lcd);
 
 	unlink(DAEMON_FIFO);
-	unlink(CTRL_FIFO);
 	unlink(LOCKFILE);
 
 	syslog(LOG_INFO, "daemon is down -> bye");
@@ -708,57 +705,6 @@ void * lcd_handler(__attribute__((__unused__)) void *arg)
 	return NULL;
 }
 
-/* the ctrl thread -> for example clear display */
-void * state_handler(void *arg)
-{
-	pthread_t tid_lcd = *((pthread_t *) arg);
-
-	/* this call won't block -> clear of flag is below */
-	ctrl_fifo = create_read_fifo(CTRL_FIFO);
-	if (ctrl_fifo < 0) {
-		syslog(LOG_ERR, "can't setup read fifo");
-		eprintf("can't setup read fifo\n");
-		exit(EXIT_FAILURE);
-	}
-
-	/* now no EOF possible */
-	int dummy_fd = open(CTRL_FIFO, O_WRONLY);
-	if (dummy_fd < 0) {
-		syslog(LOG_ERR, "open in state_handler()");
-		eprintf("open in state_handler()\n");
-		exit(EXIT_FAILURE);
-	}
-
-	/* clear O_NONBLOCK -> the read will now block */
-	clr_flag(ctrl_fifo, O_NONBLOCK);
-
-	struct lcd_ctrl_request req;
-	size_t len = sizeof(struct lcd_ctrl_request);
-	memset(&req, 0, len);
-
-	for (;;) {
-		if (read(ctrl_fifo, &req, len) != (int) len) {
-			syslog(LOG_ERR,
-				"len of request not valid -> ignore it");
-			eprintf("len of request not valid -> ignore it\n");
-			//continue;
- 		}
-
-#ifdef __DEBUG__
-		syslog(LOG_INFO, "read cmd: %d", req.cmd);
-		eprintf("read cmd: %d\n", req.cmd);
-#endif
-		lcd_clear();
-
-		memset(&req, 0, len);
-	}
-
-	close(dummy_fd);
-	close(ctrl_fifo);
-
-	return NULL;
-}
-
 int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
@@ -840,20 +786,11 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	pthread_t tid_ctrl;
-	err = pthread_create(&tid_ctrl, NULL, state_handler, &tid);
-	if (err != 0) {
-		syslog(LOG_ERR, "can't create thread");
-		eprintf("can't create thread\n");
-		exit(EXIT_FAILURE);
-	}
-
 	syslog(LOG_INFO, "daemon is up and running");
 	printf("daemon is up and running\n");
 	(void) say_hello();
 
 	(void) pthread_join(tid, NULL);
-	(void) pthread_join(tid_ctrl, NULL);
 	(void) pthread_join(tid_sig, NULL);
 
 	return EXIT_SUCCESS;

@@ -338,7 +338,7 @@ static int get_cpu_temp(void)
 
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "cpu temp: %d degC", values[CPU_TEMP]);
-	printf("cpu temp: %d degC", values[CPU_TEMP]);
+	printf("cpu temp: %d degC\n", values[CPU_TEMP]);
 #endif
 
 	return 0;
@@ -369,11 +369,11 @@ static int get_values_bmp180(void)
 #ifdef __DEBUG__
 	syslog(LOG_INFO, "bmp180 pressure: %d pascal",
 		values[BMP180_PRES]);
-	printf("bmp180 pressure: %d hPa", values[BMP180_PRES]);
+	printf("bmp180 pressure: %d hPa\n", values[BMP180_PRES]);
 
 	syslog(LOG_INFO, "bmp180 temp: %d deg C",
 		values[BMP180_TEMP]);
-	printf("bmp180 temp: %d deg C",	values[BMP180_TEMP]);
+	printf("bmp180 temp: %d deg C\n",	values[BMP180_TEMP]);
 #endif
 
 	return 0;

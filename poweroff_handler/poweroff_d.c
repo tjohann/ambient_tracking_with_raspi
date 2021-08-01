@@ -93,16 +93,6 @@ static int init_lcd(void)
 	return 0;
 }
 
-static void clear_lcd(void)
-{
-	struct lcd_ctrl_request req;
-	size_t len = sizeof(struct lcd_ctrl_request);
-	memset(&req, 0, len);
-
-	req.cmd = 1 << LCD_CLEAR;
-	(void) write(lcd_ctrl_fd, &req, len); /* ignore error */
-}
-
 /* the signal handler thread */
 void *
 signal_handler(__attribute__((__unused__)) void *args)
@@ -199,7 +189,6 @@ void * poweroff_handler(__attribute__((__unused__)) void *arg)
 		printf("shut down the system in 5 seconds\n");
 		(void) gpio_write(POWER_LED, 1); /* only an indication */
 
-		clear_lcd();
 		sleep(5);
 
 		/* use runit to halt device */
