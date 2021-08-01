@@ -89,6 +89,9 @@ static unsigned char lcd_max_col = 0;
 static int read_fifo = -1;
 static int ctrl_fifo = -1;
 
+/* for global signal handler */
+sigset_t mask;
+
 extern char *__progname;
 
 /* common functions */
@@ -144,48 +147,6 @@ static void cleanup(void)
 	unlink(LOCKFILE);
 
 	syslog(LOG_INFO, "daemon is down -> bye");
-}
-
-/* for global signal handler */
-sigset_t mask;
-
-void *
-signal_handler(void *args)
-{
-	(void) args;
-
-	int sig = EINVAL;
-	int err = -1;
-	for (;;) {
-		err = sigwait(&mask, &sig);
-		if (err != 0) {
-			syslog(LOG_ERR, "sigwait() != 0");
-			eprintf("sigwait() != 0 \n");
-		}
-
-		switch(sig) {
-		case SIGTERM:
-			syslog(LOG_INFO, "catched signal \"%s\" (%d) -> exit now ",
-				strsignal(sig), sig);
-			printf("catched signal \"%s\" (%d) -> exit now ",
-				strsignal(sig), sig);
-			exit(EXIT_SUCCESS);
-			break;
-		case SIGHUP:
-			syslog(LOG_INFO,"signal \"%s\" (%d) -> ignore it",
-				strsignal(sig), sig);
-			printf("signal \"%s\" (%d) -> ignore it",
-				strsignal(sig), sig);
-			break;
-		default:
-			syslog(LOG_INFO,"unhandled signal \"%s\" (%d)",
-				strsignal(sig), sig);
-			printf("unhandled signal \"%s\" (%d)",
-				strsignal(sig), sig);
-		}
-	}
-
-	return NULL;
 }
 
 static void lock_file_handling(void)
@@ -650,6 +611,44 @@ int init_lcd(char *adapter, unsigned char addr, int type)
 	return 0;
 }
 
+/* the signal handler thread */
+void *
+signal_handler(__attribute__((__unused__)) void *args)
+{
+	int sig = EINVAL;
+	int err = -1;
+	for (;;) {
+		err = sigwait(&mask, &sig);
+		if (err != 0) {
+			syslog(LOG_ERR, "sigwait() != 0");
+			eprintf("sigwait() != 0 \n");
+		}
+
+		switch(sig) {
+		case SIGTERM:
+			syslog(LOG_INFO, "catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			printf("catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			exit(EXIT_SUCCESS);
+			break;
+		case SIGHUP:
+			syslog(LOG_INFO,"signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			printf("signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			break;
+		default:
+			syslog(LOG_INFO,"unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+			printf("unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+		}
+	}
+
+	return NULL;
+}
+
 /* the lcd & fifo thread */
 void * lcd_handler(__attribute__((__unused__)) void *arg)
 {
@@ -819,8 +818,7 @@ int main(int argc, char *argv[])
 	}
 
 	static pthread_t tid_sig;
-	err = pthread_create(&tid_sig, NULL,
-			     signal_handler, (void *) run_as_daemon);
+	err = pthread_create(&tid_sig, NULL, signal_handler, NULL);
 	if (err != 0) {
 		syslog(LOG_ERR, "can't create thread");
 		eprintf("can't create thread\n");
@@ -857,5 +855,6 @@ int main(int argc, char *argv[])
 	(void) pthread_join(tid, NULL);
 	(void) pthread_join(tid_ctrl, NULL);
 	(void) pthread_join(tid_sig, NULL);
+
 	return EXIT_SUCCESS;
 }

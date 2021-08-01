@@ -42,12 +42,14 @@ static int correct_ext = CORRECT_EXT;
 static int correct_baro = CORRECT_BARO;
 static int correct_onboard = CORRECT_ONBOARD;
 
-
 /* the database */
 sqlite3 *db;
 
 #define SQL_INSERT_STRING "INSERT INTO AmbientValues VALUES(%ld, %d, %d, %d, %d, %d, %d, %d, %d, %d);"
 #define SQL_INS_STR_LEN 150
+
+/* for global signal handler */
+sigset_t mask;
 
 extern char *__progname;
 
@@ -505,6 +507,44 @@ void * ambient_handling(__attribute__((__unused__)) void *arg)
 	return NULL;
 }
 
+/* the signal handler thread */
+void *
+signal_handler(__attribute__((__unused__)) void *args)
+{
+	int sig = EINVAL;
+	int err = -1;
+	for (;;) {
+		err = sigwait(&mask, &sig);
+		if (err != 0) {
+			syslog(LOG_ERR, "sigwait() != 0");
+			eprintf("sigwait() != 0 \n");
+		}
+
+		switch(sig) {
+		case SIGTERM:
+			syslog(LOG_INFO, "catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			printf("catched signal \"%s\" (%d) -> exit now ",
+				strsignal(sig), sig);
+			exit(EXIT_SUCCESS);
+			break;
+		case SIGHUP:
+			syslog(LOG_INFO,"signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			printf("signal \"%s\" (%d) -> ignore it",
+				strsignal(sig), sig);
+			break;
+		default:
+			syslog(LOG_INFO,"unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+			printf("unhandled signal \"%s\" (%d)",
+				strsignal(sig), sig);
+		}
+	}
+
+	return NULL;
+}
+
 int main(int argc, char *argv[])
 {
 	int type = -1;
@@ -530,6 +570,22 @@ int main(int argc, char *argv[])
 	int err = atexit(cleanup);
 	if (err != 0)
 		exit(EXIT_FAILURE);
+
+	sigfillset(&mask);
+	err = pthread_sigmask(SIG_BLOCK, &mask, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't set sigmask");
+		eprintf("can't set sigmask\n");
+		exit(EXIT_FAILURE);
+	}
+
+	static pthread_t tid_sig;
+	err = pthread_create(&tid_sig, NULL, signal_handler, NULL);
+	if (err != 0) {
+		syslog(LOG_ERR, "can't create thread");
+		eprintf("can't create thread\n");
+		exit(EXIT_FAILURE);
+	}
 
 	err = init_database();
 	if (err < 0) {
@@ -568,5 +624,7 @@ int main(int argc, char *argv[])
 	puts("applications is up and running");
 
 	(void) pthread_join(tid, NULL);
+	(void) pthread_join(tid_sig, NULL);
+
 	return EXIT_SUCCESS;
 }

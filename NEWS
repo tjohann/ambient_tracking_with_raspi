@@ -3,6 +3,9 @@
 #
 
 
+2021-08-31 -> ## code stuff
+	      add signal handler thread to all application for catching SIG_TERM
+
 2021-07-31 -> ## lcd2004_i2c & poweroff stuff
 	      fix ctrl fifo handling
 	      add first content for lcd ctrl handling
