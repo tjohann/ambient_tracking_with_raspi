@@ -44,6 +44,15 @@ Functions
 	int create_read_fifo(char *name);
 	int create_write_fifo(char *name);
 	void clr_flag(int fd, int flags);
+	int gpio_export(int pin);
+	int gpio_unexport(int pin);
+	int gpio_set_direction(int pin, unsigned char dir);
+	int gpio_set_edge_falling(int pin);
+	int gpio_read(int pin);
+	int gpio_write(int pin, int value);
+	int cpu_temp_read(void);
+	int bmp180_temp_read(void);
+	int bmp180_pres_read(void);
 
 
 Configuraion

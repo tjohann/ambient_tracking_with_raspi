@@ -3,6 +3,9 @@
 #
 
 
+2021-08-10 -> ## repo stuff
+	      some documentatio updates
+
 2021-08-31 -> ## code stuff
 	      add signal handler thread to all application for catching SIG_TERM
 	      remove all code for lcd-ctrl handling
