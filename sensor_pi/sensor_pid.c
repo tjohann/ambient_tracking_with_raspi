@@ -68,6 +68,7 @@ static unsigned char actual_num_threads;
 sigset_t mask;
 
 extern char *__progname;
+bool run_as_daemon = false;
 
 /* common functions */
 int init_sensor_hub(char *adapter, unsigned char addr);
@@ -532,7 +533,6 @@ int main(int argc, char *argv[])
 {
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
-	bool run_as_daemon = false;
 
 	int c;
 	while ((c = getopt(argc, argv, "a:dhi:")) != -1) {

@@ -35,7 +35,49 @@
 #include <i2c/smbus.h>
 #include <pthread.h>
 
-#define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
+extern bool run_as_daemon;
+
+#define eprintf(fmt, ...) do {						\
+		if(!run_as_daemon)					\
+			fprintf(stderr, "ERROR in file %s@line %d: "	\
+				fmt, __FILE__, __LINE__);		\
+		else							\
+			syslog(LOG_ERR, "ERROR in file %s@line %d: "	\
+				fmt, __FILE__, __LINE__);		\
+	} while(0)
+
+#define eprintf_l(fmt, args...) do {					\
+		if(!run_as_daemon)					\
+			fprintf(stderr, "ERROR in file %s@line %d: "	\
+				fmt, __FILE__, __LINE__, args);		\
+		else							\
+			syslog(LOG_ERR, "ERROR in file %s@line %d: "	\
+				fmt, __FILE__, __LINE__, args);		\
+	} while(0)
+
+#ifdef __DEBUG__
+#define dprintf(fmt, args...) do {					\
+		if(!run_as_daemon)					\
+			fprintf(stdout, "DEBUG-INFO for file %s@line %d: " \
+				fmt, __FILE__, __LINE__);		\
+		else							\
+			syslog(LOG_DEBUG, "DEBUG-INFO for file %s@line %d: " \
+				fmt, __FILE__, __LINE__);		\
+	} while(0)
+
+#define dprintf_l(fmt, ...) do {					\
+		if(!run_as_daemon)					\
+			fprintf(stdout, "DEBUG-INFO for file %s@line %d: " \
+				fmt, __FILE__, __LINE__, args);		\
+		else							\
+			syslog(LOG_DEBUG, "DEBUG-INFO for file %s@line %d: " \
+				fmt, __FILE__, __LINE__, args);		\
+	} while(0)
+#else
+#define dprintf(...)
+#define dprintf_l(...)
+#endif
+
 #define LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 #define FIFOMODE (S_IRUSR | S_IWUSR | S_IWGRP)
 
@@ -48,7 +90,7 @@
 #define AMBIENT_DATABASE "/home/ambient/ambient_data.db"
 
 /* define bit/pin positions to be used */
- enum bit_pos_priv {
+enum bit_pos_priv {
 	BIT0 = 1 << 0,
 	BIT1 = 1 << 1,
 	BIT2 = 1 << 2,

@@ -27,6 +27,7 @@ static int lcd_ctrl_fd = -1;
 sigset_t mask;
 
 extern char *__progname;
+bool run_as_daemon = false;
 
 static void
 __attribute__((noreturn)) usage(void)
@@ -57,27 +58,27 @@ static void cleanup(void)
 static void init_pins(void)
 {
 	if (gpio_export(POWEROFF_BUTTON ) < 0) {
-		eprintf("can't export PIN %d\n", POWEROFF_BUTTON);
+		eprintf_l("can't export PIN %d\n", POWEROFF_BUTTON);
 		exit(EXIT_FAILURE);
 	}
 
 	if (gpio_export(POWER_LED ) < 0) {
-		eprintf("can't export PIN %d\n", POWER_LED);
+		eprintf_l("can't export PIN %d\n", POWER_LED);
 		exit(EXIT_FAILURE);
 	}
 
 	if (gpio_set_direction(POWEROFF_BUTTON, GPIO_IN ) < 0) {
-		eprintf("can't set direction for PIN %d\n", POWEROFF_BUTTON);
+		eprintf_l("can't set direction for PIN %d\n", POWEROFF_BUTTON);
 		exit(EXIT_FAILURE);
 	}
 
 	if (gpio_set_direction(POWER_LED, GPIO_OUT ) < 0) {
-		eprintf("can't set direction for PIN %d\n", POWER_LED);
+		eprintf_l("can't set direction for PIN %d\n", POWER_LED);
 		exit(EXIT_FAILURE);
 	}
 
 	if (gpio_set_edge_falling(POWEROFF_BUTTON) < 0) {
-		eprintf("can't set falling edge for PIN %d\n", POWEROFF_BUTTON);
+		eprintf_l("can't set falling edge for PIN %d\n", POWEROFF_BUTTON);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -201,6 +202,8 @@ void * poweroff_handler(__attribute__((__unused__)) void *arg)
 
 int main(int argc, char *argv[])
 {
+	run_as_daemon = false;
+
 	int c;
 	while ((c = getopt(argc, argv, "a")) != -1) {
 		switch (c) {

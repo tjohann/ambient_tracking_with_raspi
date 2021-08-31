@@ -91,6 +91,7 @@ static int read_fifo = -1;
 sigset_t mask;
 
 extern char *__progname;
+bool run_as_daemon = false;
 
 /* common functions */
 int lcd_clear(void);
@@ -710,7 +711,6 @@ int main(int argc, char *argv[])
 	char *adapter = NULL;
 	unsigned char addr = 0x00;
 	int type = -1;
-	bool run_as_daemon = false;
 
 	int c;
 	while ((c = getopt(argc, argv, "a:dhi:t:")) != -1) {

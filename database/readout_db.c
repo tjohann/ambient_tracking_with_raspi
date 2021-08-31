@@ -28,7 +28,7 @@ sqlite3 *db;
 #define SQL_SEL_STR_LEN 30
 
 extern char *__progname;
-
+bool run_as_daemon = false;
 
 static void
 __attribute__((noreturn)) usage(void)

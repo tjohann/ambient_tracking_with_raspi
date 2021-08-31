@@ -52,6 +52,7 @@ sqlite3 *db;
 sigset_t mask;
 
 extern char *__progname;
+bool run_as_daemon = false;
 
 #define LCD_WRITE() do {						\
 		if (write(lcd_fd, &req, len) != (int) len) {		\
