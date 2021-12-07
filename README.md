@@ -35,8 +35,8 @@ WARNING: This is work in progress! Don't expect things to be complete in any dim
 	poweroff-handler -> works
 
 	http stuff -> open
-	bmp180 extention -> open
-	cpu temperature -> open
+	bmp180 extention -> works
+	cpu temperature -> works
 
 
 Requirement
