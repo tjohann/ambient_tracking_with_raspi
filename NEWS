@@ -5,6 +5,7 @@
 
 2021-12-09 -> ## target stuff
               regular image updates
+	      add a lot of temp data to ambient database on the image
               update kernel 5.10.83
 
 2021-08-31 -> ## code stuff
