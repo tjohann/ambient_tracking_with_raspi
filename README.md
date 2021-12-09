@@ -124,7 +124,7 @@ Versioninfo
 
 I use a standard version scheme via git tags based on 3 numbers:
 
-	PI-ENV_V0.0.1
+	PI-ENV_V0.0.2
 
 The first number is the mayor number which reflect bigger changes. The second number (minor) will change because of
 
