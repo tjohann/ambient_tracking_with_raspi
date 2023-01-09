@@ -126,7 +126,7 @@ For more informations see https://www.cyberciti.biz/faq/linux-find-out-raspberry
 BMP180 modul
 ------------
 
-For valid temperature i add a BMP180 module. There're different versions outside. Choose the one you like. To activate it i added
+For valid temperature i add a BMP180 module. There\'re different versions outside. Choose the one you like. To activate it i added
 
 
 Path via i2c or iio:
