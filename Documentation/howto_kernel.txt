@@ -5,7 +5,7 @@
 
 Author: Thorsten Johannvorderbrueggen
 Email:  thorsten.johannvorderbrueggen@t-online.de
-Date:   04.11.2022/23.04.2021
+Date:   06.03.2023/23.04.2021
 
 Content:
 
@@ -105,7 +105,7 @@ Install modules
 ---------------
 
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.15.76 modules_install
+KDO: make ARCH=arm INSTALL_MOD_PATH=../modules_5.15.92 modules_install
 
 
 Deploy SD-Card
@@ -134,7 +134,7 @@ Copy modules
 
 # Note: maybe your need to remove the old one
 DIR: $AMBIENT_REPO/kernel/linux-*
-KDO: sudo rsync -avz ../modules_5.15.76/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
+KDO: sudo rsync -avz ../modules_5.15.92/lib/modules/. /mnt/raspi/raspi_rootfs/lib/modules/.
 
 
 Copy cleaned source to sd card
@@ -169,7 +169,7 @@ KDO: make scripts
 Prepare modules to link
 -----------------------
 
-DIR: /lib/modules/5.15.76
+DIR: /lib/modules/5.15.92
 KDO: rm build
 KDO: rm source
 KDO: ln -s /usr/src/linux source
