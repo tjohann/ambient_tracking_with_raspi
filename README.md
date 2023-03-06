@@ -1,5 +1,5 @@
-My ambient tracking modul with raspi
-====================================
+My ambient tracking modul with raspi (DEPRECATED)
+=================================================
 
 This is all content around my ambient tracking modul with a Raspi2. It collects ambient values like temperatur or humidity and shows it on a LCD2004 display.
 
