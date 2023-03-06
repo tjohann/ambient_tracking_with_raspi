@@ -42,10 +42,35 @@ sdk checks:
 	- update checksum.sha256
 
 
+PI-ENV_V0.0.3 (06.03.2023)
+--------------------------
+
+	Common checks                                           [2023-03-06 -> partly]
+
+	Config updates (on the target):
+		- ...
+
+	Build updates:
+		- libbaalue
+		  - ...
+		- baalued
+		  - ...
+		- lcd2004_i2c
+		  - ...
+	    - sensor_pi
+		  - ...
+
+	Script updates:
+		- ...
+
+	Others:
+		- ...
+
+
 PI-ENV_V0.0.2 (XX.07.2021)
 --------------------------
 
-	Common checks                                           [2021-07-XX -> done]
+	Common checks                                           [2021-07-XX -> partly]
 
 	Config updates (on the target):
 		- ...
